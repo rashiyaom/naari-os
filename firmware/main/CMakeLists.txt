@@ -1,0 +1,51 @@
+idf_component_register(
+    SRCS
+        "main.cpp"
+        "drivers/i2c_bus.cpp"
+        "state_machine/state_machine.cpp"
+        "drivers/display_co5300/display_co5300.cpp"
+        "drivers/display_co5300/ui_graphics.cpp"
+        "drivers/touch_ft3168/touch_ft3168.cpp"
+        "drivers/imu_qmi8658/imu_qmi8658.cpp"
+        "drivers/audio_es7210_es8311/audio_manager.cpp"
+        "drivers/axp2101/axp2101.cpp"
+        "drivers/sim800l/sim800l.cpp"
+        "network/network_manager.cpp"
+        "voice/voice_trigger.cpp"
+        "storage/sd_logger.cpp"
+        "storage/preferences.cpp"
+        "safety/fall_detector.cpp"
+        "network/phone_bridge.cpp"
+        "drivers/rtc_pcf85063/rtc_pcf85063.cpp"
+        "ui/ui_manager.cpp"
+    INCLUDE_DIRS
+        "."
+        "state_machine"
+        "drivers/display_co5300"
+        "drivers/touch_ft3168"
+        "drivers/imu_qmi8658"
+        "drivers/audio_es7210_es8311"
+        "drivers/axp2101"
+        "drivers/sim800l"
+        "drivers/rtc_pcf85063"
+        "network"
+        "voice"
+        "storage"
+        "ui"
+    REQUIRES
+        driver
+        esp_timer
+        nvs_flash
+        esp_pm
+        fatfs
+        vfs
+        bt
+        json
+        espressif__esp_codec_dev
+)
+
+# Explicit development build only. The normal firmware never records on boot.
+option(NAARI_HARDWARE_SELFTEST "Run local audio and display checks after boot" OFF)
+if(NAARI_HARDWARE_SELFTEST)
+    target_compile_definitions(${COMPONENT_LIB} PRIVATE NAARI_HARDWARE_SELFTEST=1)
+endif()

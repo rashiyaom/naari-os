@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/omvipulbhairashiya/Downloads/projects/naari os/firmware/build-ui-preview/native-preview'
+relocations:     []
+...

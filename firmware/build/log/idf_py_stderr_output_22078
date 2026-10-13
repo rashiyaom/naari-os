@@ -1,0 +1,5 @@
+--- esp-idf-monitor 1.10.0 on /dev/cu.usbmodem101 115200
+--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H
+--- 0x4200a185: s_test_psram at /Users/omvipulbhairashiya/esp/esp-idf/components/esp_psram/esp_psram.c:405
+--- ERROR: read failed: [Errno 6] Device not configured
+--- Waiting for the device to reconnect.............................................

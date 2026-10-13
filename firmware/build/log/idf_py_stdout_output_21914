@@ -1,0 +1,203 @@
+[0;32mI (269) octal_psram: VCC          : 0x01 (3V)[0m
+[0;32mI (274) octal_psram: SRESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x2b (SPI_FAST_FLASH_BOOT)
+Saved PC:0x40048839
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce3810,len:0x178c
+load:0x403c9700,len:0x4
+load:0x403c9704,len:0xcbc
+load:0x403cc700,len:0x2d98
+entry 0x403c9914
+[0;32mI (26) boot: ESP-IDF v5.2-dirty 2nd stage bootloader[0m
+[0;32mI (27) boot: compile time Sep 28 2026 00:05:05[0m
+[0;32mI (27) boot: Multicore bootloader[0m
+[0;32mI (30) boot: chip revision: v0.2[0m
+[0;32mI (34) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (39) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (43) boot.esp32s3: SPI Flash Size : 16MB[0m
+[0;32mI (48) boot: Enabling RNG early entropy source...[0m
+[0;32mI (54) boot: Partition Table:[0m
+[0;32mI (57) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (65) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (72) boot:  1 otadata          OTA data         01 00 0000f000 00002000[0m
+[0;32mI (79) boot:  2 phy_init         RF data          01 01 00011000 00001000[0m
+[0;32mI (87) boot:  3 factory          factory app      00 00 00020000 00300000[0m
+[0;32mI (94) boot:  4 ota_0            OTA app          00 10 00320000 00300000[0m
+[0;32mI (102) boot:  5 ota_1            OTA app          00 11 00620000 00300000[0m
+[0;32mI (109) boot:  6 model            Unknown data     01 82 00920000 00300000[0m
+[0;32mI (117) boot:  7 storage          Unknown data     01 81 00c20000 00300000[0m
+[0;32mI (125) boot: End of partition table[0m
+[0;32mI (129) boot: Defaulting to factory image[0m
+[0;32mI (134) esp_image: segment 0: paddr=00020020 vaddr=3c040020 size=1810ch ( 98572) map[0m
+[0;32mI (160) esp_image: segment 1: paddr=00038134 vaddr=3fc96600 size=03358h ( 13144) load[0m
+[0;32mI (163) esp_image: segment 2: paddr=0003b494 vaddr=40374000 size=04b84h ( 19332) load[0m
+[0;32mI (170) esp_image: segment 3: paddr=00040020 vaddr=42000020 size=3ba68h (244328) map[0m
+[0;32mI (218) esp_image: segment 4: paddr=0007ba90 vaddr=40378b84 size=0da0ch ( 55820) load[0m
+[0;32mI (238) boot: Loaded app from partition at offset 0x20000[0m
+[0;32mI (238) boot: Disabling RNG early entropy source...[0m
+[0;32mI (249) cpu_start: Multicore app[0m
+[0;32mI (250) octal_psram: vendor id    : 0x0d (AP)[0m
+[0;32mI (250) octal_psram: dev id       : 0x02 (generation 3)[0m
+[0;32mI (253) octal_psram: density      : 0x03 (64 Mbit)[0m
+[0;32mI (258) octal_psram: good-die     : 0x01 (Pass)[0m
+[0;32mI (264) octal_psram: Latency      : 0x01 (Fixed)[0m
+[0;32mI (269) octal_psram: VCC          : 0x01 (3V)[0m
+[0;32mI (274) octal_psram: SRF          : 0x01 (Fast Refresh)[0m
+[0;32mI (280) octal_psram: BurstType    : 0x01 (Hybrid Wrap)[0m
+[0;32mI (286) octal_psram: BurstLen     : 0x01 (32 Byte)[0m
+[0;32mI (291) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)[0m
+[0;32mI (297) octal_psram: DriveStrength: 0x00 (1/1)[0m
+[0;32mI (303) MSPI Timing: PSRAM timing tuning index: 10[0m
+[0;32mI (308) esp_psram: Found 8MB PSRAM device[0m
+[0;32mI (313) esp_psram: Speed: 80MHz[0m
+[0;32mI (762) esp_psram: SPI SRAM memory test OK[0m
+[0;32mI (771) cpu_start: Pro cpu start user code[0m
+[0;32mI (772) cpu_start: cpu freq: 240000000 Hz[0m
+[0;32mI (772) cpu_start: Application information:[0m
+[0;32mI (775) cpu_start: Project name:     sheshield_sentinel[0m
+[0;32mI (780) cpu_start: App version:      1[0m
+[0;32mI (785) cpu_start: Compile time:     Sep 28 2026 00:04:54[0m
+[0;32mI (791) cpu_start: ELF file SHA256:  d7a654aca...[0m
+[0;32mI (796) cpu_start: ESP-IDF:          v5.2-dirty[0m
+[0;32mI (802) cpu_start: Min chip rev:     v0.0[0m
+[0;32mI (806) cpu_start: Max chip rev:     v0.99 [0m
+[0;32mI (811) cpu_start: Chip rev:         v0.2[0m
+[0;32mI (816) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (823) heap_init: At 3FC9A980 len 0004ED90 (315 KiB): RAM[0m
+[0;32mI (829) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (835) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (841) heap_init: At 600FE010 len 00001FD8 (7 KiB): RTCRAM[0m
+[0;32mI (848) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator[0m
+[0;32mI (856) spi_flash: detected chip: gd[0m
+[0;32mI (859) spi_flash: flash io: dio[0m
+[0;33mW (863) spi_flash: Detected size(32768k) larger than the size in the binary image header(16384k). Using the size in the binary image header.[0m
+[0;33mW (877) i2c: This driver is an old driver, please migrate your application code to adapt `driver/i2c_master.h`[0m
+[0;32mI (887) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (894) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (912) pm: Frequency switching config: CPU_MAX: 240, APB_MAX: 80, APB_MIN: 40, Light sleep: DISABLED[0m
+[0;32mI (913) main_task: Started on CPU0[0m
+[0;32mI (916) esp_psram: Reserving pool of 32K of internal memory for DMA/internal allocations[0m
+[0;32mI (924) main_task: Calling app_main()[0m
+[0;32mI (928) SheShield_Main: ===============================================================[0m
+[0;32mI (937) SheShield_Main:    SheShield Sentinel - Wearable Safety OS v1.0.0             [0m
+[0;32mI (946) SheShield_Main:    Board: Waveshare ESP32-S3-Touch-AMOLED-2.06 + SIM800L      [0m
+[0;32mI (954) SheShield_Main: ===============================================================[0m
+[0;32mI (984) AXP2101_PMIC: Initializing AXP2101 Power Management IC (I2C addr 0x34)...[0m
+[0;31mE (985) AXP2101_PMIC: Failed to communicate with AXP2101 PMIC![0m
+[0;32mI (988) Display_CO5300: Initializing CO5300 2.06" AMOLED display (410x502 QSPI)...[0m
+[0;32mI (996) gpio: GPIO[8]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (1146) Display_CO5300: Sending CO5300 AMOLED initialization commands...[0m
+[0;32mI (1286) Display_CO5300: CO5300 AMOLED initialized successfully.[0m
+[0;32mI (1286) Touch_FT3168: Initializing FT3168 Capacitive Touch controller (I2C addr 0x38)...[0m
+[0;32mI (1290) gpio: GPIO[5]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 [0m
+[0;32mI (1360) Touch_FT3168: FT3168 Touch controller initialized.[0m
+[0;32mI (1360) IMU_QMI8658: Initializing QMI8658 6-Axis IMU (I2C addr 0x6B)...[0m
+[0;31mE (1363) IMU_QMI8658: Failed to communicate with QMI8658![0m
+[0;32mI (1368) Audio_ES7210_ES8311: Initializing Audio Subsystem (ES7210 Mic ADC @ 0x40 + ES8311 DAC @ 0x18)...[0m
+[0;32mI (1379) Audio_ES7210_ES8311: Audio subsystem initialized successfully.[0m
+[0;32mI (1386) SIM800L: Initializing SIM800L GSM Driver (TX:17, RX:18, PWRKEY:2)...[0m
+[0;32mI (1394) gpio: GPIO[1]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (1403) gpio: GPIO[2]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (1413) SIM800L: SIM800L Worker Task started.[0m
+[0;32mI (1413) SIM800L: SIM800L Driver initialized in standby mode.[0m
+[0;32mI (1424) SD_Logger: Mounting MicroSD card over SDMMC slot...[0m
+[0;32mI (1431) gpio: GPIO[47]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 [0m
+[0;32mI (1440) gpio: GPIO[48]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 [0m
+[0;32mI (1449) gpio: GPIO[45]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 [0m
+[0;31mE (1488) sdmmc_common: sdmmc_init_ocr: send_op_cond (1) returned 0x107[0m
+[0;31mE (1488) vfs_fat_sdmmc: sdmmc_card_init failed (0x107).[0m
+[0;33mW (1490) SD_Logger: MicroSD hardware mount failed (0x107). Operating with virtual VFS fallback.[0m
+[0;32mI (1499) Network_Manager: Initializing Wi-Fi 2.4GHz & BLE 5.0 Stack...[0m
+[0;32mI (1507) Voice_Trigger_SR: Initializing ESP-SR Offline Speech Recognition model (WakeNet + MultiNet)...[0m
+[0;32mI (1517) LVGL_UI: Initializing LVGL Graphics Pipeline for Waveshare 410x502 AMOLED...[0m
+[0;32mI (1525) LVGL_UI: ┌────────────────────────────────────────────────────────┐[0m
+[0;32mI (1543) LVGL_UI: │ [01 - SAFE SCREEN]  naari os                   82% 🔋  │[0m
+[0;32mI (1551) LVGL_UI: │                                                        │[0m
+[0;32mI (1559) LVGL_UI: │   SUNDAY, 27 SEPTEMBER                                  │[0m
+[0;32mI (1567) LVGL_UI: │   09:41                                                │[0m
+[0;32mI (1576) LVGL_UI: │   ── RIGHT HERE, WITH YOU                              │[0m
+[0;32mI (1584) LVGL_UI: │                                                        │[0m
+[0;32mI (1592) LVGL_UI: │   [🛡️] All is well · Your day, uninterrupted          │[0m
+[0;32mI (1601) LVGL_UI: │   [Cellular: Modem Asleep                              ] │[0m
+[0;32mI (1609) LVGL_UI: │   Hold side button ─────────────────────────────────>  │[0m
+[0;32mI (1622) LVGL_UI: └────────────────────────────────────────────────────────┘[0m
+[0;32mI (1640) gpio: GPIO[0]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:3 [0m
+[0;32mI (1650) State_Machine: Initializing SheShield 3-Tier State Machine (SAFE / SAFETY_WATCH / EMERGENCY)...[0m
+[0;32mI (1660) State_Machine: State Machine active in [SAFE] state.[0m
+[0;32mI (1666) Voice_Trigger_SR: ESP-SR Wake-word engine actively listening for distress phrases ("HELP ME", "BACHAO").[0m
+[0;32mI (1677) SheShield_Main: Hardware Button Cadence & Gesture Task started.[0m
+[0;32mI (1677) SheShield_Main: SheShield Sentinel System fully running and guarding in [SAFE] mode.[0m
+[0;32mI (1694) main_task: Returned from app_main()[0m
+[0;32mI (769) esp_psram: SPI SRAM memory test OK[0m
+[0;32mI (778) cpu_start: Pro cpu start user code[0m
+[0;32mI (778) cpu_start: cpu freq: 240000000 Hz[0m
+[0;32mI (778) cpu_start: Application information:[0m
+[0;32mI (781) cpu_start: Project name:     sheshield_sentinel[0m
+[0;32mI (787) cpu_start: App version:      1[0m
+[0;32mI (791) cpu_start: Compile time:     Sep 28 2026 00:04:54[0m
+[0;32mI (798) cpu_start: ELF file SHA256:  d7a654aca...[0m
+[0;32mI (803) cpu_start: ESP-IDF:          v5.2-dirty[0m
+[0;32mI (808) cpu_start: Min chip rev:     v0.0[0m
+[0;32mI (813) cpu_start: Max chip rev:     v0.99 [0m
+[0;32mI (818) cpu_start: Chip rev:         v0.2[0m
+[0;32mI (822) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (830) heap_init: At 3FC9A980 len 0004ED90 (315 KiB): RAM[0m
+[0;32mI (836) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (842) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (848) heap_init: At 600FE010 len 00001FD8 (7 KiB): RTCRAM[0m
+[0;32mI (854) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator[0m
+[0;32mI (862) spi_flash: detected chip: gd[0m
+[0;32mI (866) spi_flash: flash io: dio[0m
+[0;33mW (870) spi_flash: Detected size(32768k) larger than the size in the binary image header(16384k). Using the size in the binary image header.[0m
+[0;33mW (883) i2c: This driver is an old driver, please migrate your application code to adapt `driver/i2c_master.h`[0m
+[0;32mI (894) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (901) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (919) pm: Frequency switching config: CPU_MAX: 240, APB_MAX: 80, APB_MIN: 40, Light sleep: DISABLED[0m
+[0;32mI (920) main_task: Started on CPU0[0m
+[0;32mI (923) esp_psram: Reserving pool of 32K of internal memory for DMA/internal allocations[0m
+[0;32mI (931) main_task: Calling app_main()[0m
+[0;32mI (935) SheShield_Main: ===============================================================[0m
+[0;32mI (944) SheShield_Main:    SheShield Sentinel - Wearable Safety OS v1.0.0             [0m
+[0;32mI (953) SheShield_Main:    Board: Waveshare ESP32-S3-Touch-AMOLED-2.06 + SIM800L      [0m
+[0;32mI (961) SheShield_Main: ===============================================================[0m
+[0;32mI (991) AXP2101_PMIC: Initializing AXP2101 Power Management IC (I2C addr 0x34)...[0m
+[0;31mE (992) AXP2101_PMIC: Failed to communicate with AXP2101 PMIC![0m
+[0;32mI (995) Display_CO5300: Initializing CO5300 2.06" AMOLED display (410x502 QSPI)...[0m
+[0;32mI (1003) gpio: GPIO[8]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (1153) Display_CO5300: Sending CO5300 AMOLED initialization commands...[0m
+[0;32mI (1293) Display_CO5300: CO5300 AMOLED initialized successfully.[0m
+[0;32mI (1293) Touch_FT3168: Initializing FT3168 Capacitive Touch controller (I2C addr 0x38)...[0m
+[0;32mI (1297) gpio: GPIO[5]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 [0m
+[0;32mI (1367) Touch_FT3168: FT3168 Touch controller initialized.[0m
+[0;32mI (1367) IMU_QMI8658: Initializing QMI8658 6-Axis IMU (I2C addr 0x6B)...[0m
+[0;31mE (1370) IMU_QMI8658: Failed to communicate with QMI8658![0m
+[0;32mI (1375) Audio_ES7210_ES8311: Initializing Audio Subsystem (ES7210 Mic ADC @ 0x40 + ES8311 DAC @ 0x18)...[0m
+[0;32mI (1386) Audio_ES7210_ES8311: Audio subsystem initialized successfully.[0m
+[0;32mI (1393) SIM800L: Initializing SIM800L GSM Driver (TX:17, RX:18, PWRKEY:2)...[0m
+[0;32mI (1401) gpio: GPIO[1]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (1410) gpio: GPIO[2]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (1420) SIM800L: SIM800L Worker Task started.[0m
+[0;32mI (1420) SIM800L: SIM800L Driver initialized in standby mode.[0m
+[0;32mI (1431) SD_Logger: Mounting MicroSD card over SDMMC slot...[0m
+[0;32mI (1438) gpio: GPIO[47]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 [0m
+[0;32mI (1447) gpio: GPIO[48]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 [0m
+[0;32mI (1456) gpio: GPIO[45]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 [0m
+[0;31mE (1495) sdmmc_common: sdmmc_init_ocr: send_op_cond (1) returned 0x107[0m
+[0;31mE (1495) vfs_fat_sdmmc: sdmmc_card_init failed (0x107).[0m
+[0;33mW (1497) SD_Logger: MicroSD hardware mount failed (0x107). Operating with virtual VFS fallback.[0m
+[0;32mI (1506) Network_Manager: Initializing Wi-Fi 2.4GHz & BLE 5.0 Stack...[0m
+[0;32mI (1514) Voice_Trigger_SR: Initializing ESP-SR Offline Speech Recognition model (WakeNet + MultiNet)...[0m
+[0;32mI (1524) LVGL_UI: Initializing LVGL Graphics Pipeline for Waveshare 410x502 AMOLED...[0m
+[0;32mI (1532) LVGL_UI: ┌────────────────────────────────────────────────────────┐[0m
+[0;32mI (1550) LVGL_UI: │ [01 - SAFE SCREEN]  naari os                   82% 🔋  │[0m
+[0;32mI (1558) LVGL_UI: │                                                        │[0m
+[0;32mI (1566) LVGL_UI: │   SUNDAY, 27 SEPTEMBER                                  │[0m
+[0;32mI (1574) LVGL_UI: │   09:41                                                │[0m
+[0;32mI (1583) LVGL_UI: │   ── RIGHT HERE, WITH YOU                              │[0m
+[0;32mI (1591) LVGL_UI: │                                                        │[0m
+[0;32mI (1599) LVGL_UI: │   [🛡️] All is well · Your day, uninterrupted          │[0m
+[0;32mI (1608) LVGL_UI: │   [Cellular: Modem Asleep                              ] │[0m
+[0;32mI (1616) LVGL_UI: │   Hold side button ─────────────────────────────────>  │[0m
+[0;32mI (1629) LVGL_UI: └─────────────────────────

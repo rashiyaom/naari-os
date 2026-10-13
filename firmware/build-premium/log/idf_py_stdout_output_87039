@@ -1,0 +1,109 @@
+-- IDF_TARGET is not set, guessed 'esp32s3' from sdkconfig '/Users/omvipulbhairashiya/Downloads/projects/naari os/firmware/sdkconfig'
+-- Found Git: /usr/bin/git (found version "2.54.0 (Apple Git-157)")
+-- Component directory /Users/omvipulbhairashiya/esp/esp-idf/components/esp_vfs_console does not contain a CMakeLists.txt file. No component will be added
+-- Initialising new submodule components/bootloader/subproject/components/micro-ecc/micro-ecc...
+Submodule path 'components/bootloader/subproject/components/micro-ecc/micro-ecc': checked out '24c60e243580c7868f4334a1ba3123481fe1aa48'
+-- Initialising new submodule components/bt/controller/lib_esp32...
+Submodule path 'components/bt/controller/lib_esp32': checked out '45b79faeb13768d60497d12ed833c570dab7b89e'
+-- Initialising new submodule components/bt/controller/lib_esp32c2/esp32c2-bt-lib...
+Submodule path 'components/bt/controller/lib_esp32c2/esp32c2-bt-lib': checked out '6a5c0b8bfca1a2e984e89431b8ebf9b521dad5ea'
+-- Initialising new submodule components/bt/controller/lib_esp32c3_family...
+Submodule path 'components/bt/controller/lib_esp32c3_family': checked out '0a08c4b32f3666003080b662a1a61794da24ff0f'
+-- Initialising new submodule components/bt/controller/lib_esp32c6/esp32c6-bt-lib...
+Submodule path 'components/bt/controller/lib_esp32c6/esp32c6-bt-lib': checked out '2f0817cdfa8d2bbfeb765d7b9824cc67a8d6230c'
+-- Initialising new submodule components/bt/controller/lib_esp32h2/esp32h2-bt-lib...
+Submodule path 'components/bt/controller/lib_esp32h2/esp32h2-bt-lib': checked out 'e786a298d3dca713b9cf5801864de0b9f75cdf04'
+-- Initialising new submodule components/bt/esp_ble_mesh/lib/lib...
+Submodule path 'components/bt/esp_ble_mesh/lib/lib': checked out 'a717b72074a345e911fd775127b810dde7932824'
+-- Initialising new submodule components/bt/host/nimble/nimble...
+Submodule path 'components/bt/host/nimble/nimble': checked out '133a0d4ba49c48c364586543638fbbdd597c9825'
+-- Initialising new submodule components/cmock/CMock...
+Submodule path 'components/cmock/CMock': checked out 'eeecc49ce8af123cf8ad40efdb9673e37b56230f'
+Submodule path 'components/cmock/CMock/vendor/c_exception': checked out '71b47be7c950f1bf5f7e5303779fa99a16224bb6'
+Submodule path 'components/cmock/CMock/vendor/unity': checked out 'cf949f45ca6d172a177b00da21310607b97bc7a7'
+-- Initialising new submodule components/esp_coex/lib...
+Submodule path 'components/esp_coex/lib': checked out 'bfe5f91f424b6b39b59ff4d6c80cf6c35888b87c'
+-- Initialising new submodule components/esp_phy/lib...
+Submodule path 'components/esp_phy/lib': checked out '5695f4f38108658bc4a33e4712c1ebcb34911434'
+-- Initialising new submodule components/esp_wifi/lib...
+Submodule path 'components/esp_wifi/lib': checked out 'f4ad5e5676c3a427ca9ab23af881aa8fc8004d01'
+-- Initialising new submodule components/heap/tlsf...
+Submodule path 'components/heap/tlsf': checked out 'd2e28f872472ffc6a704faae65ddee1f24e2dfba'
+-- Initialising new submodule components/json/cJSON...
+Submodule path 'components/json/cJSON': checked out 'b2890c8d76bbb64e710585ebc0a917196b9c67e7'
+-- Initialising new submodule components/lwip/lwip...
+Submodule path 'components/lwip/lwip': checked out '392707e5c3a5d8e2531461db77843b9759cd5a43'
+-- Initialising new submodule components/mbedtls/mbedtls...
+Submodule path 'components/mbedtls/mbedtls': checked out '2b96dd8eebe880f304c69976b3c2fa0c5100cbb6'
+-- Initialising new submodule components/mqtt/esp-mqtt...
+Submodule path 'components/mqtt/esp-mqtt': checked out 'e3ab40c82443ac9cbb3951f74b96c3cdb743cf07'
+-- Initialising new submodule components/openthread/lib...
+Submodule path 'components/openthread/lib': checked out 'b7ada017e0adfcc70eeb829cbe4e56f76c57d7a2'
+-- Initialising new submodule components/openthread/openthread...
+Submodule path 'components/openthread/openthread': checked out 'b678a4f63b6f9397d1a0fa8f31e5b8e0271a4d00'
+Submodule path 'components/openthread/openthread/third_party/mbedtls/repo': checked out 'e185d7fd85499c8ce5ca2a54f5cf8fe7dbe3f8df'
+Submodule path 'components/openthread/openthread/third_party/mbedtls/repo/framework': checked out '457996474728cb8e968ed21953b72f74d2f536b2'
+-- Initialising new submodule components/protobuf-c/protobuf-c...
+Submodule path 'components/protobuf-c/protobuf-c': checked out 'abc67a11c6db271bedbb9f58be85d6f4e2ea8389'
+-- Initialising new submodule components/spiffs/spiffs...
+Submodule path 'components/spiffs/spiffs': checked out '0dbb3f71c5f6fae3747a9d935372773762baf852'
+-- Initialising new submodule components/unity/unity...
+Submodule path 'components/unity/unity': checked out '7d2bf62b7e6afaf38153041a9d53c21aeeca9a25'
+-- The C compiler identification is GNU 13.2.0
+-- The CXX compiler identification is GNU 13.2.0
+-- The ASM compiler identification is GNU
+-- Found assembler: /Users/omvipulbhairashiya/.espressif/tools/xtensa-esp-elf/esp-13.2.0_20250707/xtensa-esp-elf/bin/xtensa-esp32s3-elf-gcc
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /Users/omvipulbhairashiya/.espressif/tools/xtensa-esp-elf/esp-13.2.0_20250707/xtensa-esp-elf/bin/xtensa-esp32s3-elf-gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /Users/omvipulbhairashiya/.espressif/tools/xtensa-esp-elf/esp-13.2.0_20250707/xtensa-esp-elf/bin/xtensa-esp32s3-elf-g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- git rev-parse returned 'fatal: not a git repository (or any of the parent directories): .git'
+-- Could not use 'git describe' to determine PROJECT_VER.
+-- Building ESP-IDF components for target esp32s3
+-- Project sdkconfig file /Users/omvipulbhairashiya/Downloads/projects/naari os/firmware/sdkconfig
+Loading defaults file /Users/omvipulbhairashiya/Downloads/projects/naari os/firmware/sdkconfig.defaults...
+/Users/omvipulbhairashiya/Downloads/projects/naari os/firmware/sdkconfig.defaults:6 CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240 was replaced with CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240
+/Users/omvipulbhairashiya/Downloads/projects/naari os/firmware/sdkconfig.defaults:7 CONFIG_ESP32S3_DEFAULT_CPU_FREQ_MHZ was replaced with CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ
+-- Compiler supported targets: xtensa-esp-elf
+-- Looking for sys/types.h
+-- Looking for sys/types.h - found
+-- Looking for stdint.h
+-- Looking for stdint.h - found
+-- Looking for stddef.h
+-- Looking for stddef.h - found
+-- Check size of time_t
+-- Check size of time_t - done
+-- Found Python3: /Users/omvipulbhairashiya/.espressif/python_env/idf5.2_py3.13_env/bin/python (found version "3.13.4") found components: Interpreter
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Performing Test C_COMPILER_SUPPORTS_WFORMAT_SIGNEDNESS
+-- Performing Test C_COMPILER_SUPPORTS_WFORMAT_SIGNEDNESS - Success
+-- USING O3
+-- App "sheshield_sentinel" version: 1
+-- Adding linker script /Users/omvipulbhairashiya/Downloads/projects/naari os/firmware/build-premium/esp-idf/esp_system/ld/memory.ld
+-- Adding linker script /Users/omvipulbhairashiya/Downloads/projects/naari os/firmware/build-premium/esp-idf/esp_system/ld/sections.ld.in
+-- Adding linker script /Users/omvipulbhairashiya/esp/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ld
+-- Adding linker script /Users/omvipulbhairashiya/esp/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.api.ld
+-- Adding linker script /Users/omvipulbhairashiya/esp/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.bt_funcs.ld
+-- Adding linker script /Users/omvipulbhairashiya/esp/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.libgcc.ld
+-- Adding linker script /Users/omvipulbhairashiya/esp/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.newlib.ld
+-- Adding linker script /Users/omvipulbhairashiya/esp/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.version.ld
+-- Adding linker script /Users/omvipulbhairashiya/esp/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_master.ld
+-- Adding linker script /Users/omvipulbhairashiya/esp/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_50.ld
+-- Adding linker script /Users/omvipulbhairashiya/esp/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_smp.ld
+-- Adding linker script /Users/omvipulbhairashiya/esp/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_dtm.ld
+-- Adding linker script /Users/omvipulbhairashiya/esp/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_test.ld
+-- Adding linker script /Users/omvipulbhairashiya/esp/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_scan.ld
+-- Adding linker script /Users/omvipulbhairashiya/esp/esp-idf/components/soc/esp32s3/ld/esp32s3.peripherals.ld
+-- Components: app_trace app_update bootloader bootloader_support bt cmock console cxx driver efuse esp-tls esp_adc esp_app_format esp_bootloader_format esp_coex esp_common esp_eth esp_event esp_gdbstub esp_hal_ieee802154 esp_hid esp_http_client esp_http_server esp_https_ota esp_https_server esp_hw_support esp_lcd esp_local_ctrl esp_mm esp_netif esp_netif_stack esp_partition esp_phy esp_pm esp_psram esp_ringbuf esp_rom esp_system esp_timer esp_wifi espcoredump esptool_py fatfs freertos hal heap http_parser idf_test ieee802154 json log lwip main mbedtls mqtt newlib nvs_flash nvs_sec_provider openthread partition_table perfmon protobuf-c protocomm pthread sdmmc soc spi_flash spiffs tcp_transport touch_element ulp unity usb vfs wear_levelling wifi_provisioning wpa_supplicant xtensa
+-- Component paths: /Users/omvipulbhairashiya/esp/esp-idf/components/app_trace /Users/omvipulbhairashiya/esp/esp-idf/components/app_update /Users/omvipulbhairashiya/esp/esp-idf/components/bootloader /Users/omvipulbhairashiya/esp/esp-idf/components/bootloader_support /Users/omvipulbhairashiya/esp/esp-idf/components/bt /Users/omvipulbhairashiya/esp/esp-idf/components/cmock /Users/omvipulbhairashiya/esp/esp-idf/components/console /Users/omvipulbhairashiya/esp/esp-idf/components/cxx /Users/omvipulbhairashiya/esp/esp-idf/components/driver /Users/omvipulbhairashiya/esp/esp-idf/components/efuse /Users/omvipulbhairashiya/esp/esp-idf/components/esp-tls /Users/omvipulbhairashiya/esp/esp-idf/components/esp_adc /Users/omvipulbhairashiya/esp/esp-idf/components/esp_app_format /Users/omvipulbhairashiya/esp/esp-idf/components/esp_bootloader_format /Users/omvipulbhairashiya/esp/esp-idf/components/esp_coex /Users/omvipulbhairashiya/esp/esp-idf/components/esp_common /Users/omvipulbhairashiya/esp/esp-idf/components/esp_eth /Users/omvipulbhairashiya/esp/esp-idf/components/esp_event /Users/omvipulbhairashiya/esp/esp-idf/components/esp_gdbstub /Users/omvipulbhairashiya/esp/esp-idf/components/esp_hal_ieee802154 /Users/omvipulbhairashiya/esp/esp-idf/components/esp_hid /Users/omvipulbhairashiya/esp/esp-idf/components/esp_http_client /Users/omvipulbhairashiya/esp/esp-idf/components/esp_http_server /Users/omvipulbhairashiya/esp/esp-idf/components/esp_https_ota /Users/omvipulbhairashiya/esp/esp-idf/components/esp_https_server /Users/omvipulbhairashiya/esp/esp-idf/components/esp_hw_support /Users/omvipulbhairashiya/esp/esp-idf/components/esp_lcd /Users/omvipulbhairashiya/esp/esp-idf/components/esp_local_ctrl /Users/omvipulbhairashiya/esp/esp-idf/components/esp_mm /Users/omvipulbhairashiya/esp/esp-idf/components/esp_netif /Users/omvipulbhairashiya/esp/esp-idf/components/esp_netif_stack /Users/omvipulbhairashiya/esp/esp-idf/components/esp_partition /Users/omvipulbhairashiya/esp/esp-idf/components/esp_phy /Users/omvipulbhairashiya/esp/esp-idf/components/esp_pm /Users/omvipulbhairashiya/esp/esp-idf/components/esp_psram /Users/omvipulbhairashiya/esp/esp-idf/components/esp_ringbuf /Users/omvipulbhairashiya/esp/esp-idf/components/esp_rom /Users/omvipulbhairashiya/esp/esp-idf/components/esp_system /Users/omvipulbhairashiya/esp/esp-idf/components/esp_timer /Users/omvipulbhairashiya/esp/esp-idf/components/esp_wifi /Users/omvipulbhairashiya/esp/esp-idf/components/espcoredump /Users/omvipulbhairashiya/esp/esp-idf/components/esptool_py /Users/omvipulbhairashiya/esp/esp-idf/components/fatfs /Users/omvipulbhairashiya/esp/esp-idf/components/freertos /Users/omvipulbhairashiya/esp/esp-idf/components/hal /Users/omvipulbhairashiya/esp/esp-idf/components/heap /Users/omvipulbhairashiya/esp/esp-idf/components/http_parser /Users/omvipulbhairashiya/esp/esp-idf/components/idf_test /Users/omvipulbhairashiya/esp/esp-idf/components/ieee802154 /Users/omvipulbhairashiya/esp/esp-idf/components/json /Users/omvipulbhairashiya/esp/esp-idf/components/log /Users/omvipulbhairashiya/esp/esp-idf/components/lwip /Users/omvipulbhairashiya/Downloads/projects/naari os/firmware/main /Users/omvipulbhairashiya/esp/esp-idf/components/mbedtls /Users/omvipulbhairashiya/esp/esp-idf/components/mqtt /Users/omvipulbhairashiya/esp/esp-idf/components/newlib /Users/omvipulbhairashiya/esp/esp-idf/components/nvs_flash /Users/omvipulbhairashiya/esp/esp-idf/components/nvs_sec_provider /Users/omvipulbhairashiya/esp/esp-idf/components/openthread /Users/omvipulbhairashiya/esp/esp-idf/components/partition_table /Users/omvipulbhairashiya/esp/esp-idf/components/perfmon /Users/omvipulbhairashiya/esp/esp-idf/components/protobuf-c /Users/omvipulbhairashiya/esp/esp-idf/components/protocomm /Users/omvipulbhairashiya/esp/esp-idf/components/pthread /Users/omvipulbhairashiya/esp/esp-idf/components/sdmmc /Users/omvipulbhairashiya/esp/esp-idf/components/soc /Users/omvipulbhairashiya/esp/esp-idf/components/spi_flash /Users/omvipulbhairashiya/esp/esp-idf/components/spiffs /Users/omvipulbhairashiya/esp/esp-idf/components/tcp_transport /Users/omvipulbhairashiya/esp/esp-idf/components/touch_element /Users/omvipulbhairashiya/esp/esp-idf/components/ulp /Users/omvipulbhairashiya/esp/esp-idf/components/unity /Users/omvipulbhairashiya/esp/esp-idf/components/usb /Users/omvipulbhairashiya/esp/esp-idf/components/vfs /Users/omvipulbhairashiya/esp/esp-idf/components/wear_levelling /Users/omvipulbhairashiya/esp/esp-idf/components/wifi_provisioning /Users/omvipulbhairashiya/esp/esp-idf/components/wpa_supplicant /Users/omvipulbhairashiya/esp/esp-idf/components/xtensa
+-- Configuring done (1329.0s)
+-- Generating done (0.5s)
+-- Build files have been written to: /Users/omvipulbhairashiya/Downloads/projects/naari os/firmware/build-premium

@@ -1,0 +1,4207 @@
+/* ================================================================ */
+/* APPLE WATCH OS 410×502 ULTRA-REALISTIC SIMULATOR CSS             */
+/* ================================================================ */
+
+.ws-super-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  padding: 10px 0;
+}
+
+/* Floating Toast Notification */
+.ws-floating-toast {
+  position: absolute;
+  top: -12px;
+  z-index: 1000;
+  background: rgba(30, 41, 59, 0.95);
+  color: #fff;
+  border: 1px solid rgba(45, 212, 191, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 16px rgba(45, 212, 191, 0.25);
+  backdrop-filter: blur(16px);
+  padding: 8px 18px;
+  border-radius: 24px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  animation: wsToastSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+@keyframes wsToastSlide {
+  from { opacity: 0; transform: translateY(-8px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Hardware Aerospace Titanium Chassis */
+.ws-watch-chassis {
+  position: relative;
+  width: 320px;
+  height: 400px;
+  border-radius: 56px;
+  background: radial-gradient(120% 120% at 30% 15%, #3a3b40 0%, #202125 50%, #151619 100%);
+  padding: 14px;
+  box-sizing: border-box;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.12),
+    0 0 0 4px rgba(15, 17, 21, 0.85),
+    0 0 0 6px rgba(60, 64, 72, 0.4),
+    0 24px 60px rgba(0, 0, 0, 0.85),
+    0 2px 10px rgba(0, 0, 0, 0.9);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.ws-watch-chassis:hover {
+  box-shadow:
+    0 0 0 2px rgba(45, 212, 191, 0.3),
+    0 0 0 4px rgba(15, 17, 21, 0.85),
+    0 0 0 6px rgba(60, 64, 72, 0.5),
+    0 30px 70px rgba(0, 0, 0, 0.92),
+    0 0 30px rgba(45, 212, 191, 0.15);
+}
+
+/* Physical Hardware Digital Crown */
+.ws-hw-crown {
+  position: absolute;
+  right: -13px;
+  top: 72px;
+  width: 14px;
+  height: 58px;
+  background: linear-gradient(180deg, #44474e 0%, #2a2c30 40%, #1a1b1d 60%, #44474e 100%);
+  border-radius: 0 7px 7px 0;
+  border-left: 1px solid rgba(0, 0, 0, 0.8);
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.7);
+  box-shadow:
+    inset -1px 0 2px rgba(255, 255, 255, 0.2),
+    4px 0 10px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  z-index: 20;
+  transition: transform 0.1s ease, filter 0.2s ease;
+}
+
+.ws-hw-crown::after {
+  content: '';
+  position: absolute;
+  inset: 4px 2px;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.22) 0px,
+    rgba(255, 255, 255, 0.22) 2px,
+    transparent 2px,
+    transparent 5px
+  );
+  border-radius: 2px;
+  opacity: 0.85;
+}
+
+.ws-hw-crown:hover {
+  filter: brightness(1.2);
+}
+
+.ws-hw-crown:active {
+  transform: translateX(-3px) scale(0.97);
+}
+
+/* Physical Flush Side Button */
+.ws-hw-side-btn {
+  position: absolute;
+  right: -9px;
+  top: 156px;
+  width: 10px;
+  height: 64px;
+  background: linear-gradient(180deg, #323439 0%, #1c1d20 50%, #2e3035 100%);
+  border-radius: 0 6px 6px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  z-index: 20;
+  transition: transform 0.1s ease, filter 0.2s ease;
+}
+
+.ws-hw-side-btn:hover {
+  filter: brightness(1.25);
+  background: linear-gradient(180deg, #3d4047 0%, #25262a 50%, #393c42 100%);
+}
+
+.ws-hw-side-btn:active {
+  transform: translateX(-3px);
+}
+
+/* 410×502 High-Density AMOLED Screen Glass Viewport */
+.ws-screen-viewport,
+.ws-amoled-display {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #000000;
+  border-radius: 44px;
+  overflow: hidden;
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.95);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Subtle Glass Reflection Curve */
+.ws-screen-viewport::before,
+.ws-amoled-display::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  left: -20px;
+  width: 160%;
+  height: 120px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 60%, transparent 100%);
+  transform: rotate(-12deg);
+  pointer-events: none;
+  z-index: 50;
+  border-radius: 50%;
+}
+
+/* Common UI Screen Container - strictly clipped to viewport */
+.ws-ui-screen,
+.ws-screen {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+  overflow: hidden;
+  background: #000000;
+  box-sizing: border-box;
+}
+
+/* Screen Headers & Pills */
+.ws-screen-header {
+  height: 42px;
+  padding: 8px 12px 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  z-index: 10;
+}
+
+.ws-back-pill {
+  background: rgba(255, 255, 255, 0.14);
+  color: #00e8a8;
+  border: none;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.ws-back-pill:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: scale(0.97);
+}
+
+.ws-done-pill {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  border: none;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.ws-done-pill:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: scale(0.96);
+}
+
+/* ───────────────────────────────────────────────────────── */
+/* 1. SCREEN: SAFE WATCH FACE                                */
+/* ───────────────────────────────────────────────────────── */
+
+.ws-screen-safe {
+  background: transparent !important;
+  padding: 10px 12px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ws-status-island {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.ws-status-island:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.ws-status-date {
+  color: #00e8a8;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.ws-status-icons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 9.5px;
+}
+
+.ws-clock-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-top: 2px;
+}
+
+.ws-clock-digits {
+  font-size: 48px;
+  font-weight: 250;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.ws-brand-subtitle {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 3px;
+}
+
+/* Concentric Activity Rings */
+.ws-rings-container {
+  position: relative;
+  width: 154px;
+  height: 154px;
+  margin: 0 auto;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.ws-rings-container:hover {
+  transform: scale(1.03);
+}
+
+.ws-rings-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 10px rgba(0, 232, 168, 0.25));
+}
+
+.ws-rings-center-badge {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ws-shield-glyph {
+  font-size: 20px;
+  filter: drop-shadow(0 0 8px rgba(0, 232, 168, 0.6));
+}
+
+.ws-safe-tag {
+  font-size: 8.5px;
+  font-weight: 850;
+  letter-spacing: 0.16em;
+  color: #00e8a8;
+  margin-top: 2px;
+}
+
+/* Floating Glass Dock */
+.ws-glass-dock {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 6px 8px;
+  background: rgba(30, 32, 38, 0.75);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.ws-dock-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.ws-dock-btn:hover {
+  transform: scale(1.14);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.ws-dock-btn:active {
+  transform: scale(0.92);
+}
+
+.ws-dock-sos {
+  background: linear-gradient(135deg, #ff3b30, #c0001a);
+  box-shadow: 0 0 12px rgba(255, 59, 48, 0.5);
+}
+
+.ws-dock-sos:hover {
+  background: linear-gradient(135deg, #ff453a, #e00022);
+}
+
+/* ───────────────────────────────────────────────────────── */
+/* 2. SCREEN: HONEYCOMB SPRINGBOARD (LAUNCHPAD)             */
+/* ───────────────────────────────────────────────────────── */
+
+.ws-screen-launcher {
+  cursor: grab;
+}
+
+.ws-screen-launcher:active {
+  cursor: grabbing;
+}
+
+.ws-launcher-header {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 30;
+}
+
+.ws-header-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: -0.01em;
+}
+
+.ws-honeycomb-stage {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  touch-action: none;
+}
+
+.ws-app-bubble {
+  position: absolute;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+  will-change: transform, left, top;
+}
+
+.ws-app-bubble:hover {
+  filter: brightness(1.2);
+}
+
+.ws-app-bubble:active {
+  filter: brightness(0.85);
+}
+
+.ws-launcher-hud {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 22, 28, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 5px 16px;
+  border-radius: 18px;
+  font-size: 11.5px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: #00e8a8;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  z-index: 30;
+}
+
+/* ───────────────────────────────────────────────────────── */
+/* 3. SCREEN: EMERGENCY SOS 30s COUNTDOWN                   */
+/* ───────────────────────────────────────────────────────── */
+
+.ws-screen-sos {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background: radial-gradient(circle at 50% 20%, #300008 0%, #000000 80%);
+}
+
+.ws-sos-banner {
+  background: rgba(255, 59, 48, 0.2);
+  border: 1px solid rgba(255, 59, 48, 0.45);
+  color: #ff453a;
+  padding: 4px 14px;
+  border-radius: 16px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  animation: wsBannerPulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes wsBannerPulse {
+  from { box-shadow: 0 0 8px rgba(255, 59, 48, 0.3); }
+  to   { box-shadow: 0 0 20px rgba(255, 59, 48, 0.7); }
+}
+
+.ws-sos-dial-box {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px 0;
+}
+
+.ws-sos-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 16px rgba(255, 59, 48, 0.4));
+}
+
+.ws-sos-dial-content {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ws-countdown-digits {
+  font-size: 40px;
+  font-weight: 800;
+  color: #ff3b30;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 20px rgba(255, 59, 48, 0.6);
+}
+
+.ws-countdown-unit {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 2px;
+}
+
+.ws-sos-status-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 7px 10px;
+}
+
+.ws-sos-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9.5px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+}
+
+.ws-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ws-dot-mint { background: #00e8a8; box-shadow: 0 0 6px #00e8a8; }
+.ws-dot-coral { background: #ff453a; box-shadow: 0 0 6px #ff453a; }
+.ws-dot-cyan { background: #00d5ff; box-shadow: 0 0 6px #00d5ff; }
+
+.ws-disarm-trigger-btn {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.ws-disarm-trigger-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(0.98);
+}
+
+.ws-disarm-trigger-btn span:first-child {
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  color: #00e8a8;
+}
+
+.ws-sub-hint {
+  font-size: 8.5px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* ───────────────────────────────────────────────────────── */
+/* 4. SCREEN: HOLD-TO-DISARM (CANCEL)                       */
+/* ───────────────────────────────────────────────────────── */
+
+.ws-screen-cancel {
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ws-cancel-header {
+  text-align: center;
+}
+
+.ws-cancel-header h2 {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ff453a;
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+
+.ws-cancel-header p {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 3px 0 0 0;
+}
+
+.ws-cancel-circle {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ws-cancel-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 10px rgba(0, 232, 168, 0.35));
+}
+
+.ws-cancel-pct {
+  position: absolute;
+  font-size: 18px;
+  font-weight: 800;
+  color: #00e8a8;
+  font-variant-numeric: tabular-nums;
+}
+
+.ws-hold-pad {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px dashed rgba(0, 232, 168, 0.4);
+  border-radius: 18px;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ws-hold-pad.active {
+  background: rgba(0, 232, 168, 0.2);
+  border-color: #00e8a8;
+  box-shadow: 0 0 20px rgba(0, 232, 168, 0.35);
+  transform: scale(0.97);
+}
+
+.ws-hold-pad span:first-child {
+  font-size: 12px;
+  font-weight: 800;
+  color: #00e8a8;
+  letter-spacing: 0.04em;
+}
+
+.ws-hold-sub {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.ws-cancel-abort-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 10px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.ws-cancel-abort-btn:hover {
+  color: #ffffff;
+}
+
+/* ───────────────────────────────────────────────────────── */
+/* 5. SCREEN: OUTGOING CALLING OVERLAY                      */
+/* ───────────────────────────────────────────────────────── */
+
+.ws-screen-calling {
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background: radial-gradient(circle at 50% 15%, #0d2618 0%, #000000 80%);
+}
+
+.ws-calling-glow-pill {
+  background: rgba(0, 232, 168, 0.15);
+  border: 1px solid rgba(0, 232, 168, 0.4);
+  color: #00e8a8;
+  padding: 3px 12px;
+  border-radius: 14px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.ws-calling-avatar-box {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px 0;
+}
+
+.ws-calling-pulse-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 232, 168, 0.4);
+  animation: wsPulseScale 1.5s ease-out infinite;
+}
+
+@keyframes wsPulseScale {
+  0%   { transform: scale(0.9); opacity: 0.8; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+.ws-calling-avatar {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1c3527 0%, #0c1a12 100%);
+  border: 2px solid #00e8a8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  box-shadow: 0 0 20px rgba(0, 232, 168, 0.3);
+}
+
+.ws-caller-name {
+  font-size: 16px;
+  font-weight: 750;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.ws-caller-num {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 2px 0 0 0;
+}
+
+.ws-call-duration {
+  font-size: 13px;
+  font-weight: 600;
+  color: #00e8a8;
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+
+.ws-call-tiles {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+.ws-call-tile {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 6px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ws-call-tile.active {
+  background: rgba(0, 232, 168, 0.25);
+  color: #00e8a8;
+  border: 1px solid rgba(0, 232, 168, 0.4);
+}
+
+.ws-end-call-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #ff3b30;
+  border: none;
+  color: #ffffff;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(255, 59, 48, 0.55);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.ws-end-call-btn:hover {
+  background: #ff453a;
+  transform: scale(1.08);
+}
+
+.ws-end-call-btn:active {
+  transform: scale(0.92);
+}
+
+/* ───────────────────────────────────────────────────────── */
+/* 6. SCREEN: SMS SENT OVERLAY                              */
+/* ───────────────────────────────────────────────────────── */
+
+.ws-screen-sms {
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  cursor: pointer;
+  background: radial-gradient(circle at 50% 25%, #08261e 0%, #000000 80%);
+}
+
+.ws-sms-bubble-icon {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00e8a8 0%, #009968 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  box-shadow: 0 0 24px rgba(0, 232, 168, 0.45);
+}
+
+.ws-sms-check {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #009968;
+  font-size: 13px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.ws-sms-title {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #00e8a8;
+  margin: 6px 0 0 0;
+}
+
+.ws-sms-to {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
+}
+
+.ws-sms-contact {
+  font-size: 15px;
+  font-weight: 750;
+  color: #ffffff;
+  margin: 0;
+}
+
+.ws-sms-number {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.ws-sms-chip {
+  background: rgba(0, 232, 168, 0.15);
+  border: 1px solid rgba(0, 232, 168, 0.35);
+  color: #00e8a8;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 9.5px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.ws-sms-dismiss-hint {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 8px;
+}
+
+/* ───────────────────────────────────────────────────────── */
+/* 7. SCREEN: CONTROL CENTER                                */
+/* ───────────────────────────────────────────────────────── */
+
+.ws-screen-control {
+  padding: 10px 12px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ws-cc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.ws-cc-tile {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ws-cc-tile:hover {
+  background: rgba(255, 255, 255, 0.13);
+  transform: scale(0.98);
+}
+
+.ws-cc-tile span {
+  font-size: 20px;
+}
+
+.ws-cc-tile strong {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.ws-cc-tile small {
+  font-size: 8.5px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.ws-cc-tile.alerting {
+  background: rgba(255, 59, 48, 0.25);
+  border-color: #ff3b30;
+  animation: wsBannerPulse 1s infinite alternate;
+}
+
+.ws-cc-sos-strip {
+  width: 100%;
+  background: linear-gradient(135deg, #ff3b30, #c0001a);
+  border: none;
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 16px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(255, 59, 48, 0.4);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.ws-cc-sos-strip:hover {
+  filter: brightness(1.15);
+  transform: scale(0.98);
+}
+
+/* ───────────────────────────────────────────────────────── */
+/* 8. SCREEN: SOUND STUDIO                                  */
+/* ───────────────────────────────────────────────────────── */
+
+.ws-screen-sounds {
+  padding: 8px 12px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ws-sound-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow-y: auto;
+  max-height: 220px;
+  padding-right: 2px;
+}
+
+.ws-sound-row {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ws-sound-row:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.ws-sound-row.active {
+  background: rgba(255, 59, 48, 0.2);
+  border-color: rgba(255, 59, 48, 0.45);
+}
+
+.ws-sound-row strong {
+  display: block;
+  font-size: 11px;
+  color: #ffffff;
+}
+
+.ws-sound-row small {
+  display: block;
+  font-size: 8.5px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.ws-vol-bar {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.ws-vol-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 5px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ws-vol-btn.active {
+  background: #00e8a8;
+  color: #000000;
+  font-weight: 800;
+}
+
+/* ───────────────────────────────────────────────────────── */
+/* 9. SCREEN: FLASHLIGHT                                    */
+/* ───────────────────────────────────────────────────────── */
+
+.ws-screen-torch {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.ws-torch-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 60px;
+}
+
+.ws-torch-center strong {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+}
+
+.ws-torch-center small {
+  font-size: 9.5px;
+  opacity: 0.7;
+}
+
+.ws-torch-exit {
+  background: rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 6px 16px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ───────────────────────────────────────────────────────── */
+/* 10. SCREEN: CONTACTS LIST                                */
+/* ───────────────────────────────────────────────────────── */
+
+.ws-screen-contacts {
+  padding: 8px 12px 12px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ws-contacts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  margin-top: 6px;
+  max-height: 270px;
+}
+
+.ws-contact-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 8px 10px;
+}
+
+.ws-contact-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.ws-contact-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.ws-contact-meta strong {
+  display: block;
+  font-size: 11.5px;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ws-contact-meta small {
+  display: block;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.ws-contact-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.ws-call-action {
+  background: #30d158;
+  color: #ffffff;
+  border: none;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 4px 7px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.ws-sms-action {
+  background: #0a84ff;
+  color: #ffffff;
+  border: none;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 4px 7px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* ───────────────────────────────────────────────────────── */
+/* 11. SCREEN: STANDALONE DIALER                            */
+/* ───────────────────────────────────────────────────────── */
+
+.ws-screen-dialer {
+  padding: 8px 12px 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ws-dial-display {
+  font-size: 15px;
+  font-weight: 700;
+  color: #00e8a8;
+  letter-spacing: 0.05em;
+  text-align: right;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ws-keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin: 4px 0;
+}
+
+.ws-keypad-key {
+  height: 38px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.ws-keypad-key:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.ws-keypad-key:active {
+  transform: scale(0.92);
+  background: #00e8a8;
+  color: #000000;
+}
+
+.ws-dialer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 2px;
+}
+
+.ws-dial-aux {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 6px 10px;
+}
+
+.ws-dial-aux:hover {
+  color: #ffffff;
+}
+
+.ws-dial-call-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #30d158;
+  border: none;
+  color: #ffffff;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(48, 209, 88, 0.45);
+  transition: transform 0.15s ease;
+}
+
+.ws-dial-call-btn:hover {
+  transform: scale(1.08);
+}
+
+.ws-dial-call-btn:active {
+  transform: scale(0.92);
+}
+
+/* ───────────────────────────────────────────────────────── */
+/* 12. SCREEN: NIGHT WALK GUARD                             */
+/* ───────────────────────────────────────────────────────── */
+
+.ws-screen-guard {
+  padding: 10px 12px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ws-guard-banner {
+  text-align: center;
+}
+
+.ws-guard-banner span {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #ffd60a;
+}
+
+.ws-guard-clock {
+  text-align: center;
+  margin: 2px 0;
+}
+
+.ws-guard-clock span {
+  font-size: 32px;
+  font-weight: 300;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.ws-guard-clock small {
+  display: block;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  color: #00e8a8;
+  margin-top: 2px;
+}
+
+.ws-guard-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.ws-guard-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 6px 8px;
+}
+
+.ws-guard-card small {
+  display: block;
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.ws-guard-card strong {
+  display: block;
+  font-size: 11px;
+  color: #ffffff;
+}
+
+.ws-card-mint { color: #00e8a8 !important; font-size: 9.5px; }
+.ws-card-coral { color: #ff453a !important; font-size: 9.5px; }
+
+.ws-guard-safe-btn {
+  background: rgba(0, 232, 168, 0.18);
+  border: 1px solid rgba(0, 232, 168, 0.4);
+  color: #00e8a8;
+  padding: 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ws-guard-safe-btn:hover {
+  background: rgba(0, 232, 168, 0.3);
+}
+
+.ws-guard-sos-btn {
+  background: linear-gradient(135deg, #ff3b30, #c0001a);
+  border: none;
+  color: #ffffff;
+  padding: 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+/* Hardware Guidance Below Watch */
+.ws-footer-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.ws-footer-legend span {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 4px 10px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ws-footer-legend span:hover {
+  background: rgba(45, 212, 191, 0.15);
+  border-color: rgba(45, 212, 191, 0.4);
+  color: var(--watch-mint);
+}
+
+/* ================================================================ */
+/* WATCH SHOWCASE VIEW CONTAINER & STAGE                            */
+/* ================================================================ */
+
+.watch-showcase-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(circle at 50% 10%, #111827 0%, #080a0f 70%, #030406 100%);
+  color: #ffffff;
+  padding: 20px 28px;
+  box-sizing: border-box;
+}
+
+.showcase-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.showcase-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.showcase-logo-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(0, 232, 168, 0.12);
+  border: 1px solid rgba(0, 232, 168, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 16px rgba(0, 232, 168, 0.2);
+}
+
+.showcase-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.watch-live-pill {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #00e8a8;
+  background: rgba(0, 232, 168, 0.12);
+  border: 1px solid rgba(0, 232, 168, 0.3);
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+.showcase-sub {
+  font-size: 11.5px;
+  color: var(--text-dim);
+  margin: 3px 0 0 0;
+}
+
+.showcase-view-switcher {
+  display: flex;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4px;
+  border-radius: 16px;
+  gap: 6px;
+}
+
+.view-pill {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.view-pill:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.view-pill.active {
+  background: linear-gradient(135deg, rgba(0, 232, 168, 0.2), rgba(0, 232, 168, 0.08));
+  color: #00e8a8;
+  border: 1px solid rgba(0, 232, 168, 0.35);
+  box-shadow: 0 2px 12px rgba(0, 232, 168, 0.2);
+}
+
+/* 3-Column Showcase Stage */
+.showcase-stage {
+  display: grid;
+  grid-template-columns: 280px minmax(360px, 420px) 1fr;
+  gap: 28px;
+  align-items: start;
+  flex: 1;
+}
+
+/* Left Palette */
+.showcase-screen-palette {
+  padding: 20px;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.palette-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 750;
+  color: #ffffff;
+}
+
+.palette-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin: -6px 0 6px 0;
+}
+
+.palette-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.palette-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 8px 12px;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.palette-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(3px);
+}
+
+.palette-btn.active {
+  background: rgba(0, 232, 168, 0.15);
+  border-color: rgba(0, 232, 168, 0.4);
+  color: #00e8a8;
+  font-weight: 700;
+  box-shadow: 0 0 14px rgba(0, 232, 168, 0.15);
+}
+
+.palette-icon {
+  font-size: 16px;
+  width: 22px;
+  text-align: center;
+}
+
+.palette-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.showcase-tip-card {
+  margin-top: 10px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px;
+  font-size: 10.5px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+}
+
+.showcase-tip-card strong {
+  color: #00e8a8;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.showcase-tip-card ul {
+  padding-left: 14px;
+  margin: 0;
+}
+
+.showcase-tip-card li {
+  margin-bottom: 4px;
+}
+
+/* Center Stage */
+.showcase-watch-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+/* Right Panel: Specs & Emulation */
+.showcase-specs-panel {
+  padding: 22px;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.spec-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.spec-item {
+  display: flex;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 10px 14px;
+}
+
+.spec-item.solved {
+  border-left: 3px solid #00e8a8;
+}
+
+.check-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(0, 232, 168, 0.2);
+  color: #00e8a8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 900;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.spec-item strong {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 750;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.spec-item p {
+  margin: 0;
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+.hw-sim-deck {
+  margin-top: 6px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.hw-sim-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.hw-sim-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.hw-sim-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
+}
+
+.hw-sim-btn.sos {
+  background: rgba(255, 59, 48, 0.2);
+  border-color: rgba(255, 59, 48, 0.45);
+  color: #ff6961;
+}
+
+.hw-sim-btn.call {
+  background: rgba(48, 209, 88, 0.2);
+  border-color: rgba(48, 209, 88, 0.45);
+  color: #30d158;
+}
+
+.hw-sim-btn.sms {
+  background: rgba(10, 132, 255, 0.2);
+  border-color: rgba(10, 132, 255, 0.45);
+  color: #64d2ff;
+}
+
+.hw-sim-btn.sounds {
+  background: rgba(255, 214, 10, 0.2);
+  border-color: rgba(255, 214, 10, 0.45);
+  color: #ffd60a;
+}
+
+@media (max-width: 1180px) {
+  .showcase-stage {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+  .showcase-screen-palette,
+  .showcase-specs-panel {
+    width: 100%;
+    max-width: 580px;
+  }
+}
+
+/* ================================================================ */
+/* WATCH FACE WALLPAPER CYCLER & CUSTOM DOCK ICONS                 */
+/* ================================================================ */
+
+.ws-wallpaper-cycler {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #00e8a8;
+  cursor: pointer;
+  margin: 4px auto 0 auto;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.ws-wallpaper-cycler:hover {
+  background: rgba(0, 0, 0, 0.75);
+  border-color: rgba(0, 232, 168, 0.45);
+  transform: scale(1.03);
+}
+
+.ws-wp-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.ws-wp-cycle-icon {
+  font-size: 11px;
+  opacity: 0.75;
+}
+
+.ws-dock-icon-img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  border-radius: 6px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+/* ================================================================ */
+/* SIMPLE SLIDE APP DRAWER (WATCHOS LIST VIEW)                      */
+/* ================================================================ */
+
+.ws-screen-slide-drawer {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: #000000 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
+}
+
+.ws-drawer-header,
+.ws-slide-drawer-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 10px 14px 7px 14px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  flex-shrink: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+  z-index: 10 !important;
+}
+
+.ws-drawer-title-group {
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 8px !important;
+}
+
+.ws-drawer-title,
+.ws-slide-drawer-title {
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.01em !important;
+  color: #ffffff !important;
+  line-height: 1 !important;
+}
+
+.ws-drawer-count {
+  font-size: 9px !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.1em !important;
+  color: #00e8a8 !important;
+  opacity: 0.8 !important;
+}
+
+.ws-drawer-done,
+.ws-slide-drawer-done {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  color: #00e8a8 !important;
+  font-size: 10.5px !important;
+  font-weight: 750 !important;
+  padding: 3px 10px !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+  letter-spacing: 0.04em !important;
+  line-height: 1.2 !important;
+  transition: all 0.15s ease !important;
+}
+
+.ws-drawer-done:hover,
+.ws-slide-drawer-done:hover {
+  background: rgba(0, 232, 168, 0.2) !important;
+  border-color: #00e8a8 !important;
+  color: #ffffff !important;
+}
+
+.ws-slide-drawer-list,
+.ws-slide-drawer-scrollable {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 8px 8px 16px 8px !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.ws-slide-drawer-list::-webkit-scrollbar,
+.ws-slide-drawer-scrollable::-webkit-scrollbar {
+  width: 3px !important;
+}
+.ws-slide-drawer-list::-webkit-scrollbar-track,
+.ws-slide-drawer-scrollable::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+.ws-slide-drawer-list::-webkit-scrollbar-thumb,
+.ws-slide-drawer-scrollable::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-radius: 4px !important;
+}
+
+.ws-drawer-card {
+  display: flex !important;
+  align-items: center !important;
+  gap: 9px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 14px !important;
+  padding: 7px 9px !important;
+  cursor: pointer !important;
+  transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+  text-align: left !important;
+}
+
+.ws-drawer-card:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  transform: scale(0.985) !important;
+}
+
+.ws-drawer-card:active {
+  transform: scale(0.96) !important;
+  background: rgba(0, 232, 168, 0.15) !important;
+}
+
+.ws-drawer-icon-wrap,
+.ws-drawer-custom-icon-wrapper {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #111 !important;
+}
+
+.ws-drawer-custom-icon {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+.ws-drawer-info,
+.ws-drawer-card-info {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  overflow: hidden !important;
+}
+
+.ws-drawer-name-row,
+.ws-drawer-card-top {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 6px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.ws-drawer-name,
+.ws-drawer-card-name {
+  font-size: 11.5px !important;
+  font-weight: 750 !important;
+  color: #ffffff !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  line-height: 1.2 !important;
+}
+
+.ws-drawer-badge,
+.ws-drawer-card-badge {
+  font-size: 7px !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.06em !important;
+  padding: 1.5px 5px !important;
+  border-radius: 5px !important;
+  border: 1px solid !important;
+  flex-shrink: 0 !important;
+  line-height: 1.1 !important;
+  text-transform: uppercase !important;
+  margin-left: auto !important;
+}
+
+.ws-drawer-sub,
+.ws-drawer-card-sub {
+  display: block !important;
+  font-size: 9px !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.2 !important;
+  width: 100% !important;
+}
+
+.ws-drawer-chevron {
+  font-size: 15px !important;
+  font-weight: 400 !important;
+  color: rgba(255, 255, 255, 0.25) !important;
+  flex-shrink: 0 !important;
+  margin-left: 2px !important;
+}
+
+/* ================================================================ */
+/* OUTGOING CALLING RINGING INDICATOR                               */
+/* ================================================================ */
+
+.ws-calling-icon-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.ws-calling-ring-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 232, 168, 0.12);
+  border: 1px solid rgba(0, 232, 168, 0.35);
+  padding: 3px 12px;
+  border-radius: 12px;
+  margin: 4px 0 6px 0;
+}
+
+.ws-ring-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00e8a8;
+  box-shadow: 0 0 8px #00e8a8;
+  animation: wsDotPulse 0.9s infinite alternate ease-in-out;
+}
+
+@keyframes wsDotPulse {
+  from { opacity: 0.4; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1.3); }
+}
+
+.ws-ring-text {
+  font-size: 10px;
+  font-weight: 750;
+  color: #00e8a8;
+  letter-spacing: 0.04em;
+}
+
+.ws-audio-ring-bars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 10px;
+}
+
+.ws-audio-bar {
+  width: 2px;
+  height: 100%;
+  background: #00e8a8;
+  border-radius: 1px;
+  animation: wsBarBounce 0.8s infinite alternate ease-in-out;
+}
+
+.ws-audio-bar:nth-child(2) { animation-delay: 0.25s; }
+.ws-audio-bar:nth-child(3) { animation-delay: 0.5s; }
+
+@keyframes wsBarBounce {
+  from { height: 25%; }
+  to   { height: 100%; }
+}
+
+/* ================================================================ */
+/* MATURE WATCHOS 10 CONTROL CENTER STYLING                         */
+/* ================================================================ */
+
+.ws-cc-header-title {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+}
+
+.ws-cc-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 2px;
+}
+
+.ws-cc-carrier {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.ws-cc-batt-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 750;
+  color: #00e8a8;
+}
+
+.ws-cc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 6px 0;
+}
+
+.ws-cc-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ws-cc-card:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: scale(0.98);
+}
+
+.ws-cc-card:active {
+  transform: scale(0.95);
+}
+
+.ws-cc-icon-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.ws-cc-meta strong {
+  display: block;
+  font-size: 11px;
+  font-weight: 750;
+  color: #ffffff;
+}
+
+.ws-cc-meta small {
+  display: block;
+  font-size: 8.5px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Active Card Highlights */
+.ws-cc-card.active-green {
+  background: rgba(48, 209, 88, 0.18);
+  border-color: rgba(48, 209, 88, 0.4);
+}
+.ws-cc-card.active-green .ws-cc-icon-circle {
+  background: #30d158;
+  color: #000000;
+}
+
+.ws-cc-card.active-blue {
+  background: rgba(10, 132, 255, 0.18);
+  border-color: rgba(10, 132, 255, 0.4);
+}
+.ws-cc-card.active-blue .ws-cc-icon-circle {
+  background: #0a84ff;
+  color: #ffffff;
+}
+
+.ws-cc-card.active-purple {
+  background: rgba(191, 90, 242, 0.18);
+  border-color: rgba(191, 90, 242, 0.4);
+}
+.ws-cc-card.active-purple .ws-cc-icon-circle {
+  background: #bf5af2;
+  color: #ffffff;
+}
+
+.ws-cc-card.alerting-card {
+  background: rgba(255, 59, 48, 0.22);
+  border-color: #ff3b30;
+  animation: wsCardAlert 0.8s infinite alternate ease-in-out;
+}
+
+@keyframes wsCardAlert {
+  from { box-shadow: 0 0 6px rgba(255, 59, 48, 0.3); }
+  to   { box-shadow: 0 0 16px rgba(255, 59, 48, 0.6); }
+}
+
+.ws-cc-sos-strip {
+  width: 100%;
+  background: linear-gradient(135deg, #ff3b30, #c0001a);
+  border: none;
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(255, 59, 48, 0.45);
+  transition: transform 0.12s ease;
+}
+
+.ws-cc-sos-strip:hover {
+  transform: scale(0.98);
+}
+
+/* ================================================================ */
+/* SHOWCASE WALLPAPER SELECTOR PALETTE                              */
+/* ================================================================ */
+
+.showcase-wp-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wp-thumbnails-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.wp-chip-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 10px;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.wp-chip-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(2px);
+}
+
+.wp-chip-btn.active {
+  background: rgba(0, 232, 168, 0.16);
+  border-color: rgba(0, 232, 168, 0.45);
+  color: #00e8a8;
+  font-weight: 750;
+}
+
+.wp-color-preview {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.wp-chip-name {
+  flex: 1;
+}
+
+.palette-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 6px 0;
+}
+
+/* ================================================================ */
+/* WATCH FACE (SCREEN 1: ws-screen-safe-face)                       */
+/* ================================================================ */
+.ws-screen-safe-face {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: transparent !important;
+  padding: 8px 10px 10px 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  box-sizing: border-box !important;
+  cursor: pointer !important;
+}
+
+.ws-top-status-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 4px 8px !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  border-radius: 12px !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  cursor: pointer !important;
+}
+
+.ws-status-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.ws-carrier-bars {
+  display: flex !important;
+  align-items: flex-end !important;
+  gap: 2px !important;
+  height: 10px !important;
+}
+
+.ws-carrier-bars .bar {
+  width: 2.5px !important;
+  background: rgba(255, 255, 255, 0.3) !important;
+  border-radius: 1px !important;
+}
+.ws-carrier-bars .bar:nth-child(1) { height: 3px !important; }
+.ws-carrier-bars .bar:nth-child(2) { height: 5px !important; }
+.ws-carrier-bars .bar:nth-child(3) { height: 7.5px !important; }
+.ws-carrier-bars .bar:nth-child(4) { height: 10px !important; }
+.ws-carrier-bars .bar.active { background: #00e8a8 !important; }
+
+.ws-status-carrier {
+  font-size: 9px !important;
+  font-weight: 750 !important;
+  color: #ffffff !important;
+  letter-spacing: 0.02em !important;
+}
+
+.ws-status-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+
+.ws-battery-val {
+  font-size: 9px !important;
+  font-weight: 750 !important;
+  color: #00e8a8 !important;
+}
+
+.ws-battery-pill {
+  width: 18px !important;
+  height: 9px !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  border-radius: 3px !important;
+  padding: 1px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.ws-battery-pill.mini {
+  width: 16px !important;
+  height: 8px !important;
+}
+
+.ws-battery-fill {
+  height: 100% !important;
+  background: #00e8a8 !important;
+  border-radius: 1px !important;
+  transition: width 0.3s ease !important;
+}
+
+.ws-clock-hero {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 2px 0 !important;
+}
+
+.ws-clock-time {
+  font-size: 44px !important;
+  font-weight: 250 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 1 !important;
+  color: #ffffff !important;
+  font-variant-numeric: tabular-nums !important;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.25) !important;
+}
+
+.ws-clock-date {
+  font-size: 9.5px !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.12em !important;
+  color: #00e8a8 !important;
+  text-transform: uppercase !important;
+  margin-top: 2px !important;
+}
+
+.ws-activity-rings-container {
+  position: relative !important;
+  width: 105px !important;
+  height: 105px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.ws-activity-rings-svg {
+  width: 100% !important;
+  height: 100% !important;
+  transform: rotate(-90deg) !important;
+  filter: drop-shadow(0 0 8px rgba(0, 232, 168, 0.2)) !important;
+}
+
+.ws-center-ring-info {
+  position: absolute !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: none !important;
+}
+
+.ws-ring-val {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  line-height: 1 !important;
+}
+
+.ws-ring-unit {
+  font-size: 7.5px !important;
+  font-weight: 750 !important;
+  color: #ff453a !important;
+  letter-spacing: 0.08em !important;
+  margin-top: 1px !important;
+}
+
+.ws-safe-dock {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-around !important;
+  padding: 4px 8px !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(12px) !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  margin: 0 4px !important;
+}
+
+.ws-dock-btn {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.16s ease !important;
+}
+
+.ws-dock-btn:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+  transform: scale(1.08) !important;
+}
+
+.ws-dock-btn.sos { border-color: rgba(255, 69, 58, 0.4) !important; }
+.ws-dock-btn.guard { border-color: rgba(255, 214, 10, 0.4) !important; }
+.ws-dock-btn.phone { border-color: rgba(48, 209, 88, 0.4) !important; }
+
+.ws-dock-custom-img {
+  width: 26px !important;
+  height: 26px !important;
+  object-fit: contain !important;
+  border-radius: 6px !important;
+}
+
+.ws-tap-apps-hint {
+  font-size: 7px !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.16em !important;
+  color: rgba(255, 255, 255, 0.35) !important;
+  text-align: center !important;
+  margin-top: 1px !important;
+}
+
+/* ================================================================ */
+/* CONTROL CENTER (SCREEN 3: ws-screen-cc-mature)                   */
+/* ================================================================ */
+.ws-screen-cc-mature {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 8px 10px 10px 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  box-sizing: border-box !important;
+  background: #000000 !important;
+  overflow: hidden !important;
+}
+
+.ws-cc-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 2px 4px 6px 4px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  flex-shrink: 0 !important;
+}
+
+.ws-cc-status-group,
+.ws-cc-batt-group {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+
+.ws-cc-carrier {
+  font-size: 9.5px !important;
+  font-weight: 750 !important;
+  color: #ffffff !important;
+}
+
+.ws-cc-dot {
+  width: 4px !important;
+  height: 4px !important;
+  border-radius: 50% !important;
+  background: #00e8a8 !important;
+}
+
+.ws-cc-batt-num {
+  font-size: 9.5px !important;
+  font-weight: 750 !important;
+  color: #00e8a8 !important;
+}
+
+.ws-cc-done-btn {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  color: #00e8a8 !important;
+  font-size: 10px !important;
+  font-weight: 750 !important;
+  padding: 2px 8px !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  letter-spacing: 0.04em !important;
+}
+
+.ws-cc-cards-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 6px !important;
+  margin: 4px 0 !important;
+  flex: 1 !important;
+}
+
+.ws-cc-card {
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  border-radius: 14px !important;
+  padding: 6px 8px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  text-align: left !important;
+}
+
+.ws-cc-card:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  transform: scale(0.98) !important;
+}
+
+.ws-cc-card.active {
+  background: rgba(0, 232, 168, 0.16) !important;
+  border-color: rgba(0, 232, 168, 0.4) !important;
+}
+
+.ws-cc-card.alert-active {
+  background: rgba(255, 69, 58, 0.22) !important;
+  border-color: #ff453a !important;
+  animation: wsCardAlert 0.8s infinite alternate ease-in-out !important;
+}
+
+.ws-cc-card-icon {
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.ws-cc-card-icon.cellular { color: #30d158 !important; }
+.ws-cc-card-icon.wifi { color: #0a84ff !important; }
+.ws-cc-card-icon.silent { color: #bf5af2 !important; }
+.ws-cc-card-icon.torch { color: #ffd60a !important; }
+.ws-cc-card-icon.siren { color: #ff453a !important; }
+.ws-cc-card-icon.gps { color: #00e8a8 !important; }
+
+.ws-cc-card-texts {
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+.ws-cc-card-texts .title {
+  font-size: 10px !important;
+  font-weight: 750 !important;
+  color: #ffffff !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.1 !important;
+}
+
+.ws-cc-card-texts .sub {
+  font-size: 8px !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  margin-top: 1px !important;
+  line-height: 1.1 !important;
+}
+
+.ws-cc-volume-bar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+  padding: 5px 8px !important;
+  margin: 3px 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.ws-cc-vol-track {
+  flex: 1 !important;
+  height: 6px !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-radius: 3px !important;
+  position: relative !important;
+  cursor: pointer !important;
+  overflow: hidden !important;
+}
+
+.ws-cc-vol-fill {
+  height: 100% !important;
+  background: #00e8a8 !important;
+  border-radius: 3px !important;
+}
+
+.ws-cc-vol-val {
+  font-size: 9px !important;
+  font-weight: 750 !important;
+  color: #00e8a8 !important;
+  min-width: 26px !important;
+  text-align: right !important;
+}
+
+/* ================================================================ */
+/* EMERGENCY SOS & CANCEL (SCREENS 4 & 5)                           */
+/* ================================================================ */
+.ws-screen-emergency-alert {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 12px 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  box-sizing: border-box !important;
+  background: radial-gradient(circle at 50% 30%, #300a0a 0%, #000000 80%) !important;
+  overflow: hidden !important;
+}
+
+.ws-emer-top-header {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 2px !important;
+}
+
+.ws-emer-badge {
+  font-size: 10px !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.12em !important;
+  color: #ff453a !important;
+  background: rgba(255, 69, 58, 0.15) !important;
+  border: 1px solid rgba(255, 69, 58, 0.4) !important;
+  padding: 3px 10px !important;
+  border-radius: 10px !important;
+}
+
+.ws-emer-sub {
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  letter-spacing: 0.08em !important;
+  margin-top: 2px !important;
+}
+
+.ws-countdown-arc-wrap {
+  position: relative !important;
+  width: 105px !important;
+  height: 105px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.ws-arc-svg {
+  width: 100% !important;
+  height: 100% !important;
+  transform: rotate(-90deg) !important;
+  filter: drop-shadow(0 0 12px rgba(255, 69, 58, 0.5)) !important;
+}
+
+.ws-arc-inner-content {
+  position: absolute !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.ws-count-num {
+  font-size: 38px !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  line-height: 1 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.ws-count-unit {
+  font-size: 8px !important;
+  font-weight: 800 !important;
+  color: #ff453a !important;
+  letter-spacing: 0.12em !important;
+  margin-top: 2px !important;
+}
+
+.ws-emer-status-text {
+  font-size: 9.5px !important;
+  font-weight: 650 !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  text-align: center !important;
+  line-height: 1.3 !important;
+  padding: 0 10px !important;
+}
+
+.ws-cancel-slider-btn {
+  width: 100% !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  padding: 8px 12px !important;
+  border-radius: 14px !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+  cursor: pointer !important;
+  letter-spacing: 0.04em !important;
+  transition: all 0.15s ease !important;
+}
+
+.ws-screen-cancel-hold {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  box-sizing: border-box !important;
+  background: #000000 !important;
+  overflow: hidden !important;
+}
+
+.ws-cancel-header {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  color: #30d158 !important;
+  letter-spacing: 0.04em !important;
+}
+
+.ws-cancel-hint {
+  font-size: 9px !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  text-align: center !important;
+  line-height: 1.3 !important;
+  margin: 0 8px !important;
+}
+
+.ws-hold-ring-container {
+  position: relative !important;
+  width: 110px !important;
+  height: 110px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.ws-hold-svg {
+  width: 100% !important;
+  height: 100% !important;
+  transform: rotate(-90deg) !important;
+}
+
+.ws-hold-touch-target {
+  position: absolute !important;
+  width: 80px !important;
+  height: 80px !important;
+  border-radius: 50% !important;
+  background: radial-gradient(circle, #1a3a2a 0%, #0d1e15 100%) !important;
+  border: 2px solid rgba(48, 209, 88, 0.4) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.12s ease !important;
+}
+
+.ws-hold-touch-target.pressing {
+  transform: scale(0.94) !important;
+  border-color: #30d158 !important;
+  box-shadow: 0 0 20px rgba(48, 209, 88, 0.5) !important;
+}
+
+.ws-hold-pct {
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  color: #30d158 !important;
+  line-height: 1 !important;
+}
+
+.ws-hold-label {
+  font-size: 8.5px !important;
+  font-weight: 800 !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  letter-spacing: 0.1em !important;
+  margin-top: 2px !important;
+}
+
+.ws-nav-back-link {
+  background: none !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  font-size: 10px !important;
+  cursor: pointer !important;
+  text-decoration: underline !important;
+  padding: 4px !important;
+}
+
+/* ================================================================ */
+/* CALLING & SMS OVERLAYS (SCREENS 6 & 7)                           */
+/* ================================================================ */
+.ws-screen-calling {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 16px 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  box-sizing: border-box !important;
+  background: radial-gradient(circle at 50% 25%, #0a2418 0%, #000000 80%) !important;
+  overflow: hidden !important;
+}
+
+.ws-calling-pulse-circle {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 50% !important;
+  background: rgba(48, 209, 88, 0.15) !important;
+  border: 2px solid rgba(48, 209, 88, 0.4) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  animation: wsPulseCircle 1.4s infinite ease-out !important;
+}
+
+@keyframes wsPulseCircle {
+  0% { box-shadow: 0 0 0 0 rgba(48, 209, 88, 0.6); }
+  70% { box-shadow: 0 0 0 14px rgba(48, 209, 88, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(48, 209, 88, 0); }
+}
+
+.ws-calling-status {
+  font-size: 9px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.14em !important;
+  color: #30d158 !important;
+  text-transform: uppercase !important;
+}
+
+.ws-calling-name {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  letter-spacing: -0.01em !important;
+  text-align: center !important;
+}
+
+.ws-calling-num {
+  font-size: 11px !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+  letter-spacing: 0.04em !important;
+}
+
+.ws-calling-ring-indicator {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: rgba(0, 232, 168, 0.12) !important;
+  border: 1px solid rgba(0, 232, 168, 0.35) !important;
+  padding: 3px 10px !important;
+  border-radius: 12px !important;
+  font-size: 8.5px !important;
+  color: #00e8a8 !important;
+}
+
+.ws-calling-timer {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.ws-end-call-btn {
+  width: 100% !important;
+  background: linear-gradient(135deg, #ff3b30, #c0001a) !important;
+  border: none !important;
+  color: #ffffff !important;
+  padding: 8px 14px !important;
+  border-radius: 14px !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 14px rgba(255, 59, 48, 0.45) !important;
+}
+
+.ws-screen-sms-sent {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 16px 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  box-sizing: border-box !important;
+  background: #000000 !important;
+  overflow: hidden !important;
+}
+
+.ws-sms-check-circle {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 50% !important;
+  background: rgba(48, 209, 88, 0.15) !important;
+  border: 2px solid #30d158 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-top: 6px !important;
+}
+
+.ws-sms-sent-title {
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+}
+
+.ws-sms-sent-recipient {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: #00e8a8 !important;
+}
+
+.ws-sms-sent-body {
+  font-size: 9px !important;
+  color: rgba(255, 255, 255, 0.65) !important;
+  text-align: center !important;
+  line-height: 1.35 !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 8px 10px !important;
+  margin: 0 4px !important;
+}
+
+.ws-sms-done-btn {
+  width: 100% !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  padding: 8px 14px !important;
+  border-radius: 12px !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+  cursor: pointer !important;
+}
+
+/* ================================================================ */
+/* SOUND STUDIO, FLASHLIGHT, GUARD, CONTACTS, DIALER, DIAGNOSTICS   */
+/* ================================================================ */
+.ws-screen-sound-studio,
+.ws-screen-guard,
+.ws-screen-contacts,
+.ws-screen-dialer,
+.ws-screen-system,
+.ws-screen-telemetry {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 8px 10px 10px 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: #000000 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.ws-sound-header,
+.ws-contacts-header,
+.ws-sys-header,
+.ws-tele-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 2px 4px 6px 4px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  flex-shrink: 0 !important;
+  font-size: 12.5px !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+}
+
+.ws-sound-header .title { font-size: 13px !important; font-weight: 800 !important; color: #fff !important; }
+.ws-sound-header .done,
+.ws-contacts-header button,
+.ws-sys-header button,
+.ws-tele-header button {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #00e8a8 !important;
+  font-size: 10px !important;
+  font-weight: 750 !important;
+  padding: 2px 8px !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+}
+
+.ws-sound-list,
+.ws-contacts-list,
+.ws-sys-scrollable {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+  overflow-y: auto !important;
+  padding: 6px 0 !important;
+  flex: 1 !important;
+  min-height: 0 !important;
+}
+
+.ws-sound-card {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+  padding: 7px 10px !important;
+  cursor: pointer !important;
+  text-align: left !important;
+}
+
+.ws-sound-card.active {
+  background: rgba(255, 69, 58, 0.2) !important;
+  border-color: #ff453a !important;
+}
+
+.ws-sound-name { font-size: 11px !important; font-weight: 750 !important; color: #fff !important; }
+.ws-sound-sub { font-size: 8.5px !important; color: rgba(255, 255, 255, 0.45) !important; }
+.ws-sound-state { font-size: 9px !important; font-weight: 800 !important; color: #00e8a8 !important; }
+.ws-sound-card.active .ws-sound-state { color: #ff453a !important; }
+
+/* Flashlight */
+.ws-screen-flashlight {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 20px 14px !important;
+  box-sizing: border-box !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease !important;
+  overflow: hidden !important;
+}
+
+.ws-torch-hint { display: flex !important; flex-direction: column !important; align-items: center !important; gap: 4px !important; }
+.ws-torch-hint .mode-label { font-size: 14px !important; font-weight: 800 !important; }
+.ws-torch-hint .tap-hint { font-size: 9.5px !important; opacity: 0.7 !important; }
+.ws-torch-close-btn {
+  background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+  padding: 6px 14px !important;
+  border-radius: 14px !important;
+  cursor: pointer !important;
+}
+
+/* Guard */
+.ws-guard-top { display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important; }
+.ws-guard-top .title { font-size: 12px !important; font-weight: 800 !important; color: #fff !important; }
+.ws-guard-top .badge {
+  font-size: 7.5px !important; font-weight: 850 !important; letter-spacing: 0.08em !important;
+  color: #ffd60a !important; background: rgba(255, 214, 10, 0.15) !important;
+  border: 1px solid rgba(255, 214, 10, 0.35) !important; padding: 2px 6px !important; border-radius: 6px !important;
+}
+.ws-guard-pulse-center { position: relative !important; width: 85px !important; height: 85px !important; display: flex !important; align-items: center !important; justify-content: center !important; margin: 4px auto !important; }
+.ws-pulse-sonar {
+  position: absolute !important; inset: 0 !important; border-radius: 50% !important;
+  border: 2px solid rgba(255, 214, 10, 0.4) !important;
+  animation: wsSonarPulse 2s infinite cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+@keyframes wsSonarPulse {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+.ws-guard-meta {
+  width: 100% !important; display: flex !important; flex-direction: column !important; gap: 3px !important;
+  background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important; padding: 5px 8px !important; box-sizing: border-box !important;
+}
+.ws-guard-meta .meta-row { display: flex !important; align-items: center !important; justify-content: space-between !important; font-size: 9px !important; }
+.ws-guard-meta .meta-row span { color: rgba(255, 255, 255, 0.5) !important; }
+.ws-guard-meta .meta-row strong { color: #ffffff !important; font-weight: 750 !important; }
+.ws-guard-end-btn {
+  width: 100% !important; background: rgba(255, 69, 58, 0.2) !important;
+  border: 1px solid rgba(255, 69, 58, 0.4) !important; color: #ff453a !important;
+  font-size: 10.5px !important; font-weight: 750 !important; padding: 6px 12px !important;
+  border-radius: 12px !important; cursor: pointer !important;
+}
+
+/* Contacts */
+.ws-contact-row-card {
+  display: flex !important; align-items: center !important; gap: 8px !important;
+  background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important; padding: 6px 8px !important;
+}
+.ws-contact-row-card .avatar {
+  width: 26px !important; height: 26px !important; border-radius: 50% !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  font-size: 10px !important; font-weight: 800 !important; color: #ffffff !important; flex-shrink: 0 !important;
+}
+.ws-contact-row-card .info { flex: 1 !important; min-width: 0 !important; display: flex !important; flex-direction: column !important; }
+.ws-contact-row-card .name { font-size: 10px !important; font-weight: 750 !important; color: #ffffff !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+.ws-contact-row-card .num { font-size: 8px !important; color: rgba(255, 255, 255, 0.45) !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+.ws-contact-row-card .call-btn {
+  background: #30d158 !important; border: none !important; color: #000000 !important;
+  font-size: 8.5px !important; font-weight: 800 !important; padding: 3px 8px !important;
+  border-radius: 8px !important; cursor: pointer !important; flex-shrink: 0 !important;
+}
+
+/* Dialer */
+.ws-dialer-display {
+  display: flex !important; align-items: center !important; justify-content: space-between !important;
+  padding: 4px 8px !important; background: rgba(255, 255, 255, 0.06) !important;
+  border-radius: 10px !important; min-height: 26px !important;
+}
+.ws-dialer-display .digits {
+  font-size: 14px !important; font-weight: 750 !important; color: #ffffff !important;
+  letter-spacing: 0.06em !important; flex: 1 !important; overflow: hidden !important;
+  text-overflow: ellipsis !important; white-space: nowrap !important;
+}
+.ws-dialer-display .del { background: none !important; border: none !important; color: #ff453a !important; font-size: 13px !important; cursor: pointer !important; padding: 0 4px !important; }
+.ws-dialer-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 4px !important; margin: 3px 0 !important; }
+.ws-dialer-grid .key-btn {
+  height: 32px !important; border-radius: 10px !important; background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important; color: #ffffff !important;
+  font-size: 14px !important; font-weight: 700 !important; display: flex !important;
+  align-items: center !important; justify-content: center !important; cursor: pointer !important;
+  transition: all 0.12s ease !important;
+}
+.ws-dialer-grid .key-btn:hover { background: rgba(255, 255, 255, 0.18) !important; }
+.ws-dialer-grid .key-btn:active { transform: scale(0.93) !important; background: #00e8a8 !important; color: #000000 !important; }
+.ws-dialer-bottom { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; padding: 0 2px !important; }
+.ws-dialer-bottom .call-out-btn {
+  flex: 1 !important; height: 32px !important; border-radius: 10px !important;
+  background: #30d158 !important; border: none !important; display: flex !important;
+  align-items: center !important; justify-content: center !important; cursor: pointer !important;
+}
+.ws-dialer-bottom .exit-btn {
+  padding: 6px 10px !important; border-radius: 10px !important;
+  background: rgba(255, 255, 255, 0.1) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important; font-size: 10px !important; font-weight: 700 !important; cursor: pointer !important;
+}
+
+/* Diagnostics */
+.ws-sys-card {
+  display: flex !important; flex-direction: column !important; gap: 1px !important;
+  background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 10px !important; padding: 5px 8px !important;
+}
+.ws-sys-card .label { font-size: 7.5px !important; font-weight: 750 !important; color: #00e8a8 !important; letter-spacing: 0.06em !important; text-transform: uppercase !important; }
+.ws-sys-card .val { font-size: 9px !important; font-weight: 650 !important; color: #ffffff !important; }
+
+/* Telemetry */
+.ws-compass-rose { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; margin: auto 0 !important; }
+.ws-compass-svg { width: 95px !important; height: 95px !important; filter: drop-shadow(0 0 10px rgba(0, 232, 168, 0.3)) !important; }
+.ws-heading-text { font-size: 15px !important; font-weight: 800 !important; color: #00e8a8 !important; margin-top: 4px !important; letter-spacing: 0.04em !important; }
+.ws-altitude-text { font-size: 8.5px !important; color: rgba(255, 255, 255, 0.55) !important; margin-top: 2px !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   NAARI OS v6 · OBSIDIAN TITANIUM
+   Mirrors the allocation-free RGB565 hardware design language.
+   ══════════════════════════════════════════════════════════════ */
+
+.ws-super-wrapper {
+  --naari-mint: #35f2bc;
+  --naari-coral: #ff453a;
+  --naari-blue: #0a84ff;
+  --naari-violet: #a970ff;
+  --naari-amber: #ffd60a;
+  --naari-surface: rgba(29, 29, 31, 0.82);
+  --naari-line: rgba(255, 255, 255, 0.14);
+  --naari-highlight: rgba(255, 255, 255, 0.25);
+  perspective: 900px;
+}
+
+.ws-watch-chassis {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.55) 0%, transparent 10%, transparent 84%, rgba(0, 0, 0, 0.65) 100%),
+    linear-gradient(120deg, #d9dde1 0%, #777d83 18%, #24272a 47%, #8e949a 72%, #303438 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  box-shadow:
+    0 38px 70px rgba(0, 0, 0, 0.66),
+    0 9px 22px rgba(0, 0, 0, 0.72),
+    inset 0 1px 1px rgba(255, 255, 255, 0.8),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.8) !important;
+}
+
+.ws-screen-viewport {
+  border: 2px solid #050506 !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 0 24px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(255, 255, 255, 0.22) !important;
+  background-color: #000 !important;
+}
+
+.ws-display-glare {
+  background: linear-gradient(118deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.025) 20%, transparent 42%) !important;
+  opacity: 0.8 !important;
+}
+
+.ws-ui-screen:not(.ws-screen-flashlight-pure) {
+  background-color: #000 !important;
+  background-image:
+    radial-gradient(circle at 85% 5%, rgba(53, 242, 188, 0.09), transparent 28%),
+    radial-gradient(circle at 0% 92%, rgba(10, 132, 255, 0.07), transparent 33%),
+    linear-gradient(180deg, #08090b 0%, #000 65%) !important;
+}
+
+.ws-screen-safe-face {
+  padding: 9px 10px 10px !important;
+}
+
+.ws-top-status-bar {
+  min-height: 29px !important;
+  padding: 0 10px !important;
+  background: linear-gradient(180deg, rgba(45, 45, 48, 0.86), rgba(20, 20, 22, 0.84)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-top-color: rgba(255, 255, 255, 0.35) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 5px 12px rgba(0,0,0,0.45), inset 0 1px rgba(255,255,255,0.08) !important;
+  backdrop-filter: blur(18px) saturate(140%) !important;
+}
+
+.ws-status-carrier,
+.ws-battery-val {
+  font-size: 9.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.ws-wallpaper-cycler {
+  background: rgba(20, 20, 22, 0.74) !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,0.09) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+.ws-clock-hero {
+  margin-top: 2px !important;
+  gap: 0 !important;
+}
+
+.ws-clock-time {
+  font-size: 48px !important;
+  font-weight: 630 !important;
+  line-height: 0.95 !important;
+  letter-spacing: -0.075em !important;
+  padding-right: 0.075em !important;
+  color: #fff !important;
+  text-shadow: 0 2px 14px rgba(255,255,255,0.14) !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.ws-clock-date {
+  color: rgba(255,255,255,0.62) !important;
+  font-size: 9px !important;
+  font-weight: 680 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+}
+
+.ws-activity-rings-container {
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.58)) !important;
+}
+
+.ws-activity-rings-svg {
+  filter: drop-shadow(0 0 7px rgba(53,242,188,0.13)) !important;
+}
+
+.ws-center-ring-info {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(145deg, rgba(38,38,41,0.96), rgba(8,8,9,0.96)) !important;
+  border: 1px solid rgba(255,255,255,0.16) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,0.12), 0 5px 12px rgba(0,0,0,0.5) !important;
+}
+
+.ws-safe-dock {
+  padding: 5px 8px !important;
+  background: linear-gradient(180deg, rgba(48,48,51,0.86), rgba(17,17,19,0.9)) !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  border-top-color: rgba(255,255,255,0.34) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5), inset 0 1px rgba(255,255,255,0.1) !important;
+  backdrop-filter: blur(18px) saturate(150%) !important;
+}
+
+.ws-dock-btn {
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  background: linear-gradient(145deg, rgba(42,42,45,0.9), rgba(13,13,14,0.94)) !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 1px rgba(255,255,255,0.15) !important;
+}
+
+.ws-dock-btn.sos {
+  border-color: rgba(255,69,58,0.72) !important;
+  box-shadow: 0 0 0 3px rgba(255,69,58,0.09), 0 7px 18px rgba(255,69,58,0.24), inset 0 1px rgba(255,255,255,0.18) !important;
+}
+
+.ws-dock-custom-img,
+.ws-drawer-custom-icon {
+  filter: saturate(0.98) contrast(1.06) drop-shadow(0 3px 5px rgba(0,0,0,0.45)) !important;
+}
+
+.ws-tap-apps-hint {
+  color: rgba(255,255,255,0.34) !important;
+  letter-spacing: 0.16em !important;
+  font-size: 7px !important;
+}
+
+.ws-drawer-header,
+.ws-sound-header,
+.ws-contacts-header,
+.ws-sys-header,
+.ws-tele-header,
+.ws-recorder-header,
+.ws-wp-header {
+  background: linear-gradient(180deg, rgba(38,38,41,0.82), rgba(16,16,18,0.78)) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  border-top-color: rgba(255,255,255,0.27) !important;
+  border-radius: 14px !important;
+  padding: 5px 7px !important;
+  box-shadow: 0 5px 12px rgba(0,0,0,0.38), inset 0 1px rgba(255,255,255,0.08) !important;
+}
+
+.ws-drawer-card-square {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.08), transparent 48%),
+    linear-gradient(155deg, rgba(39,39,42,0.94), rgba(13,13,15,0.96)) !important;
+  border-color: rgba(255,255,255,0.15) !important;
+  border-top-color: rgba(255,255,255,0.3) !important;
+  border-radius: 23px !important;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.42), inset 0 1px rgba(255,255,255,0.08) !important;
+}
+
+.ws-drawer-card-square:hover {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.12), transparent 50%),
+    linear-gradient(155deg, rgba(48,48,52,0.98), rgba(18,18,20,0.98)) !important;
+  border-color: rgba(53,242,188,0.45) !important;
+  transform: translateY(-2px) scale(1.015) !important;
+}
+
+.ws-drawer-square-icon-wrap {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 16px !important;
+  border-color: rgba(255,255,255,0.24) !important;
+  box-shadow: 0 7px 13px rgba(0,0,0,0.42), inset 0 1px rgba(255,255,255,0.23) !important;
+}
+
+.ws-drawer-square-badge {
+  border-radius: 8px !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.ws-drawer-square-name {
+  font-size: 11.5px !important;
+  font-weight: 720 !important;
+  letter-spacing: -0.015em !important;
+}
+
+.ws-drawer-square-sub {
+  color: rgba(255,255,255,0.46) !important;
+  font-size: 8.5px !important;
+}
+
+.ws-cc-card,
+.ws-sound-card,
+.ws-contact-row-card,
+.ws-sys-card,
+.ws-sys-card-friendly,
+.ws-guard-meta,
+.ws-dialer-display,
+.ws-wp-card {
+  background: linear-gradient(150deg, rgba(42,42,45,0.88), rgba(15,15,17,0.92)) !important;
+  border-color: rgba(255,255,255,0.14) !important;
+  border-top-color: rgba(255,255,255,0.25) !important;
+  box-shadow: 0 5px 12px rgba(0,0,0,0.35), inset 0 1px rgba(255,255,255,0.07) !important;
+}
+
+.ws-cc-card.active {
+  border-color: rgba(53,242,188,0.55) !important;
+  background: linear-gradient(145deg, rgba(26,80,65,0.82), rgba(10,28,25,0.9)) !important;
+}
+
+.ws-cc-card-icon,
+.ws-contact-row-card .avatar {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 1px rgba(255,255,255,0.2) !important;
+}
+
+.ws-screen-emergency-alert {
+  background-image:
+    radial-gradient(circle at 50% 27%, rgba(255,69,58,0.24), transparent 32%),
+    linear-gradient(180deg, #130405 0%, #000 68%) !important;
+}
+
+.ws-countdown-arc-wrap,
+.ws-calling-pulse-circle,
+.ws-rec-big-circle {
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.55)) !important;
+}
+
+.ws-emer-badge,
+.ws-recorder-live-badge {
+  box-shadow: 0 0 18px rgba(255,69,58,0.22) !important;
+}
+
+.ws-page-nav-btn,
+.ws-drawer-home-btn,
+.ws-cc-done-btn,
+.ws-sms-done-btn,
+.ws-wp-apply-btn,
+.ws-guard-end-btn,
+.ws-end-call-btn {
+  box-shadow: inset 0 1px rgba(255,255,255,0.15), 0 5px 12px rgba(0,0,0,0.32) !important;
+}
+
+.ws-page-nav-btn:active,
+.ws-drawer-home-btn:active,
+.ws-cc-card:active,
+.ws-sound-card:active,
+.ws-contact-row-card button:active,
+.ws-wp-card:active {
+  transform: scale(0.96) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ws-pulse-sonar,
+  .ws-calling-pulse-ring,
+  .ws-ring-wave,
+  .ws-soundwave-bar {
+    animation: none !important;
+  }
+
+  .ws-drawer-card-square,
+  .ws-cc-card,
+  .ws-page-nav-btn {
+    transition: none !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════ */
+/* NAARI OS v5.0 · 4-APP STACKS DRAWER, VOICE RECORDER & WALLPAPERS */
+/* ══════════════════════════════════════════════════════════════ */
+
+/* Drawer Navigation Header */
+.ws-drawer-home-btn {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #00e8a8 !important;
+  border: 1px solid rgba(0, 232, 168, 0.25) !important;
+  border-radius: 12px !important;
+  padding: 4px 10px !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  letter-spacing: 0.02em !important;
+  transition: all 0.15s ease !important;
+}
+.ws-drawer-home-btn:hover {
+  background: rgba(0, 232, 168, 0.18) !important;
+  transform: scale(0.97) !important;
+}
+
+.ws-drawer-page-indicator {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #94a3b8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
+  padding: 3px 8px !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+}
+
+/* 4 Square Cards (2x2 Grid) in App Drawer */
+.ws-drawer-grid-4 {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  grid-template-rows: repeat(2, 1fr) !important;
+  gap: 10px !important;
+  padding: 10px 12px !important;
+  flex: 1 !important;
+  box-sizing: border-box !important;
+  align-content: center !important;
+}
+
+.ws-drawer-card-square {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 20px !important;
+  padding: 10px 6px !important;
+  cursor: pointer !important;
+  text-align: center !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+.ws-drawer-card-square:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(0, 232, 168, 0.45) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+}
+.ws-drawer-card-square:active {
+  transform: scale(0.96) !important;
+}
+
+.ws-drawer-square-badge {
+  position: absolute !important;
+  top: 6px !important;
+  right: 6px !important;
+  font-size: 8px !important;
+  font-weight: 800 !important;
+  padding: 1px 5px !important;
+  border-radius: 6px !important;
+  border: 1px solid !important;
+  letter-spacing: 0.03em !important;
+  line-height: 1 !important;
+}
+
+.ws-drawer-square-icon-wrap {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  margin-bottom: 6px !important;
+  flex-shrink: 0 !important;
+}
+
+.ws-drawer-square-name {
+  font-size: 12.5px !important;
+  font-weight: 750 !important;
+  color: #ffffff !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  margin-top: 2px !important;
+  letter-spacing: -0.01em !important;
+}
+
+.ws-drawer-square-sub {
+  font-size: 9.5px !important;
+  font-weight: 500 !important;
+  color: #94a3b8 !important;
+  margin-top: 2px !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
+}
+
+/* Drawer Bottom Pagination Bar */
+.ws-drawer-pagination-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 6px 12px 10px 12px !important;
+}
+
+.ws-page-nav-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #00e8a8 !important;
+  border: 1px solid rgba(0, 232, 168, 0.25) !important;
+  border-radius: 12px !important;
+  padding: 6px 14px !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+.ws-page-nav-btn:hover:not(:disabled) {
+  background: rgba(0, 232, 168, 0.2) !important;
+}
+.ws-page-nav-btn.disabled {
+  opacity: 0.3 !important;
+  cursor: not-allowed !important;
+  border-color: transparent !important;
+  color: #64748b !important;
+}
+
+.ws-drawer-dots {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+.ws-drawer-dot {
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.25) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+.ws-drawer-dot.active-pill {
+  width: 18px !important;
+  border-radius: 4px !important;
+  background: #00e8a8 !important;
+  box-shadow: 0 0 8px rgba(0, 232, 168, 0.6) !important;
+}
+
+/* ══════════ PURE FULL-SCREEN FLASHLIGHT (ZERO TEXT) ══════════ */
+.ws-screen-flashlight-pure {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  transition: background 0.1s ease !important;
+}
+
+/* ══════════ VOICE MEMO RECORDER APP ══════════ */
+.ws-screen-recorder {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 8px 12px 14px 12px !important;
+  justify-content: space-between !important;
+}
+.ws-recorder-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  font-size: 13px !important;
+  font-weight: 750 !important;
+  color: #ffffff !important;
+}
+.ws-recorder-body {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  flex: 1 !important;
+  gap: 8px !important;
+}
+.ws-recorder-live-badge {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: rgba(255, 69, 58, 0.2) !important;
+  border: 1px solid #ff453a !important;
+  padding: 4px 12px !important;
+  border-radius: 12px !important;
+  color: #ff453a !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.04em !important;
+}
+.ws-rec-dot {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  background: #ff453a !important;
+  box-shadow: 0 0 8px #ff453a !important;
+  animation: wsRecBlink 1s infinite alternate !important;
+}
+@keyframes wsRecBlink {
+  0% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+.ws-rec-timer {
+  font-size: 32px !important;
+  font-weight: 800 !important;
+  color: #ff453a !important;
+  font-variant-numeric: tabular-nums !important;
+  letter-spacing: 0.04em !important;
+}
+.ws-rec-timer.saved {
+  color: #00e8a8 !important;
+}
+.ws-rec-mic-sub {
+  font-size: 10px !important;
+  color: #94a3b8 !important;
+}
+
+.ws-rec-soundwaves {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  height: 60px !important;
+  margin: 6px 0 !important;
+}
+.ws-soundwave-bar {
+  width: 5px !important;
+  background: #ff453a !important;
+  border-radius: 3px !important;
+  animation: wsSoundwave 0.8s ease-in-out infinite alternate !important;
+}
+.ws-rec-soundwaves.static .ws-soundwave-bar {
+  animation: none !important;
+  background: #64748b !important;
+}
+.ws-rec-soundwaves.static .ws-soundwave-bar.playing {
+  background: #00e8a8 !important;
+  animation: wsSoundwave 0.7s ease-in-out infinite alternate !important;
+}
+@keyframes wsSoundwave {
+  0% { transform: scaleY(0.3); opacity: 0.5; }
+  100% { transform: scaleY(1.3); opacity: 1; }
+}
+
+.ws-rec-stop-btn {
+  background: #ff453a !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 16px !important;
+  padding: 10px 24px !important;
+  font-size: 13px !important;
+  font-weight: 750 !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 14px rgba(255, 69, 58, 0.4) !important;
+  transition: all 0.15s ease !important;
+}
+.ws-rec-stop-btn:hover {
+  transform: scale(0.97) !important;
+  background: #ff3b30 !important;
+}
+
+.ws-recorder-saved-badge {
+  background: rgba(0, 232, 168, 0.18) !important;
+  border: 1px solid #00e8a8 !important;
+  padding: 4px 12px !important;
+  border-radius: 12px !important;
+  color: #00e8a8 !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+}
+
+.ws-rec-actions {
+  display: flex !important;
+  gap: 10px !important;
+  width: 100% !important;
+  padding: 0 10px !important;
+  box-sizing: border-box !important;
+}
+.ws-rec-play-btn {
+  flex: 1 !important;
+  background: rgba(0, 232, 168, 0.2) !important;
+  border: 1px solid #00e8a8 !important;
+  color: #00e8a8 !important;
+  border-radius: 14px !important;
+  padding: 10px !important;
+  font-size: 12px !important;
+  font-weight: 750 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+.ws-rec-play-btn.active {
+  background: #00e8a8 !important;
+  color: #000000 !important;
+}
+.ws-rec-new-btn {
+  background: rgba(255, 69, 58, 0.15) !important;
+  border: 1px solid #ff453a !important;
+  color: #ff453a !important;
+  border-radius: 14px !important;
+  padding: 10px 18px !important;
+  font-size: 12px !important;
+  font-weight: 750 !important;
+  cursor: pointer !important;
+}
+.ws-rec-note {
+  font-size: 9.5px !important;
+  color: #64748b !important;
+}
+
+.ws-rec-big-circle {
+  width: 72px !important;
+  height: 72px !important;
+  border-radius: 50% !important;
+  background: radial-gradient(circle, #ff453a 0%, #a61c14 100%) !important;
+  border: 3px solid rgba(255, 255, 255, 0.3) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  box-shadow: 0 0 24px rgba(255, 69, 58, 0.5) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.ws-rec-big-circle:hover {
+  transform: scale(1.08) !important;
+}
+.ws-rec-idle-title {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  letter-spacing: -0.01em !important;
+}
+.ws-rec-idle-sub {
+  font-size: 11px !important;
+  color: #94a3b8 !important;
+}
+.ws-rec-idle-desc {
+  font-size: 9.5px !important;
+  color: #64748b !important;
+}
+
+/* ══════════ WALLPAPERS SELECTOR SCREEN ══════════ */
+.ws-screen-wallpapers {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 8px 12px 12px 12px !important;
+  justify-content: space-between !important;
+}
+.ws-wp-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  font-size: 13px !important;
+  font-weight: 750 !important;
+  color: #ffffff !important;
+}
+.ws-wp-cards-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 7px !important;
+  overflow-y: auto !important;
+  flex: 1 !important;
+  margin: 8px 0 !important;
+  padding-right: 2px !important;
+}
+.ws-wp-card {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 8px 10px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 14px !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  transition: all 0.15s ease !important;
+}
+.ws-wp-card.selected {
+  background: rgba(0, 232, 168, 0.12) !important;
+  border-color: #00e8a8 !important;
+}
+.ws-wp-swatch {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  flex-shrink: 0 !important;
+}
+.ws-wp-card-text {
+  flex: 1 !important;
+}
+.ws-wp-card-text .name {
+  font-size: 13px !important;
+  font-weight: 750 !important;
+  color: #ffffff !important;
+}
+.ws-wp-card-text .sub {
+  font-size: 9.5px !important;
+  color: #94a3b8 !important;
+  margin-top: 1px !important;
+}
+.ws-wp-check {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  color: #00e8a8 !important;
+  background: rgba(0, 232, 168, 0.2) !important;
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.ws-wp-apply-btn {
+  background: #00e8a8 !important;
+  color: #000000 !important;
+  border: none !important;
+  border-radius: 14px !important;
+  padding: 10px !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  cursor: pointer !important;
+  letter-spacing: 0.02em !important;
+  transition: all 0.15s ease !important;
+}
+.ws-wp-apply-btn:hover {
+  background: #34d399 !important;
+  transform: scale(0.98) !important;
+}
+
+/* ══════════ SIMPLIFIED FRIENDLY SYSTEM HEALTH ══════════ */
+.ws-sys-status-banner {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  background: rgba(0, 232, 168, 0.15) !important;
+  border: 1px solid #00e8a8 !important;
+  border-radius: 14px !important;
+  padding: 8px 12px !important;
+  margin: 6px 0 !important;
+}
+.ws-sys-shield-ico {
+  font-size: 24px !important;
+}
+.ws-sys-status-banner .status-title {
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  color: #00e8a8 !important;
+  letter-spacing: 0.02em !important;
+}
+.ws-sys-status-banner .status-sub {
+  font-size: 9.5px !important;
+  color: #ffffff !important;
+}
+
+.ws-sys-card-friendly {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 8px 10px !important;
+  margin-bottom: 6px !important;
+}
+.ws-sys-card-friendly.clickable {
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+.ws-sys-card-friendly.clickable:hover {
+  background: rgba(255, 159, 10, 0.12) !important;
+  border-color: #ff9f0a !important;
+}
+.ws-sys-card-friendly .card-top {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+.ws-sys-card-friendly .card-name {
+  font-size: 12px !important;
+  font-weight: 750 !important;
+  color: #ffffff !important;
+}
+.ws-sys-card-friendly .badge {
+  font-size: 9.5px !important;
+  font-weight: 700 !important;
+  padding: 2px 7px !important;
+  border-radius: 8px !important;
+}
+.ws-sys-card-friendly .badge.mint {
+  background: rgba(0, 232, 168, 0.18) !important;
+  color: #00e8a8 !important;
+}
+.ws-sys-card-friendly .badge.blue {
+  background: rgba(10, 132, 255, 0.18) !important;
+  color: #0a84ff !important;
+}
+.ws-sys-card-friendly .badge.cyan {
+  background: rgba(48, 176, 199, 0.18) !important;
+  color: #30b0c7 !important;
+}
+.ws-sys-card-friendly .badge.amber {
+  background: rgba(255, 159, 10, 0.18) !important;
+  color: #ff9f0a !important;
+}
+.ws-sys-card-friendly .card-val {
+  font-size: 9.5px !important;
+  color: #94a3b8 !important;
+}
+
+/* v6 final cascade: keep premium treatment after legacy v5 component rules. */
+.ws-drawer-home-btn,
+.ws-page-nav-btn {
+  background: linear-gradient(180deg, rgba(43,43,46,.92), rgba(17,17,19,.94)) !important;
+  border-color: rgba(255,255,255,.17) !important;
+  border-top-color: rgba(255,255,255,.3) !important;
+  box-shadow: 0 5px 12px rgba(0,0,0,.35), inset 0 1px rgba(255,255,255,.1) !important;
+}
+
+.ws-drawer-page-indicator {
+  background: rgba(20,20,22,.78) !important;
+  border-color: rgba(255,255,255,.14) !important;
+  color: rgba(255,255,255,.6) !important;
+}
+
+.ws-drawer-card-square {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,.08), transparent 48%),
+    linear-gradient(155deg, rgba(39,39,42,.94), rgba(13,13,15,.96)) !important;
+  border-color: rgba(255,255,255,.15) !important;
+  border-top-color: rgba(255,255,255,.3) !important;
+  border-radius: 23px !important;
+  box-shadow: 0 8px 16px rgba(0,0,0,.42), inset 0 1px rgba(255,255,255,.08) !important;
+}
+
+.ws-drawer-card-square:hover {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,.12), transparent 50%),
+    linear-gradient(155deg, rgba(48,48,52,.98), rgba(18,18,20,.98)) !important;
+  border-color: rgba(53,242,188,.45) !important;
+  box-shadow: 0 10px 20px rgba(0,0,0,.5), inset 0 1px rgba(255,255,255,.1) !important;
+}
+
+.ws-drawer-square-icon-wrap {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 16px !important;
+  border-color: rgba(255,255,255,.24) !important;
+  box-shadow: 0 7px 13px rgba(0,0,0,.42), inset 0 1px rgba(255,255,255,.23) !important;
+}
+
+.ws-drawer-square-badge {
+  border-radius: 8px !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.ws-drawer-square-name {
+  font-size: 11.5px !important;
+  font-weight: 720 !important;
+}
+
+.ws-drawer-square-sub {
+  color: rgba(255,255,255,.46) !important;
+  font-size: 8.5px !important;
+}
+
+.ws-wp-card,
+.ws-sys-card-friendly {
+  background: linear-gradient(150deg, rgba(42,42,45,.88), rgba(15,15,17,.92)) !important;
+  border-color: rgba(255,255,255,.14) !important;
+  border-top-color: rgba(255,255,255,.25) !important;
+  box-shadow: 0 5px 12px rgba(0,0,0,.35), inset 0 1px rgba(255,255,255,.07) !important;
+}
+
+.ws-wp-card.selected {
+  background: linear-gradient(145deg, rgba(31,78,67,.9), rgba(10,28,25,.94)) !important;
+  border-color: rgba(53,242,188,.62) !important;
+}
+
+.ws-wp-swatch,
+.ws-rec-big-circle {
+  box-shadow: 0 7px 14px rgba(0,0,0,.48), inset 0 1px rgba(255,255,255,.18) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ws-rec-dot,
+  .ws-soundwave-bar {
+    animation: none !important;
+  }
+}
