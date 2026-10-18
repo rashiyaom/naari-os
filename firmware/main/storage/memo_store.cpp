@@ -259,7 +259,7 @@ std::vector<uint8_t> MemoStore::chunk(const std::string &id, size_t offset,
         std::find_if(memos.begin(), memos.end(), [&](const StoredMemo &m) { return m.id == id; });
     if (m == memos.end() || offset >= m->bytes)
         return {};
-    size_t n = std::min({maxPayload, size_t(230), m->bytes - offset});
+    size_t n = std::min({maxPayload, size_t(490), m->bytes - offset});
     std::vector<uint8_t> packet(10 + n);
     uint32_t seq = offset;
     for (unsigned i = 0; i < 4; ++i) {

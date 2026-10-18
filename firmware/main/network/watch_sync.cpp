@@ -94,7 +94,8 @@ cJSON *status() {
     cJSON_AddBoolToObject(o, "saving", MemoStore::instance().busy());
     auto caps = cJSON_AddArrayToObject(o, "capabilities");
     for (const char *cap : {"wallpaper", "brightness", "volume", "fall_detection", "watch_mode",
-                            "find_watch", "time_sync", "profile_read", "audio_transfer"})
+                            "find_watch", "time_sync", "safe_check_in", "profile_read",
+                            "audio_transfer"})
         cJSON_AddItemToArray(caps, cJSON_CreateString(cap));
     return o;
 }
@@ -209,6 +210,22 @@ void execute(const Command &input) {
                 static_cast<uint8_t>(dt.tm_min),          static_cast<uint8_t>(dt.tm_sec),
                 static_cast<uint8_t>(dt.tm_wday)};
             ok = RtcPCF85063::instance().setDateTime(rtc) == ESP_OK;
+        }
+    } else if (op == "safe_check_in") {
+        auto sm = StateMachine::instance().getCurrentState();
+        // A remote check-in can finish Night Guard, but it can never dismiss
+        // an active emergency. SOS dismissal remains a deliberate watch hold.
+        if (sm != SystemState::EMERGENCY) {
+            if (sm == SystemState::SAFETY_WATCH)
+                StateMachine::instance().sendEvent(StateEvent::EVT_ENTER_SAFE_MODE);
+            for (int i = 0; i < 40 && StateMachine::instance().getCurrentState() != SystemState::SAFE;
+                 ++i)
+                vTaskDelay(pdMS_TO_TICKS(10));
+            ok = StateMachine::instance().getCurrentState() == SystemState::SAFE;
+            if (ok) {
+                applied = status();
+                cJSON_AddBoolToObject(applied, "checked_in", true);
+            }
         }
     } else if (op == "get_recording") {
         auto catalog = MemoStore::instance().catalog();

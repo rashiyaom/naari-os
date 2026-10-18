@@ -6,7 +6,7 @@ repo_dir="$(cd "$app_dir/.." && pwd)"
 source_apk="$app_dir/app/build/outputs/apk/debug/app-debug.apk"
 artifact_dir="$app_dir/build"
 website_dir="$repo_dir/sheshield-sentinel-guardian-main/public/downloads"
-artifact_name="Naari-Companion-1.2-debug.apk"
+artifact_name="Naari-Companion-1.3-debug.apk"
 
 if [[ ! -f "$source_apk" ]]; then
   echo "APK not found. Run ./gradlew assembleDebug first." >&2

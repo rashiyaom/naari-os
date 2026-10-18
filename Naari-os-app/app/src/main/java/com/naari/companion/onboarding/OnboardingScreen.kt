@@ -988,6 +988,7 @@ private fun CapabilityCard(
             ) {
                 Text(
                     text = title,
+                    modifier = Modifier.weight(1f).padding(end = NaariSpacing.sm),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )

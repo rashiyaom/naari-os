@@ -1,6 +1,7 @@
 #include "phone_bridge.h"
 #include "json_frame.h"
 #include "watch_sync.h"
+#include "../ui/ui_manager.h"
 #include <algorithm>
 #include <cJSON.h>
 #include <cmath>
@@ -142,8 +143,11 @@ static int gapEvent(ble_gap_event *event, void *) {
     }
     case BLE_GAP_EVENT_PASSKEY_ACTION: {
         if (!PhoneBridge::instance().isPairing()) {
-            ble_gap_terminate(event->passkey.conn_handle, BLE_ERR_AUTH_FAIL);
-            break;
+            // Android initiated association. Open the short pairing window and
+            // take the user straight to the code instead of requiring them to
+            // discover Phone Link on the watch first.
+            PhoneBridge::instance().openPairing();
+            UiManager::instance().requestScreen(WatchScreenId::SCREEN_PHONE_LINK);
         }
         ble_sm_io io = {};
         io.action = event->passkey.params.action;
@@ -444,6 +448,9 @@ bool PhoneBridge::acceptReply(const char *json) {
             phones[i] = nextPhones[i];
             names[i] = nextNames[i];
         }
+        // Contacts and Night Guard read directly from this profile. Schedule a
+        // render on the UI task so an edit appears without leaving the screen.
+        UiManager::instance().requestRefresh();
     } else {
         auto item = cJSON_GetObjectItem(o, "id");
         if (!cJSON_IsNumber(item) || !std::isfinite(item->valuedouble) ||

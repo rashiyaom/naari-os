@@ -10,6 +10,8 @@ import com.naari.companion.onboarding.OnboardingRepository
 import com.naari.companion.permissions.PermissionsRepository
 import com.naari.companion.protocol.*
 import com.naari.companion.recordings.*
+import com.naari.companion.safewalk.SafeWalkManager
+import com.naari.companion.safewalk.SafeWalkState
 import com.naari.companion.service.CompanionServiceController
 import com.naari.companion.watch.WatchSettingsRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -32,7 +34,8 @@ class WatchSyncCoordinator @Inject constructor(
     private val guardians: GuardiansRepository,
     private val permissions: PermissionsRepository,
     private val deviceState: DeviceStateRepository,
-    private val incidents: IncidentsRepository
+    private val incidents: IncidentsRepository,
+    private val safeWalk: SafeWalkManager
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val ids = AtomicInteger(1000000)
@@ -40,6 +43,11 @@ class WatchSyncCoordinator @Inject constructor(
     private var transferJob: Job? = null
     private var lastAttempt = 0L
     private var incident: Long? = null
+    @Volatile private var walkStatusInitialized = false
+    @Volatile private var suppressNextWalkCommand = false
+    @Volatile private var pendingPhoneMode: WatchMode? = null
+    @Volatile private var localWalkDirty = false
+    private var seenWalkState = false
     fun start() {
         if(started) return
         started = true
@@ -57,13 +65,49 @@ class WatchSyncCoordinator @Inject constructor(
                 if(state != BleConnectionState.Ready) {
                     transferJob?.cancel()
                     settings.setCapabilities(WatchCapabilities.NONE)
+                    walkStatusInitialized = false
                 }
             }
         }
         scope.launch {
+            safeWalk.state
+                .map { it is SafeWalkState.Active }
+                .distinctUntilChanged()
+                .collect { active ->
+                    if (!seenWalkState) {
+                        seenWalkState = true
+                        if (!walkStatusInitialized) {
+                            localWalkDirty = active
+                            return@collect
+                        }
+                    }
+                    if (suppressNextWalkCommand) {
+                        suppressNextWalkCommand = false
+                        return@collect
+                    }
+                    if (!walkStatusInitialized || ble.connectionState.value != BleConnectionState.Ready ||
+                        !ble.hasV2ControlService.value) {
+                        localWalkDirty = true
+                        return@collect
+                    }
+                    val desired = if (active) WatchMode.WATCH else WatchMode.SAFE
+                    pendingPhoneMode = desired
+                    try {
+                        command("set_mode", "{\"mode\":\"${desired.name}\"}")
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (_: Exception) {
+                        pendingPhoneMode = null
+                        localWalkDirty = true
+                    }
+                }
+        }
+        scope.launch {
             ble.rawSnapshots.collect { response ->
                 val data = response.appliedData
-                settings.handleStatusSnapshot(ProtocolV2Codec.parseStatusSnapshot(data))
+                val snapshot = ProtocolV2Codec.parseStatusSnapshot(data)
+                settings.handleStatusSnapshot(snapshot)
+                reconcileSafeWalk(snapshot.mode)
                 deviceState.notifySyncCompleted(System.currentTimeMillis())
                 val mode = data["mode"] as? String
                 if(mode == "EMERGENCY") {
@@ -84,6 +128,39 @@ class WatchSyncCoordinator @Inject constructor(
                     transferJob = scope.launch { syncRecordings(count) }
                 }
             }
+        }
+    }
+    private fun reconcileSafeWalk(mode: WatchMode?) {
+        if (mode == null || mode == WatchMode.EMERGENCY) return
+        walkStatusInitialized = true
+        if (localWalkDirty) {
+            localWalkDirty = false
+            val desired = if (safeWalk.state.value is SafeWalkState.Active) WatchMode.WATCH else WatchMode.SAFE
+            pendingPhoneMode = desired
+            scope.launch {
+                try {
+                    command("set_mode", "{\"mode\":\"${desired.name}\"}")
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    pendingPhoneMode = null
+                    localWalkDirty = true
+                }
+            }
+            return
+        }
+        val pending = pendingPhoneMode
+        if (pending != null) {
+            if (mode == pending) pendingPhoneMode = null
+            return
+        }
+        val phoneActive = safeWalk.state.value is SafeWalkState.Active
+        if (mode == WatchMode.WATCH && !phoneActive) {
+            suppressNextWalkCommand = true
+            safeWalk.startJourney(15)
+        } else if (mode == WatchMode.SAFE && phoneActive) {
+            suppressNextWalkCommand = true
+            safeWalk.cancel()
         }
     }
     private suspend fun command(op: String, args: String = "{}"): ControlResponse {

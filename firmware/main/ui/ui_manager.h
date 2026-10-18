@@ -4,6 +4,7 @@
 #include "../drivers/sim800l/sim800l.h"
 #include "../state_machine/state_machine.h"
 #include <cstdint>
+#include <atomic>
 #include <esp_err.h>
 #include <string>
 #include <vector>
@@ -72,6 +73,8 @@ class UiManager {
 
     // Toast notification (auto-clears)
     void showToast(const char *message, int durationMs = 2200);
+    void requestRefresh() { m_refreshRequested.store(true); }
+    void requestScreen(WatchScreenId screen) { m_requestedScreen.store(static_cast<int>(screen)); }
 
     // Hold-to-cancel SOS flow
     void startHoldCancellation();
@@ -262,6 +265,8 @@ class UiManager {
     uint32_t m_animFrame;
     int64_t m_lastRenderTimeUs;
     int64_t m_lastSecondTickUs; // drives safe-screen clock + emergency countdown
+    std::atomic<bool> m_refreshRequested{false};
+    std::atomic<int> m_requestedScreen{-1};
 
     SimStatusReport m_lastSimStatus;
 };

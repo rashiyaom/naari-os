@@ -135,6 +135,9 @@ class DefaultBleSessionManager(
     private suspend fun setup() {
         _connectionState.value = BleConnectionState.ConnectedServiceUnavailable
         _connectionStep.value = BleConnectionStep.ConnectedBonded
+        // Prefer a short connection interval for status reconciliation and
+        // recording transfer. Android may decline this without failing setup.
+        transport.requestHighConnectionPriority()
         val mtuResult = queue.requestMtu(512, 15000)
         if (mtuResult.exceptionOrNull() is java.util.concurrent.TimeoutException) mtuResult.getOrThrow()
         _negotiatedMtu.value = mtuResult.getOrDefault(23)

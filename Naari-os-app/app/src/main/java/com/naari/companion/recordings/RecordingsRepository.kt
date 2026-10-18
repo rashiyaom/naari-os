@@ -128,6 +128,7 @@ class DefaultRecordingsRepository(
             ?: return Result.failure(IllegalArgumentException("Recording $recordingId not found in catalog"))
 
         var lastOffset = entity.transferredBytes
+        var lastPersistedOffset = entity.transferredBytes
         try {
             val session = transferClient.startTransfer(
                 recordingId = recordingId,
@@ -147,12 +148,15 @@ class DefaultRecordingsRepository(
             chunkSource(session.currentTransferredBytes) { chunk ->
                 val newOffset = session.appendChunk(chunk)
                 lastOffset = newOffset
-                recordingDao.updateSyncProgress(
-                    id = entity.id,
-                    transferredBytes = newOffset,
-                    syncState = RecordingSyncState.Transferring,
-                    failureReason = null
-                )
+                if (newOffset == entity.totalBytes || newOffset - lastPersistedOffset >= 16 * 1024) {
+                    recordingDao.updateSyncProgress(
+                        id = entity.id,
+                        transferredBytes = newOffset,
+                        syncState = RecordingSyncState.Transferring,
+                        failureReason = null
+                    )
+                    lastPersistedOffset = newOffset
+                }
             }
 
             // Verify and atomic commit

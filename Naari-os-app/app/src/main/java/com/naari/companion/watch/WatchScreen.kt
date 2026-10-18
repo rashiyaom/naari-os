@@ -115,7 +115,7 @@ fun WatchScreen(
         // Capability overview warning if v2 service not available
         if (!uiState.capabilities.hasAnyCapability) {
             InlineError(
-                message = "Watch Firmware Protocol V1 Active: Emergency SOS dispatch, live location relay, and primary guardian syncing are operational. Advanced controls (wallpapers, brightness, volume, mode) will become available in a future watch firmware release.",
+                message = "Legacy Protocol V1 firmware detected. SOS and guardian relay remain active; install the current Naari OS firmware to enable live wallpapers, brightness, volume, fall detection, Night Guard, recordings, and utilities.",
                 severity = InlineErrorSeverity.Warning
             )
         }
@@ -506,7 +506,7 @@ private fun OperatingModeCard(
             }
 
             Text(
-                text = "Safety Mode keeps emergency monitoring active. Watch Mode saves battery as a standard timepiece.",
+                text = "Safety Mode keeps normal protection active. Night Guard starts a synced Safe Walk session on both the watch and phone.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -526,7 +526,7 @@ private fun OperatingModeCard(
                 )
 
                 SecondaryButton(
-                    text = if (isWatch) "WATCH (Active)" else "WATCH Mode",
+                    text = if (isWatch) "GUARD (Active)" else "Night Guard",
                     onClick = { onSelectMode(WatchMode.WATCH) },
                     enabled = isSupported && !state.isApplying,
                     modifier = Modifier.weight(1f)

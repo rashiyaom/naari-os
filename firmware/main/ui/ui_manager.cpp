@@ -2435,6 +2435,12 @@ void UiManager::tick() {
     if (!m_initialized)
         return;
 
+    int requestedScreen = m_requestedScreen.exchange(-1);
+    if (requestedScreen >= 0)
+        showScreen(static_cast<WatchScreenId>(requestedScreen));
+    else if (m_refreshRequested.exchange(false))
+        showScreen(m_currentScreen);
+
     m_animFrame++;
     int64_t now = esp_timer_get_time();
 

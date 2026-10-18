@@ -87,11 +87,13 @@ class RecordingTransferClient(
     ) {
         private val receivedSequences = mutableSetOf<Long>()
         private var highestOffset = 0L
+        private var lastDurableOffset = 0L
 
         init {
             // If resuming from existing temp file, initialize offset
             if (tempFile.exists()) {
                 highestOffset = tempFile.length()
+                lastDurableOffset = highestOffset
             }
         }
 
@@ -116,8 +118,14 @@ class RecordingTransferClient(
                     require(existing.contentEquals(chunk.payload)) { "Conflicting duplicate chunk" }
                 } else {
                     raf.write(chunk.payload)
-                    raf.fd.sync()
                     highestOffset += chunk.length
+                    // A physical fsync for every ~490-byte BLE packet made a
+                    // ten-second memo take minutes. Keep resume durability in
+                    // sensible batches and always sync before final verify.
+                    if (highestOffset - lastDurableOffset >= 16 * 1024) {
+                        raf.fd.sync()
+                        lastDurableOffset = highestOffset
+                    }
                 }
             }
 
@@ -135,6 +143,8 @@ class RecordingTransferClient(
             if (!isComplete) {
                 throw IllegalStateException("Transfer incomplete: received $highestOffset of $totalBytes bytes")
             }
+            RandomAccessFile(tempFile, "rw").use { it.fd.sync() }
+            lastDurableOffset = highestOffset
             return storageManager.commitTempFileToWav(
                 tempFile = tempFile,
                 recordingId = recordingId,

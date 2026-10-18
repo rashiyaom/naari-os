@@ -22,7 +22,9 @@ class MemoStore {
     bool busy() const { return saving; }
     std::string error() const;
     std::vector<StoredMemo> catalog() const;
-    std::vector<uint8_t> chunk(const std::string &id, size_t offset, size_t maxPayload = 230) const;
+    // 490 bytes fits the negotiated 512-byte BLE MTU with the 10-byte memo
+    // header and ATT overhead, cutting transfer round-trips by more than half.
+    std::vector<uint8_t> chunk(const std::string &id, size_t offset, size_t maxPayload = 490) const;
     bool readPcm(const std::string &id, int16_t *destination, size_t capacitySamples,
                  size_t &samples) const;
     bool remove(const std::string &id); // Explicit user deletion of the watch copy only.

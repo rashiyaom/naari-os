@@ -40,6 +40,11 @@ void ble_store_clear(){}
 void* ble_hs_mbuf_from_flat(const void*,size_t){return nullptr;}
 void ble_gatts_notify_custom(int,int,void*){}
 namespace SheShield {
+class UiManager {
+  public:
+    static UiManager &instance(){ static UiManager ui; return ui; }
+    void requestRefresh(){}
+};
 '''
 fixture+=state+helpers+'''
 PhoneBridge& PhoneBridge::instance(){static PhoneBridge p;return p;}

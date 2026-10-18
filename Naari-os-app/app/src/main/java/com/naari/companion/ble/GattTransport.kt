@@ -33,6 +33,8 @@ interface GattTransport {
     fun close()
     fun discoverServices(): Boolean
     fun requestMtu(mtu: Int): Boolean
+    /** Requests a low-latency connection interval; unsupported test/legacy transports may ignore it. */
+    fun requestHighConnectionPriority(): Boolean = true
     fun readCharacteristic(serviceUuid: UUID, charUuid: UUID): Boolean
     fun writeCharacteristic(serviceUuid: UUID, charUuid: UUID, data: ByteArray, writeType: Int): Boolean
     fun writeDescriptor(serviceUuid: UUID, charUuid: UUID, descriptorUuid: UUID, data: ByteArray): Boolean

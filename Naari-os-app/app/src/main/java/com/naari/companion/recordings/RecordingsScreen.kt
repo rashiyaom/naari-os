@@ -120,7 +120,7 @@ fun RecordingsScreen(
         // Firmware Capability Gating Notice
         if (!uiState.isFirmwareSupported) {
             InlineError(
-                message = "The watch records up to 10-second emergency audio memos for on-device speaker playback. BLE audio transfer to your phone will be enabled in an upcoming watch software release.",
+                message = "This watch is running legacy firmware. Install the current Naari OS firmware to sync and play recordings on your phone.",
                 severity = InlineErrorSeverity.Warning
             )
         }

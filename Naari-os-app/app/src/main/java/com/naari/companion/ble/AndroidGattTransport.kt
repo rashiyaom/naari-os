@@ -243,6 +243,16 @@ class AndroidGattTransport(
     }
 
     @SuppressLint("MissingPermission")
+    override fun requestHighConnectionPriority(): Boolean {
+        val gatt = bluetoothGatt ?: return false
+        return try {
+            gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)
+        } catch (_: SecurityException) {
+            false
+        }
+    }
+
+    @SuppressLint("MissingPermission")
     override fun readCharacteristic(serviceUuid: UUID, charUuid: UUID): Boolean {
         val gatt = bluetoothGatt ?: return false
         val char = gatt.getService(serviceUuid)?.getCharacteristic(charUuid) ?: return false
