@@ -1,6 +1,17 @@
 # A3 Poster Brief — Naari OS / SheShield Sentinel
 
-This document supplies the copy, images, layout and checks needed to produce the poster. It describes the current repository prototype, not all capabilities promised in older proposals. It is a content/design brief, not the final print PDF.
+Hardware note, 17 October 2026: a direct A7672S LTE/GNSS firmware path has been added but the module is not yet wired or physically tested. See `docs/A7672S_WIRING_AND_BRINGUP.md`. Keep this poster's implemented/planned distinction until a physical modem test supports an updated diagram or standalone-communication claim.
+
+This document supplies the copy, images, layout and checks behind the poster. It describes the current repository prototype, not all capabilities promised in older proposals.
+
+## Final generated artwork
+
+- Print PDF: `conference-poster/naari-os-a3-poster.pdf`
+- 300 dpi A3 PNG: `conference-poster/naari-os-a3-poster.png`
+- Review proof: `conference-poster/naari-os-a3-poster-preview.png`
+- Editable generator and print instructions: `conference-poster/`
+
+The final artwork includes four blank member-name lines and a blank college field. Confirm those details and the organizer's exact P6 wording before printing.
 
 ## 1. Required print format
 
@@ -55,10 +66,10 @@ Do not add an invented prevalence statistic. No verified public safety statistic
 
 ### 2. Our Solution
 
-> A touch-screen safety watch with wrist-based SOS, fall detection and voice memos.
-> BLE connects it to an Android phone for guardian alerts, calls and location; the companion app is the next integration step.
+> A touch-screen safety watch with wrist-based SOS, fall detection and persistent voice memos.
+> Authenticated BLE connects it to an Android companion for guardian alerts, calls, phone location and verified recording transfer.
 
-The second sentence must retain its development status until a real Android app and phone actions have been tested. Do not label the current prototype phone-independent.
+The Android APK and BLE protocol are implemented. Keep the poster's “built” wording distinct from “physically demonstrated” until SMS/call/location and recording transfer have been exercised on a connected Android phone. Do not label the current prototype phone-independent.
 
 ### 3. How It Works
 
@@ -73,15 +84,15 @@ SOS / motion sensors / microphone
    SOS → 30-second cancel window
                ↓
       Bonded BLE request bridge
-               ⇢
-  Android companion — IN DEVELOPMENT
-               ⇢
+               ↓
+       Android companion APK
+               ↓
  Guardian SMS / phone call / phone location
 ```
 
 **Diagram legend:**
 
-> Solid: implemented watch path · Dashed: Android integration pending
+> Solid: implemented watch/app path · Validation labels identify what has and has not been exercised on physical hardware
 
 Use a separate short microphone → local recording branch if the main flow would imply that every memo triggers SOS. Suggested compact diagram: watch box contains “SOS + fall detection” and “Local voice memos” as separate rows, then only the SOS row feeds the cancellation window. The phone is the location source; do not draw GPS hardware inside the watch. Ordinary phone-call requests are separate from SOS; do not imply an automatic emergency-services call.
 
@@ -110,9 +121,9 @@ These come from the **actual C++ UI renderer with mocked hardware**, not a stock
 
 > **Hardware:** ESP32-S3 · 2.06″ AMOLED · QMI8658 IMU · ES7210/ES8311 audio
 > **Firmware:** C/C++ · ESP-IDF · FreeRTOS · NimBLE
-> **Next:** Native Android companion · Kotlin / Jetpack Compose
+> **Companion:** Native Android · Kotlin / Jetpack Compose · Room
 
-“Kotlin / Jetpack Compose” is the planned stack, not an already-built application. Keep it on the explicitly labeled Next line. The display is rendered using custom RGB565 drawing, **not LVGL**. Web dashboard/backend technology is optional context, not necessary in this concise primary-system stack.
+The Android application is built and its automated checks pass, but physical Android end-to-end validation remains outstanding. The display is rendered using custom RGB565 drawing, **not LVGL**. Web dashboard/backend technology is optional context, not necessary in this concise primary-system stack.
 
 ### 6. Impact & What's Next
 
@@ -162,26 +173,26 @@ Use approximately 10–12 mm content margins and 5–8 mm gaps as starting value
 | --- | --- | --- |
 | Working watch interface | `firmware/main/ui/ui_manager.cpp`; actual device photos | UI previews alone are not hardware tests |
 | 410 × 502 AMOLED | `firmware/main/drivers/display_co5300/`; UI framebuffer | Custom RGB565 renderer |
-| Audio capture/playback | `firmware/main/drivers/audio_es7210_es8311/audio_manager.cpp` | Current single memo is RAM-only, up to 10 seconds; no phone archival yet |
+| Audio capture/playback | `firmware/main/drivers/audio_es7210_es8311/audio_manager.cpp`; `firmware/main/storage/memo_store.cpp` | Six persistent memos, on-watch browse/play/delete; Android transfer still needs physical phone validation |
 | Fall detection | `firmware/main/safety/fall_detector.cpp`; IMU driver | Wrist heuristic; not medically validated |
 | SOS cancellation | `firmware/main/state_machine/` | Approximately 30-second grace window; phone execution still requires app |
 | Secure BLE phone bridge | `firmware/main/network/phone_bridge.cpp` | BLE transport exists; Android end-to-end execution not yet demonstrated |
-| Two guardian slots | Phone bridge profile persistence | App-based editing planned; do not imply unlimited guardians |
-| Android APK and recording sync | `docs/ANDROID_COMPANION_PRD.md` | Requirements only, not delivered functionality |
-| SIM800L future backup | `firmware/main/drivers/sim800l/` | Current adapter routes via phone; direct modem backup not verified |
+| Two guardian slots | Phone bridge profile persistence; Android guardian repository | App editing is implemented; physical read-back validation remains outstanding; do not imply unlimited guardians |
+| Android APK and recording sync | `Naari-os-app/`; `docs/BLE_SYNC_V83.md` | Implemented and test-built; physical Android end-to-end validation remains outstanding |
+| A7672S direct transport | `firmware/main/drivers/a7672s/`; `firmware/main/drivers/sim800l/` compatibility facade | Firmware path exists; modem wiring, network actions and live call audio are not physically verified |
 
 Avoid historical claims in the original proposal/site: standalone GSM protection, guaranteed alert delivery, live phone-independent GPS, completed offline wake words, continuous SD evidence recording, proven 105/110 dB output, measured real heart rate, or cloud evidence delivery. Those are not established by the current implementation.
 
-## 8. Assets and details still needed
+## 8. Details still needed before print
 
 Before final artwork, collect:
 
 - Exact official P6 problem-statement title and confirmation of “Track 3: SheLeads”.
 - Registered team spelling, member full names and college name.
-- Two to four current physical prototype photos, preferably three listed above.
-- Public demo/repository URL and generated, tested QR code.
+- Optional current physical prototype photos, if they can replace the accurately labelled firmware-rendered screens without exposing personal information.
+- The generated poster QR points to the verified live project site at `https://narios.vercel.app`; test it again on the physical proof.
 - Optional official college logo.
-- Final firmware/app status as of printing. If Android integration is completed and physically tested before the event, update the solution/diagram/stack accordingly; only change claims supported by that test.
+- Final firmware/app status as of printing. If physical Android or A7672S validation is completed before the event, update the validation labels; only change claims supported by that test.
 
 ## 9. Final print checklist
 

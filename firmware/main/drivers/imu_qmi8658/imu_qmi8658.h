@@ -25,6 +25,14 @@ class ImuQMI8658 {
     bool isReady() const { return m_initialized; }
     bool isFallDetectionEnabled() const { return m_fallEnabled; }
     float lastFallImpactG() const;
+    struct FallTelemetry {
+        float accelerationG, angularSpeedDps, peakG;
+        unsigned phase;
+        uint32_t samples, detections;
+        bool testing;
+    };
+    FallTelemetry fallTelemetry() const;
+    void setFallTestMode(bool enabled) { m_testMode = enabled; }
     bool setFallDetectionEnabled(bool enabled);
     bool checkFallCondition(const ImuData &data);
     bool checkViolentShakeCondition(const ImuData &data);
@@ -37,19 +45,11 @@ class ImuQMI8658 {
 
     bool m_initialized;
     std::atomic<bool> m_fallEnabled{false};
-    float m_fallThresholdG;
-    float m_impactThresholdG;
-    int m_freefallCounter;
-    int m_impactWaitCounter;
-    int m_stillnessCounter;
-    bool m_potentialFallActive;
-
-    // Violent shake detection
-    int m_shakePeakCount;
-    int m_shakeWindowSamples;
-    int64_t m_lastShakeTriggerMs;
-    float m_prevAccelMag;
-    bool m_prevInPeak;
+    std::atomic<bool> m_testMode{false};
+    bool m_detectorTestMode = false; // Sampling task is the only writer.
+    std::atomic<float> m_liveG{0}, m_liveRotation{0}, m_peakG{0};
+    std::atomic<unsigned> m_phase{0};
+    std::atomic<uint32_t> m_samples{0}, m_detections{0};
 };
 
 } // namespace SheShield

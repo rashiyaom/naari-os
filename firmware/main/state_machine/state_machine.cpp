@@ -66,7 +66,7 @@ void StateMachine::init() {
     // 2. Spawn State Machine FreeRTOS Task (Priority 5 on Core 1)
     xTaskCreatePinnedToCore(taskEntry, "sm_task", 4096, this, 5, &m_taskHandle, 1);
 
-    // Listen to SIM800L status updates
+    // Listen to cellular status updates
     SIM800L::instance().registerStatusCallback([this](const SimStatusReport &report) {
         this->sendEvent(StateEvent::EVT_SIM_STATUS_CHANGED,
                         static_cast<uint32_t>(report.regStatus));
@@ -204,6 +204,7 @@ void StateMachine::handleStateSafe(const EventMessage &msg) {
     case StateEvent::EVT_VOICE_TRIGGERED:
         ESP_LOGW(TAG, "[SAFE] Direct trigger to EMERGENCY! (Event: %d, Shock: %.2f G)",
                  static_cast<int>(msg.event), msg.shockG);
+        m_incidentTrigger = msg.event;
         m_lastShockG = msg.shockG;
         transitionTo(SystemState::EMERGENCY);
         enterEmergencyState(msg.shockG);
@@ -230,7 +231,7 @@ void StateMachine::enterSafeState() {
     m_gracePeriodActive = false;
     m_emergencyAlertDispatched = false;
 
-    // 2. Put SIM800L modem to sleep to conserve battery
+    // 2. Keep cellular registration and queued safe-confirmation messages intact
     SIM800L::instance().requestPowerDown();
 
     // 3. Stop siren & BLE beacon
@@ -238,7 +239,7 @@ void StateMachine::enterSafeState() {
     NetworkManager::instance().stopBleSosBeacon();
     SdLogger::instance().closeAudioEvidenceRecording();
 
-    ESP_LOGI(TAG, "Entered SAFE state. Modem powered down.");
+    ESP_LOGI(TAG, "Entered SAFE state. Communications remain available.");
 }
 
 // -------------------------------------------------------------
@@ -277,6 +278,7 @@ void StateMachine::handleStateWatch(const EventMessage &msg) {
                  static_cast<int>(msg.event), msg.shockG);
         if (m_watchPeriodicTimer)
             xTimerStop(m_watchPeriodicTimer, 0);
+        m_incidentTrigger = msg.event;
         m_lastShockG = msg.shockG;
         transitionTo(SystemState::EMERGENCY);
         enterEmergencyState(msg.shockG);
@@ -290,7 +292,7 @@ void StateMachine::handleStateWatch(const EventMessage &msg) {
 void StateMachine::enterWatchState() {
     m_watchStartTimeMs = esp_timer_get_time() / 1000;
 
-    // 1. Power up SIM800L & register on cellular network
+    // 1. Ensure the selected communications transport is initialized
     SIM800L::instance().requestPowerUpAndRegister();
 
     // 2. Dispatch initial Safety Watch activation SMS to primary contact
@@ -371,6 +373,7 @@ void StateMachine::handleStateEmergency(const EventMessage &msg) {
 }
 
 void StateMachine::enterEmergencyState(float shockG) {
+    ++m_incidentSeq;
     m_lastShockG = shockG;
     m_gracePeriodActive = true;
     m_graceRemainingSec = 30; // Cancellable countdown before phone requests
@@ -379,7 +382,7 @@ void StateMachine::enterEmergencyState(float shockG) {
     // 1. Immediately sound loud siren alarm on speaker
     AudioManager::instance().playSirenAlarm(true);
 
-    // 2. Check Android phone connection
+    // 2. Ensure the selected modem/phone transport is initialized
     SIM800L::instance().requestPowerUpAndRegister();
 
     // 3. Start Grace Timer (1-second tick)

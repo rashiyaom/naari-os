@@ -10,12 +10,16 @@ idf_component_register(
         "drivers/audio_es7210_es8311/audio_manager.cpp"
         "drivers/axp2101/axp2101.cpp"
         "drivers/sim800l/sim800l.cpp"
+        "drivers/a7672s/a7672s.cpp"
+        "drivers/a7672s/modem_protocol.cpp"
         "network/network_manager.cpp"
         "voice/voice_trigger.cpp"
         "storage/sd_logger.cpp"
         "storage/preferences.cpp"
         "safety/fall_detector.cpp"
         "network/phone_bridge.cpp"
+        "network/watch_sync.cpp"
+        "storage/memo_store.cpp"
         "drivers/rtc_pcf85063/rtc_pcf85063.cpp"
         "ui/ui_manager.cpp"
     INCLUDE_DIRS
@@ -41,6 +45,7 @@ idf_component_register(
         vfs
         bt
         json
+        mbedtls
         espressif__esp_codec_dev
 )
 

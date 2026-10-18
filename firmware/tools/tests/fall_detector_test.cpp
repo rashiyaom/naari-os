@@ -59,6 +59,23 @@ int main() {
     falling(d, t);
     assert(!d.update(std::numeric_limits<float>::quiet_NaN(), 0, t));
     assert(!feed(d, t, 3000, 1));
+    // A rotating wrist impact can lack sustained freefall; it must still settle.
+    d.reset();
+    t = 0;
+    assert(!feed(d, t, 150, 1.0f, 180));
+    assert(!feed(d, t, 10, 3.5f, 60));
+    assert(feed(d, t, 2700, 1.03f, 35));
+    d.reset();
+    t = 0;
+    assert(!feed(d, t, 50, 1, 200));
+    assert(!feed(d, t, 500, 1, 0)); // Rotation is too old to corroborate impact.
+    assert(!feed(d, t, 20, 5, 0));
+    assert(!feed(d, t, 3000, 1, 0));
+    d.reset();
+    t = 0;
+    assert(!feed(d, t, 50, 1, 200));
+    assert(!feed(d, t, 20, 4, 200));
+    assert(!feed(d, t, 12000, 1, 100)); // Continued movement rejects this path too.
     std::puts("Fall detector: normal motion, valid sequence, cooldown, continued "
               "motion, missing samples, invalid values: PASS");
 }

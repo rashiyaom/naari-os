@@ -1,0 +1,23 @@
+menu "Naari cellular transport"
+config NAARI_A7672S_ENABLED
+    bool "Use direct A7672S LTE modem instead of Android for SMS/calls/location"
+    default y
+    help
+        BLE remains available for pairing and persisted guardian configuration.
+        No automatic failover or retry after an uncertain cellular submission.
+config NAARI_MODEM_TX_GPIO
+    int "ESP32 TX GPIO (connect to modem RX)"
+    range 0 48
+    default 43
+    depends on NAARI_A7672S_ENABLED
+config NAARI_MODEM_RX_GPIO
+    int "ESP32 RX GPIO (connect to modem TX)"
+    range 0 48
+    default 44
+    depends on NAARI_A7672S_ENABLED
+config NAARI_MODEM_BAUD
+    int "Modem UART baud"
+    range 9600 921600
+    default 115200
+    depends on NAARI_A7672S_ENABLED
+endmenu

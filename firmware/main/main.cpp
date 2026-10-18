@@ -19,6 +19,7 @@
 #include "drivers/touch_ft3168/touch_ft3168.h"
 #include "network/network_manager.h"
 #include "state_machine/state_machine.h"
+#include "storage/memo_store.h"
 #include "storage/sd_logger.h"
 #include "ui/ui_manager.h"
 #include "voice/voice_trigger.h"
@@ -118,10 +119,11 @@ static void buttonCadenceTask(void *pvParameters) {
 }
 
 // -------------------------------------------------------------
-// Sensor Monitoring Task (QMI8658 IMU 50Hz Sampling)
+// Sensor Monitoring Task (QMI8658 IMU ~250Hz Sampling)
 // -------------------------------------------------------------
 static void imuMonitorTask(void *pvParameters) {
     ImuData data;
+    TickType_t sampleWake = xTaskGetTickCount();
     while (true) {
         if (ImuQMI8658::instance().read(data) == ESP_OK &&
             ImuQMI8658::instance().checkFallCondition(data)) {
@@ -129,7 +131,7 @@ static void imuMonitorTask(void *pvParameters) {
             ESP_LOGW(TAG, "Fall sequence detected; starting cancellable SOS window");
             StateMachine::instance().sendEvent(StateEvent::EVT_FALL_DETECTED, 0, g);
         }
-        vTaskDelay(pdMS_TO_TICKS(10)); // 100Hz sampling catches short impact spikes
+        vTaskDelayUntil(&sampleWake, pdMS_TO_TICKS(4)); // Match 250Hz sensor ODR, including read time.
     }
 }
 
@@ -185,7 +187,7 @@ static void localHardwareSelftest(void *) {
 extern "C" void app_main(void) {
     ESP_LOGI(TAG, "===============================================================");
     ESP_LOGI(TAG, "   SheShield Sentinel - Wearable Safety OS v1.0.0             ");
-    ESP_LOGI(TAG, "   Board: Waveshare ESP32-S3-Touch-AMOLED-2.06 + Android BLE      ");
+    ESP_LOGI(TAG, "   Board: Waveshare ESP32-S3-Touch-AMOLED-2.06 + A7672S LTE + BLE ");
     ESP_LOGI(TAG, "===============================================================");
 
     // 1. Initialize Non-Volatile Storage (NVS)
@@ -203,9 +205,15 @@ extern "C" void app_main(void) {
     DisplayCO5300::instance().init();
     TouchFT3168::instance().init();
     ImuQMI8658::instance().init();
-    AudioManager::instance().init();
-    SIM800L::instance().init();
     SdLogger::instance().init();
+    bool memoReady = MemoStore::instance().init();
+    ESP_LOGI(TAG, "Persistent memos: ready=%d count=%u error=%s", memoReady,
+             unsigned(MemoStore::instance().catalog().size()),
+             MemoStore::instance().error().c_str());
+    AudioManager::instance().init();
+    esp_err_t modemError = SIM800L::instance().init();
+    if (modemError != ESP_OK)
+        ESP_LOGE(TAG, "Cellular transport initialization failed: %s", esp_err_to_name(modemError));
     NetworkManager::instance().init();
     VoiceTrigger::instance().init();
     RtcPCF85063::instance().init();
@@ -230,7 +238,7 @@ extern "C" void app_main(void) {
         UiManager::instance().updateState(newState);
     });
 
-    // 6. Connect SIM800L Cellular Status to UI Observer
+    // 6. Connect the selected cellular transport to the UI observer
     SIM800L::instance().registerStatusCallback(
         [](const SimStatusReport &report) { UiManager::instance().updateSimStatus(report); });
 
@@ -242,11 +250,14 @@ extern "C" void app_main(void) {
 
     // 8. Spawn Dedicated FreeRTOS Tasks
     xTaskCreatePinnedToCore(buttonCadenceTask, "btn_task", 3072, nullptr, 6, nullptr, 1);
-    xTaskCreatePinnedToCore(imuMonitorTask, "imu_task", 3072, nullptr, 5, nullptr, 1);
+    xTaskCreatePinnedToCore(imuMonitorTask, "imu_task", 4096, nullptr, 5, nullptr, 1);
     xTaskCreatePinnedToCore(uiTask, "ui_task", 4096, nullptr, 4, nullptr, 1);
 
+    ESP_LOGI(TAG, "Startup stack free minimum: %u bytes", unsigned(uxTaskGetStackHighWaterMark(nullptr)));
     ESP_LOGI(TAG, "SheShield Sentinel System fully running and guarding in [SAFE] mode.");
 #ifdef NAARI_HARDWARE_SELFTEST
     xTaskCreate(localHardwareSelftest, "local_selftest", 4096, nullptr, 2, nullptr);
+#else
+    ESP_LOGI(TAG, "Production firmware: automatic hardware checks disabled.");
 #endif
 }

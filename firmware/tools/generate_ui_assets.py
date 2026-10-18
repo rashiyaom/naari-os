@@ -48,6 +48,8 @@ SYMBOLS = {
  'Stop': '<rect x="5" y="5" width="14" height="14" rx="3" fill="white" stroke="none"/>',
  'Heart': '<path d="M12 20S3 14.5 3 8.5a5 5 0 0 1 9-3 5 5 0 0 1 9 3C21 14.5 12 20 12 20Z"/>',
  'Location': '<path d="m21 3-7 18-3.5-7.5L3 10Z"/>',
+ 'Bluetooth': '<path d="M7 7 17 17l-5 4V3l5 4L7 17"/>',
+ 'BluetoothOff': '<path d="M12 12V3l5 4-5 5m0 4v5l5-4M3 3l18 18"/>',
  'Moon': '<path d="M20 14.5A9 9 0 0 1 9.5 4a9 9 0 1 0 10.5 10.5Z"/>',
 }
 SIZES = [18, 22, 26, 32, 44, 50, 60]

@@ -1,6 +1,10 @@
 # Naari Android Companion — Product Requirements and AI Handoff
 
+> **v8.3 implementation update:** The Android project and watch firmware now implement acknowledged controls, profile read-back, live state reconciliation and persistent memo transfer. See [current BLE sync and installation notes](BLE_SYNC_V83.md); historical gap statements below describe the earlier baseline. Physical Android integration testing is still required.
+
 Version 1.0 · 12 October 2026 · Status: implementation brief, not a shipped app.
+
+> Hardware revision, 17 October 2026: the user selected a directly wired Graylogix A7672S LTE/GNSS TTL modem as the primary communications path. `firmware/main/drivers/a7672s/` implements it; see `A7672S_WIRING_AND_BRINGUP.md`. Android BLE remains for profile configuration and an explicit phone-only build mode. This supersedes phone-primary/SIM800L-future-only assumptions below. Do not execute an Android phone action in parallel with an already submitted modem action. The modem is not yet wired or physically verified; live call audio is not routed through UART.
 
 ## 1. Build objective
 
@@ -26,7 +30,7 @@ Inspect source before coding; these paths are authoritative:
 | SOS | SAFE/WATCH/EMERGENCY state machine, approximately 30-second cancellation window and configured guardian phone requests | `state_machine.*` |
 | Remote settings / audio sync | Not implemented | Must extend firmware |
 | SIM800L | Current legacy adapter delegates to PhoneBridge; no validated functioning direct modem fallback | `drivers/sim800l/` |
-| Other systems | Web/backend projects exist; voice wake word and SD logger contain unfinished/mock paths | Audit before integration |
+| Other systems | Only the narios.vercel.app website remains; old dashboard/backend/Supabase demo removed. Voice wake word and SD logger contain unfinished/mock paths | Audit before integration |
 | Android app | No companion project/APK yet | Create `android-companion/` |
 
 Previous hardware self-test captured 51,456 real microphone samples (~3.2 seconds), completed playback without driver errors, rendered/saved all five faces, and started BLE advertising. This is not proof of human-audible quality or end-to-end Android actions. Host tests cover fall/protocol logic and native UI rendering. Recheck the currently flashed image; do not assume the last self-test image is a production build.
@@ -191,7 +195,7 @@ Do not start cloud/OTA, incoming SMS mirroring or live phone-call audio until th
 
 ## 11. Cleanup instructions
 
-Remove only demonstrated disposable artifacts: macOS `.DS_Store`, Python bytecode, obsolete generated preview outputs and superseded build caches after a working rebuild and flash. Retain current artifacts during active hardware verification. Keep lockfiles, SDK configs, partitions, source assets and font licenses, tests, firmware tools, SIM800L interface, web/backend source and historical architecture documents. Inventory ambiguous directories and dependencies before deleting them; the companion's lack of dependency on a site is not evidence that the site is unwanted. Document each deletion. Never remove source, credentials/config needed by existing deployments, or the only known working firmware image in a broad cleanup.
+Remove only demonstrated disposable artifacts: macOS `.DS_Store`, Python bytecode, obsolete generated preview outputs and superseded build caches after a working rebuild and flash. Retain current artifacts during active hardware verification. Keep lockfiles, SDK configs, partitions, source assets and font licenses, tests, firmware tools, SIM800L interface, the main narios.vercel.app website and historical architecture documents. The old dashboard/backend/Supabase demo was explicitly removed by the user on 17 October 2026. Inventory ambiguous directories and dependencies before deleting them; the companion's lack of dependency on a site is not evidence that the site is unwanted. Document each deletion. Never remove source, credentials/config needed by existing deployments, or the only known working firmware image in a broad cleanup.
 
 ## 12. Instructions for the next AI
 

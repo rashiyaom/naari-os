@@ -7,6 +7,7 @@
 #include "drivers/rtc_pcf85063/rtc_pcf85063.h"
 #include "drivers/touch_ft3168/touch_ft3168.h"
 #include "network/phone_bridge.h"
+#include "storage/memo_store.h"
 #include "storage/preferences.h"
 #include "ui/ui_manager.h"
 #include <algorithm>
@@ -18,6 +19,7 @@
 #include <string>
 
 int64_t previewTime = 12000000;
+static bool previewPhoneConnected = true, previewPhoneReady = true;
 int64_t esp_timer_get_time() { return previewTime; }
 
 namespace SheShield {
@@ -79,6 +81,16 @@ void AudioManager::playSound(AlarmSoundType s) {
     m_currentSoundType = s;
     m_soundPlaying = true;
 }
+bool AudioManager::setSelectedAlarmSound(AlarmSoundType s) {
+    m_selectedSoundType = s;
+    return true;
+}
+void AudioManager::playSirenAlarm(bool enabled) {
+    if (enabled) playSound(getSelectedAlarmSound()); else stopSound();
+}
+ImuQMI8658::FallTelemetry ImuQMI8658::fallTelemetry() const {
+    return {1.01f, 2.0f, 0, 0, 100, 0, m_testMode};
+}
 void AudioManager::stopSound() { m_soundPlaying = false; }
 void AudioManager::setVolume(uint8_t n) { m_volumePercent = n; }
 bool AudioManager::startVoiceMemoRecording() {
@@ -94,6 +106,46 @@ bool AudioManager::playVoiceMemo() {
 }
 void AudioManager::stopVoiceMemoPlayback() { m_playingVoiceMemo = false; }
 size_t AudioManager::getRecordedDurationSec() const { return m_memoSampleCount / 16000; }
+MemoStore &MemoStore::instance() {
+    static MemoStore store;
+    return store;
+}
+static bool previewSavedMemos = false;
+static bool previewDeletionFails = false;
+static std::vector<std::string> previewDeletedMemos;
+std::vector<StoredMemo> MemoStore::catalog() const {
+    if (!previewSavedMemos) return {};
+    std::vector<StoredMemo> records;
+    for (int i = 0; i < 6; ++i) {
+        StoredMemo memo;
+        memo.id = std::string(31, 'a') + char('a' + i);
+        if (std::find(previewDeletedMemos.begin(), previewDeletedMemos.end(), memo.id) != previewDeletedMemos.end()) continue;
+        memo.bytes = 32000 * (i + 1);
+        memo.timestampMs = 1792267200000LL + i * 60000;
+        memo.synced = i % 2;
+        records.push_back(memo);
+    }
+    return records;
+}
+bool MemoStore::remove(const std::string &id) {
+    if (previewDeletionFails) return false;
+    auto memos = catalog();
+    if (std::none_of(memos.begin(), memos.end(), [&](const StoredMemo &memo) { return memo.id == id; })) return false;
+    previewDeletedMemos.push_back(id);
+    return true;
+}
+void AudioManager::clearRecordedMemo() {
+    stopVoiceMemoPlayback(); m_memoSampleCount = 0;
+}
+bool AudioManager::playStoredMemo(const std::string &id) {
+    auto records = MemoStore::instance().catalog();
+    auto m = std::find_if(records.begin(), records.end(), [&](const StoredMemo &m) { return m.id == id; });
+    if (m == records.end()) return false;
+    m_memoSampleCount = m->bytes / 2;
+    m_playingVoiceMemo = true;
+    return true;
+}
+std::string MemoStore::error() const { return ""; }
 uint8_t readPreference(const char *, uint8_t fallback) { return fallback; }
 bool writePreference(const char *, uint8_t) { return true; }
 bool ImuQMI8658::setFallDetectionEnabled(bool enabled) {
@@ -106,7 +158,9 @@ PhoneBridge &PhoneBridge::instance() {
 }
 PhoneLinkStatus PhoneBridge::status() const {
     PhoneLinkStatus s;
-    s.connected = s.ready = s.smsAllowed = s.callsAllowed = s.locationAllowed = true;
+    s.connected = previewPhoneConnected;
+    s.ready = previewPhoneReady;
+    s.smsAllowed = s.callsAllowed = s.locationAllowed = s.ready;
     return s;
 }
 uint32_t PhoneBridge::request(const char *, const char *, const char *) { return 1; }
@@ -130,7 +184,7 @@ SIM800L::SIM800L() {}
 SimStatusReport SIM800L::getStatus() {
     SimStatusReport r = {};
     r.csq = 99;
-    std::snprintf(r.statusString, sizeof(r.statusString), "Phone connected");
+    std::snprintf(r.statusString, sizeof(r.statusString), "A7672S registered (preview)");
     return r;
 }
 
@@ -139,10 +193,16 @@ SIM800L &SIM800L::instance() {
     return d;
 }
 bool SIM800L::requestVoiceCall(const char *) { return true; }
+uint32_t SIM800L::queueRequest(const char *, const char *, const char *) { return 1; }
+bool SIM800L::requestHangUp() { return true; }
+bool SIM800L::usesDirectCellular() const { return true; }
+uint32_t SIM800L::lastRequestId() const { return 1; }
+PhoneResult SIM800L::result(uint32_t id) const { return PhoneBridge::instance().result(id); }
 bool SIM800L::requestSendLocationSms(const char *, const char *, uint8_t) { return true; }
 bool SIM800L::requestPowerDown() { return true; }
 StateMachine::StateMachine()
-    : m_currentState(SystemState::SAFE), m_gracePeriodActive(true), m_graceRemainingSec(30) {}
+    : m_currentState(SystemState::SAFE), m_gracePeriodActive(true), m_graceRemainingSec(30),
+      m_emergencyAlertDispatched(false) {}
 StateMachine &StateMachine::instance() {
     static StateMachine d;
     return d;
@@ -258,6 +318,34 @@ int main(int argc, char **argv) {
     previewTime += 3000000;
     ui.tick();
     snapshot("home", WatchScreenId::SCREEN_SAFE);
+    // Connectivity changes must redraw even when the RTC minute does not change.
+    auto iconPixels = [&]() {
+        std::string bytes;
+        auto pixels = d.previewFramebuffer();
+        for (int y = 19; y < 41; ++y)
+            for (int x = 194; x < 216; ++x) {
+                uint16_t pixel = pixels[y * 410 + x];
+                bytes.append(reinterpret_cast<const char *>(&pixel), sizeof(pixel));
+            }
+        return bytes;
+    };
+    auto readyIcon = iconPixels();
+    previewPhoneReady = false;
+    previewTime += 1100000;
+    ui.tick();
+    auto bleOnlyIcon = iconPixels();
+    assert(readyIcon != bleOnlyIcon);
+    save("home-bluetooth-paired");
+    previewPhoneConnected = false;
+    previewTime += 1100000;
+    ui.tick();
+    auto offlineIcon = iconPixels();
+    assert(offlineIcon != bleOnlyIcon && offlineIcon != readyIcon);
+    save("home-bluetooth-offline");
+    previewPhoneConnected = previewPhoneReady = true;
+    previewTime += 1100000;
+    ui.tick();
+    assert(iconPixels() == readyIcon);
     snapshot("apps-1", WatchScreenId::SCREEN_LAUNCHPAD);
     ui.handleTouchTap(340, 448);
     assert(ui.getCurrentScreen() == WatchScreenId::SCREEN_LAUNCHPAD);
@@ -292,12 +380,50 @@ int main(int argc, char **argv) {
     snapshot("guard", WatchScreenId::SCREEN_WATCH);
     snapshot("sos", WatchScreenId::SCREEN_EMERGENCY);
     ui.handleTouchTap(205, 400);
-    assert(ui.getCurrentScreen() == WatchScreenId::SCREEN_SAFE);
+    assert(ui.getCurrentScreen() == WatchScreenId::SCREEN_CANCEL);
+    ui.finishHoldCancellation(); // Direct and percentage-based bypasses must fail.
+    ui.updateHoldCancellation(100);
+    assert(ui.getCurrentScreen() == WatchScreenId::SCREEN_CANCEL);
     previewTime += 10000000;
+    ui.handleCrownButtonPress();
+    assert(ui.getCurrentScreen() == WatchScreenId::SCREEN_CANCEL);
+    previewTime += 2000000;
+    ui.handleSideButtonPress();
+    assert(ui.getCurrentScreen() == WatchScreenId::SCREEN_CANCEL);
+    previewTime += 2000000;
+    ui.handleSideButtonLongPress();
+    assert(ui.getCurrentScreen() == WatchScreenId::SCREEN_CANCEL);
+    ui.handleTouchDrag(205, 350, true);
+    for (int i = 0; i < 29; ++i) {
+        previewTime += 100000;
+        ui.handleTouchDrag(205, 350, true);
+        assert(ui.getCurrentScreen() == WatchScreenId::SCREEN_CANCEL);
+    }
+    ui.handleTouchDrag(20, 350, true); // Leaving the target resets the deadline.
+    ui.handleTouchDrag(205, 350, true);
+    for (int i = 0; i < 29; ++i) {
+        previewTime += 100000; ui.handleTouchDrag(205, 350, true);
+    }
+    assert(ui.getCurrentScreen() == WatchScreenId::SCREEN_CANCEL);
+    previewTime += 100000; ui.handleTouchDrag(205, 350, true);
+    assert(ui.getCurrentScreen() == WatchScreenId::SCREEN_SAFE);
     snapshot("cancel", WatchScreenId::SCREEN_CANCEL);
-    ui.updateHoldCancellation(65);
-    ui.tick();
+    ui.startHoldCancellation();
+    for (int i = 0; i < 19; ++i) {
+        previewTime += 100000; ui.handleTouchDrag(205, 350, true);
+    }
     save("cancel-holding");
+    // Preview sounds cannot overwrite the stored SOS choice.
+    for (int i = 0; i < 5; ++i) {
+        ui.showScreen(WatchScreenId::SCREEN_SOUND_STUDIO);
+        ui.handleTouchTap(205, 80 + i * 50);
+        auto expected = static_cast<AlarmSoundType>(i);
+        assert(AudioManager::instance().getSelectedAlarmSound() == expected);
+        AudioManager::instance().playSound(AlarmSoundType::POLICE_WAIL);
+        AudioManager::instance().playSirenAlarm(true);
+        assert(AudioManager::instance().getCurrentSound() == expected);
+    }
+    AudioManager::instance().stopSound();
     snapshot("recorder", WatchScreenId::SCREEN_RECORDER);
     ui.handleTouchTap(205, 190);
     previewTime += 13000000;
@@ -310,6 +436,58 @@ int main(int argc, char **argv) {
     ui.handleTouchTap(110, 340);
     ui.tick();
     save("memo-playing");
+    previewSavedMemos = true;
+    ui.showScreen(WatchScreenId::SCREEN_SAFE);
+    ui.showScreen(WatchScreenId::SCREEN_RECORDER);
+    save("memo-library");
+    ui.handleTouchTap(320, 392); // Page two.
+    save("memo-library-page-2");
+    ui.handleTouchTap(205, 100); // Open an existing persisted recording.
+    save("memo-detail");
+    ui.handleTouchTap(205, 336);
+    assert(AudioManager::instance().isPlayingVoiceMemo());
+    assert(AudioManager::instance().getRecordedSamples() == 48000); // Correct ID, not latest RAM.
+    save("memo-stored-playing");
+    ui.handleTouchTap(205, 400); // Delete only opens confirmation and stops playback.
+    assert(!AudioManager::instance().isPlayingVoiceMemo());
+    assert(MemoStore::instance().catalog().size() == 6);
+    save("memo-delete-confirm");
+    ui.handleTouchTap(205, 400); // A second tap at the old position keeps the recording.
+    assert(MemoStore::instance().catalog().size() == 6);
+    ui.handleTouchTap(205, 336); // Playback still works after cancel.
+    assert(AudioManager::instance().isPlayingVoiceMemo());
+    ui.handleTouchTap(205, 336);
+    assert(!AudioManager::instance().isPlayingVoiceMemo());
+    ui.handleTouchTap(205, 450); // Back to the library.
+    ui.handleTouchTap(205, 450); // New recording, without deleting older ones.
+    assert(AudioManager::instance().isRecordingVoiceMemo());
+    assert(MemoStore::instance().catalog().size() == 6);
+    ui.handleTouchTap(205, 350);
+    ui.handleTouchTap(205, 409); // Saved memos shortcut from the capture view.
+    ui.handleTouchTap(205, 100);
+    ui.handleTouchTap(205, 400);
+    previewDeletionFails = true;
+    ui.handleTouchTap(205, 336);
+    assert(MemoStore::instance().catalog().size() == 6); // Storage failure preserves the entry.
+    previewDeletionFails = false;
+    ui.handleTouchTap(205, 400);
+    ui.handleTouchTap(205, 336);
+    assert(MemoStore::instance().catalog().size() == 5);
+    assert(AudioManager::instance().getRecordedSamples() == 0);
+    save("memo-deleted");
+    while (!MemoStore::instance().catalog().empty()) {
+        auto before = MemoStore::instance().catalog().size();
+        ui.handleTouchTap(205, 100);
+        ui.handleTouchTap(205, 400);
+        if (before == 5) save("memo-delete-synced");
+        ui.handleTouchTap(205, 336);
+        assert(MemoStore::instance().catalog().size() + 1 == before);
+    }
+    save("memo-library-empty");
+    ui.handleTouchTap(205, 450);
+    assert(AudioManager::instance().isRecordingVoiceMemo());
+    ui.showScreen(WatchScreenId::SCREEN_SAFE);
+    previewSavedMemos = false;
     snapshot("faces", WatchScreenId::SCREEN_WALLPAPERS);
     for (int i = 0; i < 5; ++i) {
         ui.showScreen(WatchScreenId::SCREEN_WALLPAPERS);
@@ -324,6 +502,12 @@ int main(int argc, char **argv) {
     save("torch-warm");
     ui.handleTouchTap(205, 200);
     save("torch-strobe");
+    auto red = d.previewFramebuffer()[250 * 410 + 205];
+    previewTime += 100000; ui.tick();
+    auto blue = d.previewFramebuffer()[250 * 410 + 205];
+    assert(red != blue);
+    previewTime += 100000; ui.tick();
+    assert(d.previewFramebuffer()[250 * 410 + 205] == red);
     std::puts("RGB565 blending, bounds, glyph widths, drawer paging, keypad, contacts, SOS "
               "cancellation: PASS");
 }

@@ -58,6 +58,8 @@ class StateMachine {
 
     SystemState getCurrentState() const { return m_currentState; }
     const char *getStateString() const;
+    uint32_t incidentId() const { return m_incidentSeq; }
+    StateEvent incidentTrigger() const { return m_incidentTrigger; }
 
     // Contact Management
     void addEmergencyContact(const std::string &name, const std::string &phone,
@@ -103,6 +105,8 @@ class StateMachine {
     static void graceTimerCallback(TimerHandle_t xTimer);
 
     std::atomic<SystemState> m_currentState;
+    std::atomic<uint32_t> m_incidentSeq{0};
+    std::atomic<StateEvent> m_incidentTrigger{StateEvent::EVT_NONE};
     QueueHandle_t m_eventQueue;
     TaskHandle_t m_taskHandle;
     StateChangeCallback m_stateCallback;

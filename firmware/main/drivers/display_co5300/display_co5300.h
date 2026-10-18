@@ -45,6 +45,7 @@ class DisplayCO5300 {
 
     esp_err_t init();
     void setBrightness(uint8_t percentage);
+    uint8_t getBrightness() const { return m_brightness; }
     void sleep();
     void wakeup();
 

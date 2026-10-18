@@ -1,4 +1,5 @@
 #pragma once
+#include "../safety/hold_to_confirm.h"
 
 #include "../drivers/sim800l/sim800l.h"
 #include "../state_machine/state_machine.h"
@@ -39,6 +40,12 @@ class UiManager {
   public:
     static UiManager &instance();
 
+    struct SyncSettings {
+        int wallpaper, brightness, volume, battery, screen;
+        bool fall;
+    };
+    SyncSettings syncSettings();
+    bool applySetting(const char *operation, int value);
     esp_err_t init();
     void showScreen(WatchScreenId screenId);
     void updateState(SystemState state);
@@ -73,8 +80,8 @@ class UiManager {
     void cancelHoldCancellation();
 
     // Calling / SMS overlay helpers (public so contacts can trigger)
-    void showCallingScreen(const char *name, const char *number);
-    void showSmsSentScreen(const char *name, const char *number);
+    void showCallingScreen(const char *name, const char *number, uint32_t requestId = 0);
+    void showSmsSentScreen(const char *name, const char *number, uint32_t requestId = 0);
 
     WatchScreenId getCurrentScreen() const { return m_currentScreen; }
 
@@ -100,6 +107,9 @@ class UiManager {
     void renderCallingScreen();
     void renderSmsSentScreen();
     void renderRecorderScreen();
+    void renderMemoLibrary();
+    void renderStoredMemo();
+    void handleMemoLibraryTap(int x, int y);
     void renderWallpapersScreen();
     void renderFallDetectionScreen();
     void renderPhoneLinkScreen();
@@ -177,9 +187,10 @@ class UiManager {
     SystemState m_systemState;
     bool m_sirenTestActive;
     FlashlightMode m_flashlightMode;
-    bool m_strobeState;
+    int64_t m_strobeStartUs = 0;
 
     uint8_t m_batteryPercent;
+    uint8_t m_lastPhoneLinkState = 255; // last rendered: offline / BLE only / app ready
     std::string m_timeStr;
     std::string m_dateStr;
 
@@ -193,10 +204,10 @@ class UiManager {
     // Emergency / Cancel
     uint32_t m_emergencyCountdownSec; // counts from 10 → 0 (grace window)
     int64_t m_lastGraceTickUs;        // precise per-second timer
+    HoldToConfirm m_cancelHold;
     float m_holdProgress;
     bool m_cancelConfirmed;
     bool m_holdingCancel;
-    int64_t m_holdStartTimeUs;
 
     // Calling / SMS overlay
     char m_overlayName[64];
@@ -235,6 +246,10 @@ class UiManager {
     uint32_t m_overlayRequestId = 0;
 
     // Voice Memo Audio Recorder
+    bool m_confirmMemoDelete = false;
+    bool m_showMemoLibrary = false;
+    unsigned m_memoLibraryPage = 0;
+    std::string m_selectedMemoId;
     bool m_isRecordingMemo;
     bool m_hasRecordedMemo;
     bool m_isPlayingMemo;

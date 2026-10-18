@@ -1,0 +1,28 @@
+# Local dependencies and generated output
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/.output/
+**/.vercel/
+**/.wrangler/
+**/.tanstack/
+**/.nitro/
+**/.vinxi/
+firmware/build*/
+firmware/managed_components/
+**/.cache/
+**/__pycache__/
+*.py[cod]
+*.log
+.DS_Store
+
+# Local secrets; keep example templates eligible for tracking
+.env
+.env.*
+!.env.example
+!.env.*.example
+.dev.vars
+
+# Machine-specific IDE settings
+**/.idea/
+.vscode/settings.json

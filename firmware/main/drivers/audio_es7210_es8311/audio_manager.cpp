@@ -1,5 +1,7 @@
 #include "audio_manager.h"
 #include "../../board_pins.h"
+#include "../../storage/memo_store.h"
+#include "../../storage/preferences.h"
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -14,6 +16,7 @@
 #include <esp_log.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+#include <new>
 
 static const char *TAG = "Audio_Subsystem";
 
@@ -61,6 +64,11 @@ esp_err_t AudioManager::init() {
     if (!s_i2sRxMutex || !s_audioMutex)
         return ESP_ERR_NO_MEM;
 
+    auto selected = readPreference("sos_tone", 0);
+    m_selectedSoundType = selected < static_cast<uint8_t>(AlarmSoundType::COUNT)
+                              ? static_cast<AlarmSoundType>(selected)
+                              : AlarmSoundType::POLICE_WAIL;
+    ESP_LOGI(TAG, "Saved SOS tone: %s", getSoundName(m_selectedSoundType));
     // 1. Configure Speaker Power Amplifier Pin (GPIO 46)
     gpio_config_t pa_conf = {
         .pin_bit_mask = (1ULL << PA_PIN_ENABLE),
@@ -197,7 +205,7 @@ const char *AudioManager::getSoundName(AlarmSoundType type) const {
     case AlarmSoundType::POLICE_WAIL:
         return "Police Siren";
     case AlarmSoundType::PIERCING_PULSE:
-        return "105dB Pulse";
+        return "Pulse Siren";
     case AlarmSoundType::AMBULANCE_HILO:
         return "Hi-Lo Horn";
     case AlarmSoundType::CHIRP_RADAR:
@@ -213,7 +221,9 @@ void AudioManager::playSound(AlarmSoundType soundType) {
     AudioLock lock;
     if (!m_i2sReady)
         return;
-    m_recordingMemo = false;
+    ++m_playbackGeneration;
+    if (m_recordingMemo)
+        stopVoiceMemoRecording();
     m_playingVoiceMemo = false;
     m_currentSoundType = soundType;
     m_soundPlaying = true;
@@ -221,15 +231,24 @@ void AudioManager::playSound(AlarmSoundType soundType) {
     ESP_LOGI(TAG, "Playing Alarm Sound: %s", getSoundName(soundType));
 }
 
+bool AudioManager::setSelectedAlarmSound(AlarmSoundType type) {
+    if (static_cast<unsigned>(type) >= static_cast<unsigned>(AlarmSoundType::COUNT))
+        return false;
+    if (!writePreference("sos_tone", static_cast<uint8_t>(type)))
+        return false;
+    m_selectedSoundType = type;
+    return true;
+}
 void AudioManager::playSirenAlarm(bool enable) {
     if (enable)
-        playSound(AlarmSoundType::POLICE_WAIL);
+        playSound(m_selectedSoundType);
     else
         stopSound();
 }
 
 void AudioManager::stopSound() {
     AudioLock lock;
+    ++m_playbackGeneration;
     m_soundPlaying = false;
     m_playingVoiceMemo = false;
     gpio_set_level(PA_PIN_ENABLE, 0); // Mute speaker to eliminate noise
@@ -250,7 +269,7 @@ void AudioManager::setVolume(uint8_t volumePercent) {
 // -------------------------------------------------------------
 bool AudioManager::startVoiceMemoRecording() {
     AudioLock lock;
-    if (!m_micReady || !s_memoPcmBuffer)
+    if (!m_micReady || !s_memoPcmBuffer || !MemoStore::instance().canCapture())
         return false;
     stopSound();
     m_memoSampleCount = 0;
@@ -263,7 +282,11 @@ bool AudioManager::startVoiceMemoRecording() {
 
 void AudioManager::stopVoiceMemoRecording() {
     AudioLock lock;
+    if (!m_recordingMemo)
+        return;
     m_recordingMemo = false;
+    if (m_memoSampleCount)
+        MemoStore::instance().save(s_memoPcmBuffer, m_memoSampleCount);
     ESP_LOGI(TAG, "Voice memo recording stopped. Recorded %zu samples (%.2f s).",
              m_memoSampleCount.load(), static_cast<float>(m_memoSampleCount) / 16000.0f);
 }
@@ -281,10 +304,75 @@ bool AudioManager::playVoiceMemo() {
     return true;
 }
 
+bool AudioManager::playStoredMemo(const std::string &id) {
+    AudioLock lock;
+    if (!m_i2sReady || !s_memoPcmBuffer || m_recordingMemo || m_loadingStoredMemo.exchange(true))
+        return false;
+    stopSound();
+    m_storedMemoFailed = false;
+    struct Work {
+        AudioManager *audio;
+        uint32_t generation;
+        std::string id;
+    };
+    auto work = new (std::nothrow) Work{this, m_playbackGeneration, id};
+    if (!work) {
+        m_loadingStoredMemo = false;
+        return false;
+    }
+    if (xTaskCreate(
+            [](void *arg) {
+                auto work = static_cast<Work *>(arg);
+                auto audio = work->audio;
+                // Storage IO is off the UI/audio threads and does not hold the audio mutex.
+                auto pcm = static_cast<int16_t *>(heap_caps_malloc(
+                    s_memoCapacitySamples * sizeof(int16_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT));
+                size_t samples = 0;
+                bool ok = pcm && MemoStore::instance().readPcm(work->id, pcm, s_memoCapacitySamples,
+                                                               samples);
+                {
+                    AudioLock lock;
+                    if (audio->m_playbackGeneration == work->generation) {
+                        if (ok && !audio->m_recordingMemo && !audio->m_soundPlaying) {
+                            memcpy(s_memoPcmBuffer, pcm, samples * sizeof(int16_t));
+                            audio->m_memoSampleCount = samples;
+                            audio->m_memoPlayCursor = 0;
+                            audio->m_playingVoiceMemo = true;
+                            gpio_set_level(PA_PIN_ENABLE, 1);
+                            ESP_LOGI(TAG, "Playing stored memo: %zu samples", samples);
+                        } else {
+                            audio->m_storedMemoFailed = true;
+                            ESP_LOGW(TAG, "Stored memo unavailable or checksum mismatch");
+                        }
+                    }
+                    audio->m_loadingStoredMemo = false;
+                }
+                free(pcm);
+                delete work;
+                vTaskDelete(nullptr);
+            },
+            "memo_load", 6144, work, 2, nullptr) != pdPASS) {
+        delete work;
+        m_loadingStoredMemo = false;
+        return false;
+    }
+    return true;
+}
+
 void AudioManager::stopVoiceMemoPlayback() {
     AudioLock lock;
+    ++m_playbackGeneration;
     m_playingVoiceMemo = false;
     gpio_set_level(PA_PIN_ENABLE, 0);
+}
+
+void AudioManager::clearRecordedMemo() {
+    AudioLock lock;
+    if (m_recordingMemo)
+        return;
+    stopVoiceMemoPlayback(); // Invalidates an in-flight stored-memo load, too.
+    m_memoSampleCount = 0;
+    m_memoPlayCursor = 0;
 }
 
 size_t AudioManager::getRecordedDurationSec() const {
@@ -388,7 +476,7 @@ void AudioManager::audioTask(void *pvParameters) {
                 }
                 self->m_inputPeak = peak;
                 if (self->m_memoSampleCount >= s_memoCapacitySamples)
-                    self->m_recordingMemo = false;
+                    self->stopVoiceMemoRecording();
             } else {
                 vTaskDelay(pdMS_TO_TICKS(15));
             }

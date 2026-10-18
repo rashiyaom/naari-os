@@ -13,7 +13,7 @@
  * Audio Codec: ES7210 (Mic ADC) + ES8311 (Audio DAC)
  * PMIC: AXP2101 (I2C)
  * RTC: PCF85063 (I2C)
- * External: SIM800L GSM/GPRS module on UART1
+ * External: A7672S LTE/GNSS TTL modem on UART1; pins set in menuconfig
  */
 
 // --- Primary System I2C Bus (AXP2101, PCF85063, FT3168, QMI8658, ES7210, ES8311) ---
@@ -70,12 +70,14 @@
 #define SD_PIN_CS                   GPIO_NUM_17
 #define SD_PIN_CD                   GPIO_NUM_NC   // Card Detect
 
-// --- External Cellular: SIM800L GSM/GPRS (UART1) ---
+// --- Legacy SIM800L pin names retained for source compatibility only. ---
+// Active A7672S UART pins/baud are CONFIG_NAARI_MODEM_* in menuconfig.
+// GPIO10 PWRKEY is deliberately not driven: this carrier board powers separately.
 #define SIM800L_UART_NUM            UART_NUM_1
-#define SIM800L_PIN_TX              GPIO_NUM_43   // ESP32 TX -> SIM800L RX
-#define SIM800L_PIN_RX              GPIO_NUM_44   // ESP32 RX <- SIM800L TX
-#define SIM800L_PIN_RST             GPIO_NUM_NC   // Hardware Reset
-#define SIM800L_PIN_PWRKEY          GPIO_NUM_10   // Power Key Toggle
+#define SIM800L_PIN_TX              GPIO_NUM_43
+#define SIM800L_PIN_RX              GPIO_NUM_44
+#define SIM800L_PIN_RST             GPIO_NUM_NC
+#define SIM800L_PIN_PWRKEY          GPIO_NUM_NC
 #define SIM800L_BAUD_RATE           115200
 
 // --- Physical SOS Hardware Button ---

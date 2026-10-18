@@ -7,6 +7,7 @@
 #include <esp_err.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+#include <string>
 
 namespace SheShield {
 
@@ -26,6 +27,8 @@ class AudioManager {
     esp_err_t init();
     void playSound(AlarmSoundType soundType);
     void playSirenAlarm(bool enable);
+    bool setSelectedAlarmSound(AlarmSoundType type);
+    AlarmSoundType getSelectedAlarmSound() const { return m_selectedSoundType; }
     void stopSound();
     bool isPlaying() const { return m_soundPlaying || m_playingVoiceMemo; }
     AlarmSoundType getCurrentSound() const { return m_currentSoundType; }
@@ -43,7 +46,12 @@ class AudioManager {
     bool startVoiceMemoRecording();
     void stopVoiceMemoRecording();
     bool playVoiceMemo();
+    bool playStoredMemo(const std::string &id);
+    bool isLoadingStoredMemo() const { return m_loadingStoredMemo; }
+    bool storedMemoLoadFailed() const { return m_storedMemoFailed; }
+    void clearStoredMemoError() { m_storedMemoFailed = false; }
     void stopVoiceMemoPlayback();
+    void clearRecordedMemo();
     bool isPlayingVoiceMemo() const { return m_playingVoiceMemo; }
     bool isRecordingVoiceMemo() const { return m_recordingMemo; }
     size_t getRecordedDurationSec() const;
@@ -71,9 +79,12 @@ class AudioManager {
     std::atomic<bool> m_soundPlaying;
     std::atomic<bool> m_recordingMemo;
     std::atomic<bool> m_playingVoiceMemo;
+    std::atomic<bool> m_loadingStoredMemo{false}, m_storedMemoFailed{false};
+    std::atomic<uint32_t> m_playbackGeneration{0};
     std::atomic<size_t> m_memoSampleCount;
     size_t m_memoPlayCursor;
     std::atomic<AlarmSoundType> m_currentSoundType;
+    std::atomic<AlarmSoundType> m_selectedSoundType{AlarmSoundType::POLICE_WAIL};
     std::atomic<uint8_t> m_volumePercent;
     TaskHandle_t m_taskHandle;
 };

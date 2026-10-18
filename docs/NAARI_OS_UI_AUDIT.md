@@ -1,3 +1,5 @@
+> Historical audit: the old dashboard, backend and Supabase demo referenced below were removed on 17 October 2026. The retained website is `sheshield-sentinel-guardian-main/` (narios.vercel.app). Firmware has also changed since this audit; use current source and README for implemented status.
+
 # Naari OS UI and feature audit
 
 Reviewed 12 October 2026. This is a source-and-logic audit, not a browser visual inspection or a physical-device certification. No live SMS/calls, cloud writes, microphone recordings, or device commands were performed. Application source was not changed.

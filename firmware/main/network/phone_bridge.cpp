@@ -1,4 +1,6 @@
 #include "phone_bridge.h"
+#include "json_frame.h"
+#include "watch_sync.h"
 #include <algorithm>
 #include <cJSON.h>
 #include <cmath>
@@ -23,9 +25,9 @@ void ble_store_config_init(void);
 namespace SheShield {
 static const char *TAG = "Phone_BLE";
 static SemaphoreHandle_t mutex;
-struct Lock {
-    Lock() { xSemaphoreTake(mutex, portMAX_DELAY); }
-    ~Lock() { xSemaphoreGive(mutex); }
+struct PhoneLock {
+    PhoneLock() { xSemaphoreTake(mutex, portMAX_DELAY); }
+    ~PhoneLock() { xSemaphoreGive(mutex); }
 };
 static PhoneLinkStatus link;
 static uint16_t connection = BLE_HS_CONN_HANDLE_NONE, requestHandle;
@@ -86,18 +88,24 @@ static int access(uint16_t conn, uint16_t, ble_gatt_access_ctxt *ctx, void *) {
     char buffer[481];
     if (os_mbuf_copydata(ctx->om, 0, n, buffer))
         return BLE_ATT_ERR_UNLIKELY;
-    buffer[n] = 0;
-    return PhoneBridge::instance().acceptReply(buffer) ? 0 : BLE_ATT_ERR_UNLIKELY;
+    static JsonFrame frame;
+    std::string json;
+    int state = frame.accept(reinterpret_cast<uint8_t *>(buffer), n, json);
+    if (state < 0)
+        return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+    if (!state)
+        return 0;
+    return PhoneBridge::instance().acceptReply(json.c_str()) ? 0 : BLE_ATT_ERR_UNLIKELY;
 }
 static ble_gatt_chr_def characteristics[3];
-static ble_gatt_svc_def services[2];
+static ble_gatt_svc_def services[3];
 static void advertise();
 static int gapEvent(ble_gap_event *event, void *) {
     switch (event->type) {
     case BLE_GAP_EVENT_CONNECT:
         if (event->connect.status == 0) {
             {
-                Lock l;
+                PhoneLock l;
                 connection = event->connect.conn_handle;
                 link = {};
                 subscribed = false;
@@ -107,7 +115,8 @@ static int gapEvent(ble_gap_event *event, void *) {
             advertise();
         break;
     case BLE_GAP_EVENT_DISCONNECT: {
-        Lock l;
+        WatchSync::disconnected();
+        PhoneLock l;
         connection = BLE_HS_CONN_HANDLE_NONE;
         link = {};
         subscribed = false;
@@ -122,9 +131,10 @@ static int gapEvent(ble_gap_event *event, void *) {
         ble_gap_conn_desc d;
         if (!event->enc_change.status && !ble_gap_conn_find(event->enc_change.conn_handle, &d) &&
             d.sec_state.encrypted && d.sec_state.authenticated) {
-            Lock l;
+            PhoneLock l;
             link.connected = true;
             pairUntil = 0;
+            WatchSync::connected(event->enc_change.conn_handle);
             ESP_LOGI(TAG, "Authenticated Android link established");
         } else
             ble_gap_terminate(event->enc_change.conn_handle, BLE_ERR_AUTH_FAIL);
@@ -155,7 +165,7 @@ static int gapEvent(ble_gap_event *event, void *) {
         return BLE_GAP_REPEAT_PAIRING_IGNORE;
     case BLE_GAP_EVENT_SUBSCRIBE:
         if (event->subscribe.attr_handle == requestHandle) {
-            Lock l;
+            PhoneLock l;
             subscribed = event->subscribe.cur_notify;
         }
         break;
@@ -242,6 +252,9 @@ esp_err_t PhoneBridge::init() {
     services[0].type = BLE_GATT_SVC_TYPE_PRIMARY;
     services[0].uuid = &serviceUuid.u;
     services[0].characteristics = characteristics;
+    if (!WatchSync::init())
+        return ESP_ERR_NO_MEM;
+    services[1] = *WatchSync::service();
     if (ble_gatts_count_cfg(services) || ble_gatts_add_svcs(services))
         return ESP_FAIL;
     ble_att_set_preferred_mtu(512);
@@ -265,20 +278,20 @@ esp_err_t PhoneBridge::init() {
 void PhoneBridge::openPairing() {
     if (!mutex)
         return;
-    Lock l;
+    PhoneLock l;
     pairingCode = 100000 + esp_random() % 900000;
     pairUntil = esp_timer_get_time() + 60000000;
 }
 bool PhoneBridge::isPairing() const {
     if (!mutex)
         return false;
-    Lock l;
+    PhoneLock l;
     return pairUntil > esp_timer_get_time();
 }
 uint32_t PhoneBridge::passkey() const {
     if (!mutex)
         return 0;
-    Lock l;
+    PhoneLock l;
     return pairingCode;
 }
 void PhoneBridge::forgetPhone() {
@@ -286,7 +299,7 @@ void PhoneBridge::forgetPhone() {
         return;
     uint16_t c;
     {
-        Lock l;
+        PhoneLock l;
         c = connection;
         link = {};
     }
@@ -297,7 +310,7 @@ void PhoneBridge::forgetPhone() {
 PhoneLinkStatus PhoneBridge::status() const {
     if (!mutex)
         return {};
-    Lock l;
+    PhoneLock l;
     auto s = link;
     if (esp_timer_get_time() / 1000 - s.locationTimeMs > 120000)
         s.locationValid = false;
@@ -311,10 +324,12 @@ uint32_t PhoneBridge::request(const char *type, const char *phone, const char *m
     if (std::strcmp(type, "sms") && std::strcmp(type, "location_sms") &&
         std::strcmp(type, "call") && std::strcmp(type, "location"))
         return 0;
-    Lock l;
+    PhoneLock l;
     if (!link.connected || !link.ready || count == 16)
         return 0;
-    uint32_t id = ++sequence;
+    sequence = (sequence + 1) & 0x7fffffffu;
+    if (!sequence) sequence = 1;
+    uint32_t id = sequence;
     cJSON *o = cJSON_CreateObject();
     if (!o)
         return 0;
@@ -341,32 +356,32 @@ uint32_t PhoneBridge::request(const char *type, const char *phone, const char *m
 PhoneResult PhoneBridge::result(uint32_t id) const {
     if (!mutex)
         return {};
-    Lock l;
+    PhoneLock l;
     auto r = results[id % 32];
     return r.id == id ? r : PhoneResult{};
 }
 uint32_t PhoneBridge::lastRequestId() const {
     if (!mutex)
         return 0;
-    Lock l;
+    PhoneLock l;
     return sequence;
 }
 std::string PhoneBridge::guardianName(unsigned i) const {
     if (!mutex || i > 1)
         return "Guardian";
-    Lock l;
+    PhoneLock l;
     return names[i];
 }
 std::string PhoneBridge::guardianPhone(unsigned i) const {
     if (!mutex || i > 1)
         return "";
-    Lock l;
+    PhoneLock l;
     return phones[i];
 }
 std::string PhoneBridge::pendingJson() const {
     if (!mutex)
         return "{}";
-    Lock l;
+    PhoneLock l;
     return count ? pending[head].json : "{}";
 }
 bool PhoneBridge::acceptReply(const char *json) {
@@ -380,7 +395,7 @@ bool PhoneBridge::acceptReply(const char *json) {
         cJSON_Delete(o);
         return false;
     }
-    Lock l;
+    PhoneLock l;
     const char *op = stringValue(o, "op");
     if (!std::strcmp(op, "hello")) {
         link.ready = true;
@@ -520,7 +535,7 @@ void PhoneBridge::tick() {
     uint32_t id = 0;
     int64_t now = esp_timer_get_time() / 1000;
     {
-        Lock l;
+        PhoneLock l;
         conn = connection;
         if (link.ready && now - lastHeartbeat > 45000)
             link.ready = false;

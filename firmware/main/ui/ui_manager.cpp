@@ -1,16 +1,18 @@
 // ─────────────────────────────────────────────────────────────────────────────
-//  Naari OS · UiManager v7.0  –  Smooth native AMOLED interface
+//  Naari OS · UiManager v8.1  –  Smooth native AMOLED interface
 //
 //  Display: 410 × 502  (CO5300 AMOLED, portrait, RGB565)
 // ─────────────────────────────────────────────────────────────────────────────
 #include "ui_manager.h"
 #include "../network/phone_bridge.h"
+#include "../storage/memo_store.h"
 #include "../storage/preferences.h"
 #include "wallpaper_assets.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <ctime>
 #include <esp_heap_caps.h>
 #include <esp_log.h>
 #include <esp_system.h>
@@ -101,6 +103,13 @@ static constexpr uint16_t kOrange = rgb(255, 149, 65);
 
 // Grace-window length shown in UI
 static constexpr uint32_t kGraceWindowSec = 30;
+
+// App readiness requires a live BLE connection and a recent companion heartbeat.
+static uint8_t phoneLinkState() {
+    auto link = PhoneBridge::instance().status();
+    return !link.connected ? 0 : link.ready ? 2 : 1;
+}
+
 // Calling overlay auto-dismiss
 static constexpr int64_t kCallingOverlayUs = 30000000LL;
 // SMS overlay auto-dismiss
@@ -352,10 +361,10 @@ UiManager::UiManager()
     : m_initialized(false), m_currentScreen(WatchScreenId::SCREEN_SAFE),
       m_prevScreen(WatchScreenId::SCREEN_SAFE), m_cancelFromScreen(WatchScreenId::SCREEN_SAFE),
       m_systemState(SystemState::SAFE), m_sirenTestActive(false),
-      m_flashlightMode(FlashlightMode::WHITE_100), m_strobeState(false), m_batteryPercent(94),
+      m_flashlightMode(FlashlightMode::WHITE_100), m_batteryPercent(94),
       m_timeStr("10:00"), m_dateStr("SAT, 04 OCT"), m_dialedNumber(""), m_toastExpiryUs(0),
       m_emergencyCountdownSec(kGraceWindowSec), m_lastGraceTickUs(0), m_holdProgress(0.0f),
-      m_cancelConfirmed(false), m_holdingCancel(false), m_holdStartTimeUs(0), m_overlayStartUs(0),
+      m_cancelConfirmed(false), m_holdingCancel(false), m_overlayStartUs(0),
       m_isTouched(false), m_touchStartX(0), m_touchStartY(0), m_lastTouchX(0), m_lastTouchY(0),
       m_touchStartTimeUs(0), m_lastSideBtnPressUs(0), m_lastCrownBtnPressUs(0),
       m_drawerScrollY(0.0f), m_drawerVelY(0.0f), m_launcherPanX(0.0f), m_launcherPanY(0.0f),
@@ -375,9 +384,41 @@ UiManager::UiManager()
 // ─────────────────────────────────────────────────────────────────────────────
 //  INIT
 // ─────────────────────────────────────────────────────────────────────────────
+UiManager::SyncSettings UiManager::syncSettings() {
+    UiLock lock;
+    return {m_wallpaperIdx,
+            D().getBrightness(),
+            AudioManager::instance().getVolume(),
+            m_batteryPercent,
+            static_cast<int>(m_currentScreen),
+            ImuQMI8658::instance().isFallDetectionEnabled()};
+}
+bool UiManager::applySetting(const char *operation, int value) {
+    UiLock lock;
+    if (!std::strcmp(operation, "set_wallpaper")) {
+        if (value < 0 || value > 4 || !writePreference("wallpaper", value))
+            return false;
+        m_wallpaperIdx = m_wallpaperSelection = value;
+    } else if (!std::strcmp(operation, "set_brightness")) {
+        if (value < 0 || value > 100 || !writePreference("brightness", value))
+            return false;
+        D().setBrightness(value);
+    } else if (!std::strcmp(operation, "set_volume")) {
+        if (value < 0 || value > 100 || !writePreference("volume", value))
+            return false;
+        AudioManager::instance().setVolume(value);
+    } else if (!std::strcmp(operation, "set_fall_enabled")) {
+        if (!ImuQMI8658::instance().setFallDetectionEnabled(value))
+            return false;
+    } else
+        return false;
+    showScreen(m_currentScreen);
+    return true;
+}
+
 esp_err_t UiManager::init() {
     UiLock uiLock;
-    ESP_LOGI(TAG, "Naari OS v8 - audio, watch faces, Android BLE, fall detection");
+    ESP_LOGI(TAG, "Naari OS v8.5 - recording library with confirmed deletion");
     m_initialized = true;
 
     char tBuf[16], dBuf[32];
@@ -390,6 +431,8 @@ esp_err_t UiManager::init() {
 
     m_wallpaperIdx = std::min<int>(4, readPreference("wallpaper", 0));
     m_wallpaperSelection = m_wallpaperIdx;
+    D().setBrightness(readPreference("brightness", 85));
+    AudioManager::instance().setVolume(readPreference("volume", 85));
     showScreen(WatchScreenId::SCREEN_SAFE);
     return ESP_OK;
 }
@@ -411,9 +454,12 @@ void UiManager::showScreen(WatchScreenId id) {
         m_hasRecordedMemo = AudioManager::instance().getRecordedSamples() > 0;
         m_memoDurationSec = AudioManager::instance().getRecordedDurationSec();
     }
-    if (m_currentScreen == WatchScreenId::SCREEN_FALL_DETECTION && id != m_currentScreen)
+    if (m_currentScreen == WatchScreenId::SCREEN_FALL_DETECTION && id != m_currentScreen) {
         m_fallDemoStartUs = 0;
+        ImuQMI8658::instance().setFallTestMode(false);
+    }
     m_currentScreen = id;
+    m_cancelHold.reset();
     m_holdProgress = 0.0f;
     m_cancelConfirmed = false;
     m_holdingCancel = false;
@@ -455,6 +501,7 @@ void UiManager::showScreen(WatchScreenId id) {
         renderDialerScreen();
         break;
     case WatchScreenId::SCREEN_CANCEL:
+        m_toastMessage[0] = 0; // Keep the hold instructions visible during emergency confirmation.
         renderCancelScreen();
         break;
     case WatchScreenId::SCREEN_CALLING:
@@ -464,6 +511,12 @@ void UiManager::showScreen(WatchScreenId id) {
         renderSmsSentScreen();
         break;
     case WatchScreenId::SCREEN_RECORDER:
+        if (m_prevScreen != WatchScreenId::SCREEN_RECORDER) {
+            m_showMemoLibrary = !MemoStore::instance().catalog().empty();
+            m_selectedMemoId.clear();
+            m_confirmMemoDelete = false;
+            m_memoLibraryPage = 0;
+        }
         renderRecorderScreen();
         break;
     case WatchScreenId::SCREEN_FALL_DETECTION:
@@ -517,19 +570,19 @@ void UiManager::showToast(const char *msg, int durationMs) {
 // ─────────────────────────────────────────────────────────────────────────────
 //  CALLING / SMS OVERLAYS
 // ─────────────────────────────────────────────────────────────────────────────
-void UiManager::showCallingScreen(const char *name, const char *number) {
+void UiManager::showCallingScreen(const char *name, const char *number, uint32_t requestId) {
     std::strncpy(m_overlayName, name ? name : "Contact", sizeof(m_overlayName) - 1);
     std::strncpy(m_overlayNumber, number ? number : "", sizeof(m_overlayNumber) - 1);
-    m_overlayRequestId = PhoneBridge::instance().lastRequestId();
+    m_overlayRequestId = requestId ? requestId : SIM800L::instance().lastRequestId();
     m_overlayStartUs = esp_timer_get_time();
     m_cancelFromScreen = m_currentScreen;
     showScreen(WatchScreenId::SCREEN_CALLING);
 }
 
-void UiManager::showSmsSentScreen(const char *name, const char *number) {
+void UiManager::showSmsSentScreen(const char *name, const char *number, uint32_t requestId) {
     std::strncpy(m_overlayName, name ? name : "Contact", sizeof(m_overlayName) - 1);
     std::strncpy(m_overlayNumber, number ? number : "", sizeof(m_overlayNumber) - 1);
-    m_overlayRequestId = PhoneBridge::instance().lastRequestId();
+    m_overlayRequestId = requestId ? requestId : SIM800L::instance().lastRequestId();
     m_overlayStartUs = esp_timer_get_time();
     m_cancelFromScreen = m_currentScreen;
     showScreen(WatchScreenId::SCREEN_SMS_SENT);
@@ -557,8 +610,9 @@ void UiManager::handleCrownButtonPress() {
     if (m_currentScreen == WatchScreenId::SCREEN_EMERGENCY ||
         m_currentScreen == WatchScreenId::SCREEN_CANCEL ||
         m_systemState == SystemState::EMERGENCY) {
-        ESP_LOGI(TAG, "Crown click in EMERGENCY -> Disarm SOS");
-        finishHoldCancellation();
+        ESP_LOGI(TAG, "Crown click in EMERGENCY -> Confirm disarm");
+        cancelHoldCancellation();
+        showScreen(WatchScreenId::SCREEN_CANCEL);
         return;
     }
 
@@ -599,6 +653,12 @@ void UiManager::handleCrownButtonDoublePress() {
         return;
     m_lastCrownBtnPressUs = now;
 
+    if (m_systemState == SystemState::EMERGENCY || m_currentScreen == WatchScreenId::SCREEN_EMERGENCY ||
+        m_currentScreen == WatchScreenId::SCREEN_CANCEL) {
+        cancelHoldCancellation();
+        showScreen(WatchScreenId::SCREEN_CANCEL);
+        return;
+    }
     if (m_prevScreen != m_currentScreen && m_prevScreen != WatchScreenId::SCREEN_EMERGENCY) {
         showScreen(m_prevScreen);
     } else {
@@ -615,12 +675,13 @@ void UiManager::handleSideButtonPress() {
 
     ESP_LOGI(TAG, "Side Button click – screen %d", (int)m_currentScreen);
 
-    // If on Emergency or Cancel screen, side button click DISARMS SOS
+    // Buttons only open the hold confirmation.
     if (m_currentScreen == WatchScreenId::SCREEN_EMERGENCY ||
         m_currentScreen == WatchScreenId::SCREEN_CANCEL ||
         m_systemState == SystemState::EMERGENCY) {
-        ESP_LOGI(TAG, "Side Button click in EMERGENCY -> Disarm SOS");
-        finishHoldCancellation();
+        ESP_LOGI(TAG, "Side Button click in EMERGENCY -> Confirm disarm");
+        cancelHoldCancellation();
+        showScreen(WatchScreenId::SCREEN_CANCEL);
         return;
     }
 
@@ -651,12 +712,13 @@ void UiManager::handleSideButtonLongPress() {
         return; // 1.5s debounce latch
     m_lastSideBtnPressUs = now;
 
-    // Holding side button while in EMERGENCY disarms the alert!
+    // A short, long or triple press cannot bypass the timed touchscreen hold.
     if (m_currentScreen == WatchScreenId::SCREEN_EMERGENCY ||
         m_currentScreen == WatchScreenId::SCREEN_CANCEL ||
         m_systemState == SystemState::EMERGENCY) {
-        ESP_LOGI(TAG, "Side Button LONG PRESS while in EMERGENCY -> DISARM SOS!");
-        finishHoldCancellation();
+        ESP_LOGI(TAG, "Side Button in EMERGENCY -> Confirm disarm");
+        cancelHoldCancellation();
+        showScreen(WatchScreenId::SCREEN_CANCEL);
         return;
     }
 
@@ -860,9 +922,12 @@ void UiManager::handleSafeTap(int x, int y) {
 
 void UiManager::renderSafeScreen() {
     drawWallpaper(m_wallpaperIdx);
-    D().drawText(34, 20, m_dateStr.c_str(), kTxtMuted, Font::Caption, false, 222);
-    D().drawSymbol(292, 30, 18, Symbol::Phone,
-                   PhoneBridge::instance().status().ready ? kMint : kTxtDim);
+    D().drawText(34, 20, m_dateStr.c_str(), kTxtMuted, Font::Caption, false, 142);
+    m_lastPhoneLinkState = phoneLinkState();
+    D().drawSymbol(205, 30, 22, m_lastPhoneLinkState ? Symbol::Bluetooth : Symbol::BluetoothOff,
+                   m_lastPhoneLinkState == 2   ? kBlue
+                   : m_lastPhoneLinkState == 1 ? kAmber
+                                               : kTxtDim);
     char battery[12];
     std::snprintf(battery, sizeof(battery), "%d%%", m_batteryPercent);
     D().drawText(338, 17, battery, kTxtSoft, Font::Body, true, 56);
@@ -1023,7 +1088,7 @@ void UiManager::renderLaunchpadScreen() {
 // ─────────────────────────────────────────────────────────────────────────────
 //  SCREEN 3 : SOUND STUDIO
 // ─────────────────────────────────────────────────────────────────────────────
-static const char *kSoundNames[5] = {"Police Siren", "105dB Pulse", "Ambulance Hi-Lo",
+static const char *kSoundNames[5] = {"Police Siren", "Pulse Siren", "Ambulance Hi-Lo",
                                      "Chirp Radar", "Bell Chime"};
 static const char *kSoundSub[5] = {"600-1600 Hz sweep", "2400 Hz burst", "960/770 Hz wave",
                                    "800-2400 Hz chirp", "1760 Hz chime"};
@@ -1042,7 +1107,12 @@ void UiManager::handleSoundStudioTap(int x, int y) {
             idx = 4;
         auto ns = static_cast<AlarmSoundType>(idx);
         bool playing = AudioManager::instance().isPlaying();
-        bool same = (AudioManager::instance().getCurrentSound() == ns);
+        bool same = (AudioManager::instance().getSelectedAlarmSound() == ns);
+        if (!AudioManager::instance().setSelectedAlarmSound(ns)) {
+            showToast("Could not save SOS tone", 2000);
+            renderSoundStudioScreen();
+            return;
+        }
         if (same && playing)
             AudioManager::instance().stopSound();
         else if (playing) {
@@ -1058,7 +1128,7 @@ void UiManager::handleSoundStudioTap(int x, int y) {
         if (AudioManager::instance().isPlaying())
             AudioManager::instance().stopSound();
         else
-            AudioManager::instance().playSound(AudioManager::instance().getCurrentSound());
+            AudioManager::instance().playSound(AudioManager::instance().getSelectedAlarmSound());
         renderSoundStudioScreen();
         return;
     }
@@ -1083,7 +1153,7 @@ void UiManager::handleSoundStudioTap(int x, int y) {
 void UiManager::renderSoundStudioScreen() {
     drawPremiumBackdrop(kPurple);
     drawPremiumHeader("Sounds", kPurple);
-    auto cur = AudioManager::instance().getCurrentSound();
+    auto cur = AudioManager::instance().getSelectedAlarmSound();
     bool playing = AudioManager::instance().isPlaying();
     for (int i = 0; i < 5; ++i) {
         int y = 58 + i * 50;
@@ -1128,6 +1198,7 @@ void UiManager::handleFlashlightTap(int x, int y) {
         m_flashlightMode = FlashlightMode::AMBER_WARM;
     } else if (m_flashlightMode == FlashlightMode::AMBER_WARM) {
         m_flashlightMode = FlashlightMode::RED_STROBE;
+        m_strobeStartUs = esp_timer_get_time();
     } else {
         m_flashlightMode = FlashlightMode::WHITE_100;
     }
@@ -1137,8 +1208,8 @@ void UiManager::handleFlashlightTap(int x, int y) {
 void UiManager::renderFlashlightScreen() {
     uint16_t bg = m_flashlightMode == FlashlightMode::WHITE_100    ? kWhite
                   : m_flashlightMode == FlashlightMode::AMBER_WARM ? rgb(255, 199, 108)
-                  : m_strobeState                                  ? kCoral
-                                                                   : kBlack;
+                  : ((esp_timer_get_time() - m_strobeStartUs) / 100000) % 2 ? rgb(0, 80, 255)
+                                                                                 : rgb(255, 0, 32);
     D().setBrightness(100);
     D().clear(bg);
     fillRR(23, 14, 86, 34, 17, kCard);
@@ -1246,7 +1317,9 @@ void UiManager::renderSystemScreen() {
     D().drawText(82, 153, text, kTxtMuted, Font::Caption, false, 284);
     drawPremiumCard(24, 194, 362, 68, 20, kBlue);
     drawIconPhone(52, 228, 26, kBlue);
-    D().drawText(82, 202, "Android phone", kWhite, Font::Label);
+    D().drawText(82, 202,
+                 SIM800L::instance().usesDirectCellular() ? "A7672S cellular" : "Android phone",
+                 kWhite, Font::Label);
     D().drawText(82, 229, m_lastSimStatus.statusString, kTxtMuted, Font::Caption, false, 282);
     drawPremiumCard(24, 270, 362, 68, 20, kCyan);
     drawIconCompass(52, 304, 26, kCyan);
@@ -1415,25 +1488,28 @@ void UiManager::handleContactsTap(int x, int y) {
             if (x >= 210 && x < 290) {
                 auto phone = i < 2 ? PhoneBridge::instance().guardianPhone(i)
                                    : std::string(kContactPhones[i]);
-                if (!SIM800L::instance().requestVoiceCall(phone.c_str())) {
-                    showToast("Connect phone and set guardians", 2000);
+                auto requestId = SIM800L::instance().queueRequest("call", phone.c_str());
+                if (!requestId) {
+                    showToast("Check network and guardian number", 2000);
                     renderContactsScreen();
                     return;
                 }
                 showCallingScreen(i < 2 ? PhoneBridge::instance().guardianName(i).c_str()
                                         : kContacts[i].name,
-                                  phone.c_str());
+                                  phone.c_str(), requestId);
                 return;
             }
             if (kContacts[i].hasSms && x >= 295) {
                 auto phone = PhoneBridge::instance().guardianPhone(i);
-                if (!SIM800L::instance().requestSendLocationSms(
-                        phone.c_str(), "[NAARI CHECK-IN] Wearer is safe.")) {
-                    showToast("Connect phone and set guardians", 2000);
+                auto requestId = SIM800L::instance().queueRequest(
+                    "location_sms", phone.c_str(), "[NAARI CHECK-IN] Wearer is safe.");
+                if (!requestId) {
+                    showToast("Check network and guardian number", 2000);
                     renderContactsScreen();
                     return;
                 }
-                showSmsSentScreen(PhoneBridge::instance().guardianName(i).c_str(), phone.c_str());
+                showSmsSentScreen(PhoneBridge::instance().guardianName(i).c_str(), phone.c_str(),
+                                  requestId);
                 return;
             }
         }
@@ -1539,12 +1615,16 @@ void UiManager::handleDialerTap(int x, int y) {
         }
         if (x >= 155 && x <= 255) {
             if (!m_dialedNumber.empty()) {
-                if (!SIM800L::instance().requestVoiceCall(m_dialedNumber.c_str())) {
-                    showToast("Connect Android phone first", 2000);
+                auto requestId = SIM800L::instance().queueRequest("call", m_dialedNumber.c_str());
+                if (!requestId) {
+                    showToast(SIM800L::instance().usesDirectCellular()
+                                  ? "Modem not ready or queue full"
+                                  : "Connect Android phone first",
+                              2000);
                     renderDialerScreen();
                     return;
                 }
-                showCallingScreen(m_dialedNumber.c_str(), m_dialedNumber.c_str());
+                showCallingScreen(m_dialedNumber.c_str(), m_dialedNumber.c_str(), requestId);
             } else
                 showToast("Enter a number first", 1500);
             return;
@@ -1647,8 +1727,8 @@ void UiManager::renderWatchScreen() {
 // ─────────────────────────────────────────────────────────────────────────────
 void UiManager::handleEmergencyTap(int x, int y) {
     if (y >= 350) {
-        ESP_LOGI(TAG, "Emergency screen Disarm button tapped -> DISARM SOS!");
-        finishHoldCancellation();
+        ESP_LOGI(TAG, "Disarm requested: opening 3-second hold confirmation");
+        showScreen(WatchScreenId::SCREEN_CANCEL);
     }
 }
 
@@ -1672,13 +1752,14 @@ void UiManager::renderEmergencyScreen() {
         Symbol icon;
         uint16_t color;
     };
-    const Row rows[] = {{PhoneBridge::instance().status().ready ? "Android phone connected"
-                                                                : "Android phone disconnected",
+    const Row rows[] = {{SIM800L::instance().usesDirectCellular() ? m_lastSimStatus.statusString
+                         : PhoneBridge::instance().status().ready ? "Android phone connected"
+                                                                  : "Android phone disconnected",
                          Symbol::Phone, kMint},
                         {grace ? "Alerts wait for countdown"
                          : StateMachine::instance().werePhoneAlertsQueued()
-                             ? "Phone alerts requested"
-                             : "Phone or guardians not ready",
+                             ? "Guardian alerts queued"
+                             : "Network or guardians not ready",
                          Symbol::Alert, kCoral},
                         {"Deterrent siren", Symbol::Volume, kAmber},
                         {"Cancel if you are safe", Symbol::Shield, kCyan}};
@@ -1689,7 +1770,7 @@ void UiManager::renderEmergencyScreen() {
         D().drawText(65, y + 5, rows[i].label, kTxtSoft, Font::Body, false, 300);
     }
     drawAction(24, 370, 362, 64, "I'm safe · Disarm SOS", kMintDim, kMint);
-    D().drawText(205, 453, "Crown or side button also disarms", kTxtDim, Font::Caption, true);
+    D().drawText(205, 453, "Buttons open hold confirmation", kTxtDim, Font::Caption, true);
     renderToastOverlay();
     D().present();
 }
@@ -1698,57 +1779,46 @@ void UiManager::renderEmergencyScreen() {
 //  SCREEN 12 : HOLD-TO-CANCEL
 // ─────────────────────────────────────────────────────────────────────────────
 void UiManager::handleTouchDrag(int x, int y, bool pressed) {
-    if (m_currentScreen == WatchScreenId::SCREEN_CANCEL && !m_cancelConfirmed) {
-        if (pressed && y >= 290) {
-            if (!m_holdingCancel) {
-                m_holdingCancel = true;
-                m_holdStartTimeUs = esp_timer_get_time();
-            } else {
-                int64_t elapsedMs = (esp_timer_get_time() - m_holdStartTimeUs) / 1000;
-                float pct = (float)elapsedMs / 2000.0f * 100.0f;
-                if (pct > 100.0f)
-                    pct = 100.0f;
-                updateHoldCancellation(pct);
-            }
-        } else {
-            if (m_holdingCancel)
-                cancelHoldCancellation();
-        }
-    }
+    if (m_currentScreen != WatchScreenId::SCREEN_CANCEL || m_cancelConfirmed) return;
+    m_cancelHold.update(pressed && x >= 44 && x < 366 && y >= 314 && y < 412,
+                        esp_timer_get_time());
+    m_holdingCancel = m_cancelHold.active();
+    updateHoldCancellation(m_cancelHold.progress(esp_timer_get_time()));
 }
 
 void UiManager::startHoldCancellation() {
-    m_holdProgress = 0.0f;
+    m_cancelHold.reset();
+    m_cancelHold.update(true, esp_timer_get_time());
+    m_holdProgress = 0;
     m_cancelConfirmed = false;
     m_holdingCancel = true;
-    m_holdStartTimeUs = esp_timer_get_time();
 }
-
 void UiManager::updateHoldCancellation(float pct) {
-    m_holdProgress = pct;
-    if (pct >= 100.0f && !m_cancelConfirmed)
-        finishHoldCancellation();
+    // A caller-supplied percentage cannot authorize disarming.
+    m_holdProgress = std::min(pct, m_cancelHold.progress(esp_timer_get_time()));
+    if (m_cancelHold.complete(esp_timer_get_time())) finishHoldCancellation();
 }
-
 void UiManager::finishHoldCancellation() {
+    if (m_currentScreen != WatchScreenId::SCREEN_CANCEL || m_cancelConfirmed ||
+        !m_holdingCancel || !m_cancelHold.complete(esp_timer_get_time())) return;
     m_cancelConfirmed = true;
     m_holdingCancel = false;
-    m_holdProgress = 100.0f;
+    m_holdProgress = 100;
     showToast("SOS Disarmed: You're Safe", 2500);
     StateMachine::instance().sendEvent(StateEvent::EVT_CANCEL_ALARM);
     AudioManager::instance().stopSound();
     showScreen(WatchScreenId::SCREEN_SAFE);
 }
-
 void UiManager::cancelHoldCancellation() {
+    m_cancelHold.reset();
     m_holdingCancel = false;
-    m_holdProgress = 0.0f;
+    m_holdProgress = 0;
 }
 
 void UiManager::renderCancelScreen() {
     drawPremiumBackdrop(kMint);
     D().drawText(205, 29, "Disarm SOS", kWhite, Font::Title, true);
-    D().drawText(205, 66, "Hold below for 2 seconds", kTxtMuted, Font::Body, true);
+    D().drawText(205, 66, "Hold below for 3 seconds", kTxtMuted, Font::Body, true);
     D().drawSmoothArc(205, 190, 67, 12, 0, 6.2831853f, kCard);
     if (m_holdProgress > 0)
         D().drawSmoothArc(205, 190, 67, 12, -1.5707963f,
@@ -1768,7 +1838,7 @@ void UiManager::renderCancelScreen() {
                  m_holdingCancel ? kMint : kWhite, Font::Title, true);
     D().drawText(205, 374, m_holdingCancel ? "Release to reset" : "to cancel the alert", kTxtMuted,
                  Font::Body, true);
-    D().drawText(205, 440, "Crown also cancels the SOS", kTxtDim, Font::Caption, true);
+    D().drawText(205, 440, "Buttons open this confirmation", kTxtDim, Font::Caption, true);
     renderToastOverlay();
     D().present();
 }
@@ -1778,48 +1848,62 @@ void UiManager::renderCancelScreen() {
 // ─────────────────────────────────────────────────────────────────────────────
 void UiManager::handleCallingTap(int x, int y) {
     if (y >= 370 && y < 456) {
+        if (SIM800L::instance().isCellularRequest(m_overlayRequestId) && !SIM800L::instance().requestHangUp()) {
+            showToast("Unable to queue hang-up", 2000);
+            return;
+        }
         showScreen(m_cancelFromScreen);
     }
 }
 
-static const char *requestLabel(PhoneRequestState state, bool sms) {
+static const char *requestLabel(PhoneRequestState state, bool sms, bool cellular) {
     switch (state) {
     case PhoneRequestState::Located:
         return "Location received";
     case PhoneRequestState::Sent:
-        return sms ? "SMS sent by phone" : "Request completed";
+        return sms ? (cellular ? "SMS accepted by network"
+                                                               : "SMS sent by phone")
+                   : "Request completed";
     case PhoneRequestState::Delivered:
         return "SMS delivered";
     case PhoneRequestState::CallStarted:
-        return "Call started on phone";
+        return cellular ? "Dial command accepted"
+                                                        : "Call started on phone";
     case PhoneRequestState::NeedsPhone:
         return "Continue on your phone";
     case PhoneRequestState::Failed:
-        return "Phone request failed";
+        return "Request failed";
     case PhoneRequestState::Received:
-        return "Phone is processing";
+        return cellular ? "Modem is processing"
+                                                        : "Phone is processing";
     default:
-        return "Waiting for your phone";
+        return cellular ? "Waiting for LTE modem"
+                                                        : "Waiting for your phone";
     }
 }
 void UiManager::renderCallingScreen() {
     drawPremiumBackdrop(kMint);
-    auto r = PhoneBridge::instance().result(m_overlayRequestId);
+    auto r = SIM800L::instance().result(m_overlayRequestId);
     D().drawText(205, 34, "Phone call", kMint, Font::Body, true);
     fillCirc(205, 162, 62, kCard);
     drawIconPhone(205, 159, 60, kTxtSoft);
     D().drawText(205, 249, m_overlayName, kWhite, Font::Title, true, 354);
     D().drawText(205, 288, m_overlayNumber, kTxtMuted, Font::Body, true, 354);
-    D().drawText(205, 327, requestLabel(r.state, false), kTxtSoft, Font::Body, true, 362);
-    drawAction(60, 389, 290, 58, "Back to watch", kCard, kWhite);
-    D().drawText(205, 466, "Manage the call on your phone", kTxtMuted, Font::Caption, true);
+    D().drawText(205, 327, requestLabel(r.state, false, SIM800L::instance().isCellularRequest(m_overlayRequestId)), kTxtSoft, Font::Body, true, 362);
+    drawAction(60, 389, 290, 58,
+               SIM800L::instance().isCellularRequest(m_overlayRequestId) ? "End call" : "Back to watch", kCard,
+               kWhite);
+    D().drawText(205, 466,
+                 SIM800L::instance().isCellularRequest(m_overlayRequestId) ? "Voice needs modem audio wiring"
+                                                          : "Manage the call on your phone",
+                 kTxtMuted, Font::Caption, true);
     renderToastOverlay();
     D().present();
 }
 void UiManager::handleSmsSentTap(int, int) { showScreen(m_cancelFromScreen); }
 void UiManager::renderSmsSentScreen() {
     drawPremiumBackdrop(kBlue);
-    auto r = PhoneBridge::instance().result(m_overlayRequestId);
+    auto r = SIM800L::instance().result(m_overlayRequestId);
     fillCirc(205, 157, 63, kBlueDim);
     drawIconMessage(205, 157, 60, kBlue);
     bool success = r.state == PhoneRequestState::Sent || r.state == PhoneRequestState::Delivered;
@@ -1827,7 +1911,7 @@ void UiManager::renderSmsSentScreen() {
         fillCirc(253, 109, 19, kMint);
         D().drawSymbol(253, 109, 22, Symbol::Check, kBlack);
     }
-    D().drawText(205, 245, requestLabel(r.state, true), kWhite, Font::Title, true, 360);
+    D().drawText(205, 245, requestLabel(r.state, true, SIM800L::instance().isCellularRequest(m_overlayRequestId)), kWhite, Font::Title, true, 360);
     D().drawText(205, 289, m_overlayName, kBlue, Font::Body, true, 354);
     D().drawText(205, 322, m_overlayNumber, kTxtMuted, Font::Body, true, 354);
     D().drawText(205, 369, r.detail, kTxtMuted, Font::Caption, true, 354);
@@ -1838,7 +1922,183 @@ void UiManager::renderSmsSentScreen() {
 // ─────────────────────────────────────────────────────────────────────────────
 //  SCREEN 15 : VOICE RECORDER APP  (Record & Playback Memo via Watch Speaker)
 // ─────────────────────────────────────────────────────────────────────────────
+namespace {
+std::vector<StoredMemo> libraryMemos() {
+    auto memos = MemoStore::instance().catalog();
+    std::stable_sort(memos.begin(), memos.end(), [](const StoredMemo &a, const StoredMemo &b) {
+        if (a.timestampMs != b.timestampMs) return a.timestampMs > b.timestampMs;
+        return a.id < b.id;
+    });
+    return memos;
+}
+std::string memoDate(const StoredMemo &memo) {
+    if (!memo.timestampMs) return "Time unavailable";
+    time_t seconds = memo.timestampMs / 1000;
+    tm date;
+    gmtime_r(&seconds, &date);
+    char label[40];
+    strftime(label, sizeof(label), "%d %b · %H:%M UTC", &date);
+    return label;
+}
+}
+void UiManager::handleMemoLibraryTap(int x, int y) {
+    auto &audio = AudioManager::instance();
+    if (!m_selectedMemoId.empty()) {
+        if (m_confirmMemoDelete) {
+            if ((x <= 130 && y <= 52) || y >= 378) {
+                m_confirmMemoDelete = false;
+            } else if (y >= 306 && y < 370) {
+                audio.stopVoiceMemoPlayback();
+                m_isPlayingMemo = false;
+                if (MemoStore::instance().remove(m_selectedMemoId)) {
+                    audio.clearRecordedMemo();
+                    m_hasRecordedMemo = false;
+                    m_selectedMemoId.clear();
+                    showToast("Recording deleted from watch", 1800);
+                } else showToast("Could not delete; try again", 2200);
+                m_confirmMemoDelete = false;
+            }
+            renderRecorderScreen();
+            return;
+        }
+        if ((x <= 130 && y <= 52) || y >= 432) {
+            audio.stopVoiceMemoPlayback();
+            m_isPlayingMemo = false;
+            m_selectedMemoId.clear();
+        } else if (y >= 378 && y < 426) {
+            audio.stopVoiceMemoPlayback();
+            m_isPlayingMemo = false;
+            m_confirmMemoDelete = true;
+            m_toastMessage[0] = 0;
+        } else if (y >= 306 && y < 374) {
+            if (m_isPlayingMemo || audio.isLoadingStoredMemo()) {
+                audio.stopVoiceMemoPlayback(); m_isPlayingMemo = false;
+            } else {
+                m_isPlayingMemo = audio.playStoredMemo(m_selectedMemoId);
+                if (!m_isPlayingMemo) showToast("Playback unavailable; try again", 2000);
+            }
+        }
+        renderRecorderScreen();
+        return;
+    }
+    if (x <= 130 && y <= 52) {
+        showScreen(WatchScreenId::SCREEN_LAUNCHPAD);
+        return;
+    }
+    auto memos = libraryMemos();
+    unsigned pages = std::max(1u, unsigned((memos.size() + 2) / 3));
+    m_memoLibraryPage = std::min(m_memoLibraryPage, pages - 1);
+    if (y >= 64 && y < 358) {
+        unsigned row = (y - 64) / 98;
+        unsigned index = m_memoLibraryPage * 3 + row;
+        if (index < memos.size()) {
+            m_selectedMemoId = memos[index].id;
+            m_confirmMemoDelete = false;
+            audio.clearStoredMemoError();
+        }
+    } else if (y >= 368 && y < 422) {
+        if (x < 150 && m_memoLibraryPage) --m_memoLibraryPage;
+        if (x > 260 && m_memoLibraryPage + 1 < pages) ++m_memoLibraryPage;
+    } else if (y >= 432) {
+        if (audio.startVoiceMemoRecording()) {
+            m_showMemoLibrary = false;
+            m_hasRecordedMemo = m_isPlayingMemo = false;
+            m_isRecordingMemo = true;
+            m_recordStartTimeUs = esp_timer_get_time();
+        } else showToast("Check mic / storage; sync memos", 2500);
+    }
+    renderRecorderScreen();
+}
+void UiManager::renderMemoLibrary() {
+    drawPremiumBackdrop(kCoral);
+    drawPremiumHeader("Saved Memos", kCoral);
+    auto memos = libraryMemos();
+    unsigned pages = std::max(1u, unsigned((memos.size() + 2) / 3));
+    m_memoLibraryPage = std::min(m_memoLibraryPage, pages - 1);
+    if (memos.empty()) {
+        fillCirc(205, 158, 48, kCard);
+        drawIconMicrophone(205, 158, 42, kCoral);
+        D().drawText(205, 235, "No saved recordings", kWhite, Font::Title, true);
+        D().drawText(205, 274, MemoStore::instance().busy() ? "Saving your memo…" : "Make your first audio note",
+                     kTxtMuted, Font::Body, true, 360);
+    }
+    for (unsigned row = 0; row < 3; ++row) {
+        unsigned index = m_memoLibraryPage * 3 + row;
+        if (index >= memos.size()) break;
+        const auto &memo = memos[index];
+        int y = 64 + row * 98;
+        drawPremiumCard(24, y, 362, 88, 20, kCoral, false);
+        fillCirc(53, y + 28, 16, kCoralDark);
+        drawIconMicrophone(53, y + 28, 18, kCoral);
+        char title[40];
+        std::snprintf(title, sizeof(title), "Recording %u · %.1fs", index + 1, memo.bytes / 32000.0);
+        D().drawText(80, y + 9, title, kWhite, Font::Body, false, 281);
+        D().drawText(80, y + 36, memoDate(memo).c_str(), kTxtMuted, Font::Caption, false, 281);
+        D().drawText(44, y + 62, memo.synced ? "Saved to phone" : "On watch · awaiting sync",
+                     memo.synced ? kMint : kTxtMuted, Font::Caption, false, 310);
+    }
+    drawAction(24, 370, 118, 48, "Previous", kCard, m_memoLibraryPage ? kTxtSoft : kTxtDim);
+    char page[24];
+    std::snprintf(page, sizeof(page), "%u/%u · %u memos", m_memoLibraryPage + 1, pages, unsigned(memos.size()));
+    D().drawText(205, 386, page, kTxtMuted, Font::Caption, true, 122);
+    drawAction(268, 370, 118, 48, "Next", kCard, m_memoLibraryPage + 1 < pages ? kTxtSoft : kTxtDim);
+    drawAction(24, 432, 362, 48, "New recording", kCoralDark, kCoral);
+    renderToastOverlay();
+    D().present();
+}
+void UiManager::renderStoredMemo() {
+    drawPremiumBackdrop(kCoral);
+    drawPremiumHeader(m_confirmMemoDelete ? "Delete memo?" : "Recording", kCoral);
+    auto memos = libraryMemos();
+    auto memo = std::find_if(memos.begin(), memos.end(), [&](const StoredMemo &m) { return m.id == m_selectedMemoId; });
+    if (memo == memos.end()) {
+        m_selectedMemoId.clear(); renderMemoLibrary(); return;
+    }
+    auto &audio = AudioManager::instance();
+    if (m_confirmMemoDelete) {
+        fillCirc(205, 123, 46, kCoralDark);
+        D().drawSymbol(205, 123, 44, Symbol::Alert, kCoral);
+        D().drawText(205, 194, "Delete from watch?", kWhite, Font::Title, true, 362);
+        D().drawText(205, 237, memo->synced ? "Your phone copy stays saved." : "Not saved to your phone yet.",
+                     kTxtMuted, Font::Body, true, 366);
+        D().drawText(205, 271, memo->synced ? "This frees space on the watch." : "This watch copy will be lost.",
+                     memo->synced ? kTxtMuted : kCoral, Font::Caption, true, 366);
+        drawAction(24, 310, 362, 60, "Delete from watch", kCoralDark, kCoral);
+        drawAction(24, 382, 362, 44, "Keep recording", kCard, kWhite);
+        D().drawText(205, 451, "Only this recording is removed", kTxtDim, Font::Caption, true);
+        D().present();
+        return;
+    }
+    fillCirc(205, 129, 46, kCard);
+    drawIconMicrophone(205, 129, 44, kCoral);
+    char duration[32];
+    std::snprintf(duration, sizeof(duration), "%.1f seconds", memo->bytes / 32000.0);
+    D().drawText(205, 194, duration, kWhite, Font::Title, true);
+    D().drawText(205, 234, memoDate(*memo).c_str(), kTxtMuted, Font::Body, true, 362);
+    D().drawText(205, 270,
+                 audio.isLoadingStoredMemo() ? "Loading recording…"
+                 : audio.storedMemoLoadFailed() ? "Could not read this recording"
+                 : audio.isPlayingVoiceMemo() ? "Playing on watch speaker"
+                 : memo->synced ? "Saved to phone" : "On watch · awaiting sync",
+                 audio.storedMemoLoadFailed() ? kCoral : kTxtMuted, Font::Caption, true, 370);
+    drawAction(24, 310, 362, 60, m_isPlayingMemo || audio.isLoadingStoredMemo() ? "Stop playback" : "Play recording",
+               kMintDim, kMint);
+    drawAction(24, 382, 362, 44, "Delete recording", kCoralDark, kCoral);
+    drawFooter("Saved memos");
+    renderToastOverlay();
+    D().present();
+}
+
 void UiManager::handleRecorderTap(int x, int y) {
+    if (m_showMemoLibrary) { handleMemoLibraryTap(x, y); return; }
+    if (!m_isRecordingMemo && y >= 392 && y < 430) {
+        AudioManager::instance().stopVoiceMemoPlayback();
+        m_isPlayingMemo = false;
+        m_showMemoLibrary = true;
+        m_selectedMemoId.clear();
+        renderRecorderScreen();
+        return;
+    }
     if (y <= 52 && x <= 130) {
         if (m_isRecordingMemo) {
             m_isRecordingMemo = false;
@@ -1857,7 +2117,7 @@ void UiManager::handleRecorderTap(int x, int y) {
         if (y >= 130 && y <= 320) {
             m_isRecordingMemo = AudioManager::instance().startVoiceMemoRecording();
             if (!m_isRecordingMemo)
-                showToast("Microphone unavailable", 2000);
+                showToast("Check mic / storage; sync memos", 2500);
             m_recordStartTimeUs = esp_timer_get_time();
             renderRecorderScreen();
             return;
@@ -1903,7 +2163,7 @@ void UiManager::handleRecorderTap(int x, int y) {
             }
             m_isRecordingMemo = AudioManager::instance().startVoiceMemoRecording();
             if (!m_isRecordingMemo)
-                showToast("Microphone unavailable", 2000);
+                showToast("Check mic / storage; sync memos", 2500);
             m_recordStartTimeUs = esp_timer_get_time();
             renderRecorderScreen();
             return;
@@ -1915,14 +2175,20 @@ void UiManager::handleRecorderTap(int x, int y) {
 }
 
 void UiManager::renderRecorderScreen() {
+    if (m_showMemoLibrary) {
+        if (m_selectedMemoId.empty()) renderMemoLibrary(); else renderStoredMemo();
+        return;
+    }
     drawPremiumBackdrop(kCoral);
     drawPremiumHeader("Voice Memos", kCoral);
     if (m_isRecordingMemo || m_hasRecordedMemo) {
         uint16_t accent = m_isRecordingMemo ? kCoral : kMint;
         D().drawText(205, 73,
-                     m_isRecordingMemo ? "Recording"
-                     : m_isPlayingMemo ? "Playing memo"
-                                       : "Memo saved",
+                     m_isRecordingMemo                        ? "Recording"
+                     : m_isPlayingMemo                        ? "Playing memo"
+                     : MemoStore::instance().busy()           ? "Saving memo..."
+                     : !MemoStore::instance().error().empty() ? "Memo save failed"
+                                                              : "Memo saved",
                      accent, Font::Body, true);
         int64_t sec = m_isRecordingMemo ? AudioManager::instance().getRecordedDurationSec()
                                         : m_memoDurationSec;
@@ -1947,16 +2213,21 @@ void UiManager::renderRecorderScreen() {
         else {
             drawAction(24, 310, 174, 68, m_isPlayingMemo ? "Stop" : "Play memo", kMintDim, kMint);
             drawAction(212, 310, 174, 68, "New memo", kCard, kCoral);
-            D().drawText(205, 397, "Listen through the watch speaker", kTxtMuted, Font::Caption,
-                         true);
+            // The archive remains accessible from the capture screen below.
+
         }
     } else {
         fillCirc(205, 197, 66, kCard);
         drawIconMicrophone(205, 190, 60, kTxtSoft);
         fillCirc(205, 242, 8, kCoral);
         D().drawText(205, 289, "Tap to record", kWhite, Font::Title, true);
-        D().drawText(205, 330, "Up to 10 seconds · saved until restart", kTxtMuted, Font::Body,
-                     true, 350);
+        D().drawText(205, 330, "Up to 10 seconds · stored on watch", kTxtMuted, Font::Body, true,
+                     350);
+    }
+    if (!m_isRecordingMemo) {
+        char label[40];
+        std::snprintf(label, sizeof(label), "Saved memos · %u", unsigned(MemoStore::instance().catalog().size()));
+        drawAction(24, 394, 362, 36, label, kCard, kTxtSoft);
     }
     drawFooter("Apps");
     renderToastOverlay();
@@ -2032,9 +2303,12 @@ void UiManager::handleFallDetectionTap(int, int y) {
     } else if (y >= 370 && y < 421) {
         if (m_fallDemoStartUs) {
             m_fallDemoStartUs = 0;
-            showToast("Demo cancelled · no alert sent", 2000);
-        } else
+            ImuQMI8658::instance().setFallTestMode(false);
+            showToast("Sensor test stopped · no SOS", 2000);
+        } else {
             m_fallDemoStartUs = esp_timer_get_time();
+            ImuQMI8658::instance().setFallTestMode(true);
+        }
     }
     renderFallDetectionScreen();
 }
@@ -2048,28 +2322,40 @@ void UiManager::renderFallDetectionScreen() {
     if (demo && left == 0) {
         m_fallDemoStartUs = 0;
         demo = false;
-        showToast("Demo complete · no alert sent", 2000);
+        imu.setFallTestMode(false);
+        showToast("Sensor test ended · no SOS", 2000);
     }
     fillCirc(205, 125, 46, kCard);
     drawIconShield(205, 125, 50, imu.isFallDetectionEnabled() ? kMint : kTxtMuted, true);
     D().drawText(205, 191,
-                 demo                           ? "Fall alert demo"
+                 demo                           ? "Sensor test · no SOS"
                  : imu.isFallDetectionEnabled() ? "Monitoring motion"
                                                 : "Monitoring is off",
                  kWhite, Font::Title, true, 360);
     if (demo) {
         char t[16];
         std::snprintf(t, sizeof(t), "%02d", left);
-        D().drawText(205, 226, t, kCoral, Font::Timer, true);
+        D().drawText(205, 218, t, kCoral, Font::Title, true);
+        auto motion = imu.fallTelemetry();
+        char live[64];
+        std::snprintf(live, sizeof(live), "%.2fg · %.0f deg/s · %s", motion.accelerationG,
+                      motion.angularSpeedDps, motion.phase == 3 ? "Detected" : motion.phase == 2 ? "Settling" : "Live");
+        D().drawText(205, 263, live, kTxtMuted, Font::Caption, true, 370);
     } else {
-        D().drawText(205, 235, "Fall + impact + stillness", kTxtMuted, Font::Body, true);
-        D().drawText(205, 263, "30 seconds to cancel an SOS", kTxtMuted, Font::Caption, true);
+        auto motion = imu.fallTelemetry();
+        const char *phases[] = {"Watching motion", "Fall candidate", "Checking stillness", "Pattern detected"};
+        char live[56];
+        std::snprintf(live, sizeof(live), "%.2fg · %.0f deg/s · %s", motion.accelerationG,
+                      motion.angularSpeedDps, motion.samples ? "Live" : "No samples");
+        D().drawText(205, 235, live, kTxtMuted, Font::Body, true, 370);
+        D().drawText(205, 263, imu.isReady() ? phases[std::min(3u, motion.phase)] : "Sensor unavailable",
+                     kTxtMuted, Font::Caption, true);
     }
     drawAction(24, 303, 362, 54,
                imu.isFallDetectionEnabled() ? "Turn monitoring off" : "Turn monitoring on",
                imu.isFallDetectionEnabled() ? kMintDim : kCard,
                imu.isFallDetectionEnabled() ? kMint : kTxtSoft);
-    drawAction(24, 373, 362, 48, demo ? "I'm OK · cancel demo" : "Try alert demo", kCard, kCoral);
+    drawAction(24, 373, 362, 48, demo ? "Stop sensor test" : "Test sensor · no SOS", kCard, kCoral);
     drawFooter("Apps");
     renderToastOverlay();
     D().present();
@@ -2215,7 +2501,8 @@ void UiManager::tick() {
         char tBuf[16], dBuf[32];
         RtcPCF85063::instance().getTimeString(tBuf, sizeof(tBuf));
         RtcPCF85063::instance().getDateString(dBuf, sizeof(dBuf));
-        bool changed = (m_timeStr != tBuf);
+        bool changed =
+            (m_timeStr != tBuf || m_dateStr != dBuf || m_lastPhoneLinkState != phoneLinkState());
         m_timeStr = tBuf;
         m_dateStr = dBuf;
 
@@ -2263,12 +2550,7 @@ void UiManager::tick() {
             break;
         case WatchScreenId::SCREEN_FLASHLIGHT:
             if (m_flashlightMode == FlashlightMode::RED_STROBE) {
-                static int64_t s_lastStrobeUs = 0;
-                if (now - s_lastStrobeUs >= 250000LL) {
-                    s_lastStrobeUs = now;
-                    m_strobeState = !m_strobeState;
-                    renderFlashlightScreen();
-                }
+                renderFlashlightScreen();
             }
             break;
         case WatchScreenId::SCREEN_WATCH:
@@ -2289,13 +2571,17 @@ void UiManager::tick() {
                 }
                 renderRecorderScreen();
             } else if (m_isPlayingMemo) {
-                if (!AudioManager::instance().isPlayingVoiceMemo()) {
+                if (!AudioManager::instance().isPlayingVoiceMemo() &&
+                    !AudioManager::instance().isLoadingStoredMemo()) {
                     m_isPlayingMemo = false;
                     AudioManager::instance().stopVoiceMemoPlayback();
                     renderRecorderScreen();
                 } else {
                     renderRecorderScreen();
                 }
+            } else {
+                // Refresh the asynchronous save result even when playback is idle.
+                renderRecorderScreen();
             }
             break;
         default:

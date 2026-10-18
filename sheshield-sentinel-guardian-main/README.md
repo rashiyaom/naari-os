@@ -1,24 +1,31 @@
-# SheShield Sentinel Launch
+# Naari website — narios.vercel.app
 
-Attached are two reference images. Use them ONLY for layout, composition, typography style, and mood (giant faded ghost word behind the hero, large cropped product render, minimal nav, tight bold headline, frosted pill buttons). Do NOT copy the AirPods, the Apple logo, or any branding. Our product is a smartwatch called SheShield Sentinel. Use the pink/coral palette from the second image.
+This directory is the sole retained website project for https://narios.vercel.app. The existing folder name is retained to preserve deployment root configuration.
 
-This project was built with [Lovable](https://lovable.dev).
+## Local development
 
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/546a7335-eedd-41a8-bd00-c70447f36d18).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Use Node.js compatible with the pinned Vite release (Node 22.12+ recommended) and npm:
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+npm ci
 npm run dev
+npm run build
 ```
+
+`package-lock.json` is the single dependency lockfile. The application uses React, TanStack Start/Router, Tailwind and Framer Motion with the existing Lovable Vite integration. Keep the established router/server/error handling and build plugins intact.
+
+## Application structure
+
+- `src/routes/`: page entry and root shell.
+- `src/components/sections/`: landing page sections.
+- `src/components/demo/`, `src/hooks/use-sentinel-demo.ts`: isolated interactive safety-state simulation.
+- `src/components/watch/`: Watch OS Studio and browser watch simulator.
+- `public/icons/`, `public/wallpapers/`: assets used by the watch simulator.
+
+Browser simulations do not prove phone SMS/call delivery or real watch sensor behavior. Actual watch code, audio drivers and BLE transport are in `../firmware/`.
+
+## Deployment
+
+The local `.vercel/` connection targets the existing `narios` project; it is not committed. Preserve its project root and follow the existing deployment process. Local build cleanup does not publish or change the hosted website automatically.
+
+Generated output, dependencies, provider metadata and caches are ignored. See `../docs/REPOSITORY_CLEANUP.md` for the cleanup scope. Follow `AGENTS.md` when changing this project; do not rewrite published history.
