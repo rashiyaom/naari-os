@@ -14,6 +14,7 @@ import { LimitsSection } from "@/components/sections/LimitsSection";
 import { RoadmapSection } from "@/components/sections/RoadmapSection";
 import { Closing } from "@/components/sections/Closing";
 import { Footer } from "@/components/sections/Footer";
+import { DownloadSection } from "@/components/sections/DownloadSection";
 
 export function SentinelPage() {
   const demo = useSentinelDemo();
@@ -30,6 +31,7 @@ export function SentinelPage() {
   return (
     <main className="min-h-screen">
       <Hero />
+      <DownloadSection />
       <GapSection />
       <ModelSection />
       <DemoSection demo={demo} />

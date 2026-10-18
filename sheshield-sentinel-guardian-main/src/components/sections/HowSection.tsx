@@ -18,32 +18,32 @@ const Mono = ({ children }: { children: React.ReactNode }) => (
 
 const flows = [
   {
-    title: "Safety Watch",
+    title: "Manual SOS",
     items: [
-      "Discreet trigger",
-      "Vibration confirmation",
-      "Watch mode active",
-      "GPS location",
-      "Guardian alerted",
-      "Continuous updates",
+      "Wearer triggers SOS",
+      "30-second grace window",
+      "3-second hold can cancel",
+      "Watch sends signed request",
+      "Android calls, texts or locates",
+      "Result returns to the watch",
     ],
   },
   {
-    title: "Emergency",
+    title: "Fall candidate",
     items: [
-      "Long press",
-      "Silent confirmation",
-      "GPS lock",
-      "Available evidence",
-      "Cellular alert",
-      "Contacts receive context",
+      "QMI8658 detects impact",
+      "Post-impact motion is evaluated",
+      "Watch asks the wearer",
+      "Wearer can dismiss locally",
+      "Unanswered event enters SOS flow",
+      "Phone relays the guardian action",
     ],
   },
 ];
 
 export function HowSection() {
   return (
-    <section className="cream-section py-24 md:py-32" aria-label="How SheShield works">
+    <section className="cream-section py-24 md:py-32" aria-label="How Naari OS works">
       <div className="mx-auto max-w-7xl px-5 md:px-10">
         <Reveal>
           <Mono>Signal, not spectacle</Mono>

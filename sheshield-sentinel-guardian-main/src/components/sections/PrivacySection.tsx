@@ -18,13 +18,13 @@ const Mono = ({ children }: { children: React.ReactNode }) => (
 );
 
 const privacyItems = [
-  "Evidence only after a user-triggered event",
-  "User-configured trusted contacts only",
-  "End-to-end encrypted cellular transmission",
-  "Authenticated guardian-only dashboard access",
-  "Strict limited retention with automatic purge",
-  "Zero continuous recording or background surveillance",
-  "Environmental context, never biometric identification",
+  "Bonded BLE plus an app-level protocol handshake",
+  "User-configured guardian contacts stored locally",
+  "No cloud account or server required for the current workflow",
+  "Recordings remain on the watch until the user transfers them",
+  "Phone-side recordings can be deleted or exported by the owner",
+  "No continuous location or ambient audio streaming",
+  "Every phone action is tied to an explicit watch request",
 ];
 
 export function PrivacySection() {
@@ -35,8 +35,8 @@ export function PrivacySection() {
           <LockKeyhole size={42} className="text-primary" />
           <h2 className="section-title mt-8">Privacy is part of safety.</h2>
           <p className="mt-5 max-w-sm text-muted-foreground leading-relaxed">
-            SheShield is intentionally designed to create a useful record only when the wearer asks for
-            help. No passive surveillance, no ambient snooping.
+            Naari OS keeps its core profile and recordings on devices. The phone acts only on authenticated
+            watch requests and Android permissions the user has explicitly granted.
           </p>
         </Reveal>
 

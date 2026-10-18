@@ -166,10 +166,22 @@ class AndroidGattTransport(
                         callback?.onConnectionStateChange(5, BluetoothProfile.STATE_DISCONNECTED)
                         return@launch
                     }
-                    val bonded = kotlinx.coroutines.withTimeoutOrNull(90_000) {
-                        while(device.bondState != BluetoothDevice.BOND_BONDED) {
-                            kotlinx.coroutines.delay(300)
-                            if(device.bondState == BluetoothDevice.BOND_NONE) return@withTimeoutOrNull false
+                    val bonded = kotlinx.coroutines.withTimeoutOrNull<Boolean>(90_000) {
+                        var observedBonding = false
+                        val startedAt = android.os.SystemClock.elapsedRealtime()
+                        while (device.bondState != BluetoothDevice.BOND_BONDED) {
+                            when (device.bondState) {
+                                BluetoothDevice.BOND_BONDING -> observedBonding = true
+                                BluetoothDevice.BOND_NONE -> {
+                                    // createBond() may return before Android publishes BOND_BONDING.
+                                    // Once bonding was observed, BOND_NONE means the user rejected it.
+                                    val elapsed = android.os.SystemClock.elapsedRealtime() - startedAt
+                                    if (observedBonding || elapsed >= 10_000) {
+                                        return@withTimeoutOrNull false
+                                    }
+                                }
+                            }
+                            kotlinx.coroutines.delay(250)
                         }
                         true
                     } ?: false

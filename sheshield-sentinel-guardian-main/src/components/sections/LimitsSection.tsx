@@ -18,12 +18,12 @@ const Mono = ({ children }: { children: React.ReactNode }) => (
 );
 
 const claims = [
-  "Cannot predict attacks before intention exists",
-  "Thermal sensors cannot identify individuals or faces",
-  "No guaranteed cellular connectivity in deep basements",
-  "No automated police dispatch without guardian escalation",
-  "AI will not independently make life-critical judgements",
-  "The core safety path never requires a paired smartphone",
+  "Fall detection is a tunable heuristic, not a medically validated diagnosis",
+  "Phone-based calls, SMS and location require Android permissions and a working BLE link",
+  "The optional A7672S LTE/GNSS hardware path has not yet been physically validated",
+  "No alert system can guarantee message delivery or guardian response",
+  "The current modem interface does not carry live call audio over UART",
+  "The browser simulator demonstrates flows; it is not evidence of hardware behavior",
 ];
 
 export function LimitsSection() {

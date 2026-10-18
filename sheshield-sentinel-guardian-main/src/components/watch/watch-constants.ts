@@ -52,7 +52,7 @@ export const DRAWER_APPS = [
   {
     id: 'guard',
     name: 'Night Walk Guard',
-    sub: 'Live GPS Telemetry',
+    sub: 'Fall & Walk Monitor',
     iconSrc: '/icons/icon_guard.png',
     screen: SCREENS.WATCH,
     badge: 'ACTIVE',
@@ -72,7 +72,7 @@ export const DRAWER_APPS = [
   {
     id: 'sounds',
     name: 'Sound Studio',
-    sub: '105dB Alert Siren',
+    sub: 'SOS Tone Studio',
     iconSrc: '/icons/icon_sounds.png',
     screen: SCREENS.SOUND_STUDIO,
     badge: 'ARMED',

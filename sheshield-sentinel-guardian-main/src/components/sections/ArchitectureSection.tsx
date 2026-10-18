@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ChevronRight, Cloud, Cpu, Eye, Radio, Satellite, Users } from "lucide-react";
+import { Bluetooth, ChevronRight, Cpu, Gauge, Smartphone, Users } from "lucide-react";
 
 const Reveal = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
   <motion.div
@@ -18,25 +18,24 @@ const Mono = ({ children }: { children: React.ReactNode }) => (
 );
 
 const nodes = [
-  { icon: Eye, name: "Sensors" },
-  { icon: Cpu, name: "MCU" },
-  { icon: Satellite, name: "GNSS" },
-  { icon: Radio, name: "Cellular" },
-  { icon: Cloud, name: "Cloud" },
-  { icon: Users, name: "Contacts" },
+  { icon: Gauge, name: "Sensors + UI" },
+  { icon: Cpu, name: "ESP32-S3 Watch" },
+  { icon: Bluetooth, name: "Secure BLE" },
+  { icon: Smartphone, name: "Android Executor" },
+  { icon: Users, name: "Guardians" },
 ];
 
 const hardwareList = [
   "ESP32-S3 Dual-Core Xtensa LX7 @ 240MHz (16MB Flash, 8MB PSRAM)",
   "410×502 Curved AMOLED Multi-touch Display (QSPI)",
-  "SIM800L Quad-Band GSM/GPRS Cellular Modem",
-  "Neo-6M GNSS GPS Satellite Positioning Engine",
-  "AXP2101 High-Precision PMU & Fuel Gauge (500mAh LiPo)",
-  "ES8311 Hi-Res DAC + ES7210 4-Ch I2S ADC (105dB Siren)",
+  "Authenticated BLE protocol with bonded transport and app-level handshake",
+  "Android call, SMS, location, guardian and recording services",
+  "AXP2101 PMU & battery telemetry",
+  "ES8311 audio output + ES7210 microphone input",
   "QMI8658 6-Axis Low-Noise IMU (Fall & Shake Detection)",
   "PCF85063 Ultra-Low Power I2C Real-Time Clock",
-  "Rotary Digital Crown & Power Button Interface",
-  "FreeRTOS Deterministic Multi-Task Firmware",
+  "Touch, crown and side-button input",
+  "FreeRTOS firmware with optional A7672S LTE/GNSS integration path",
 ];
 
 export function ArchitectureSection() {
@@ -45,7 +44,7 @@ export function ArchitectureSection() {
       <div className="mx-auto max-w-7xl px-5 md:px-10">
         <Reveal>
           <Mono>System architecture</Mono>
-          <h2 className="section-title mt-5">Independent by design.</h2>
+          <h2 className="section-title mt-5">One verified path from wrist to guardian.</h2>
         </Reveal>
 
         <div className="architecture mt-14" aria-label="Data flow pipeline">

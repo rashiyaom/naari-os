@@ -17,10 +17,10 @@ export function Nav() {
         <span className="logo-pulse">
           <Activity size={13} />
         </span>
-        SheShield
+        Naari OS
       </a>
       <div className="hidden items-center gap-7 text-[11px] font-medium md:flex">
-        {["Problem", "Model", "Demo", "Features", "Privacy"].map((x) => (
+        {["Download", "Problem", "Model", "Demo", "Features", "Privacy"].map((x) => (
           <a
             key={x}
             href={`#${x.toLowerCase()}`}
@@ -31,10 +31,10 @@ export function Nav() {
         ))}
       </div>
       <a
-        href="#demo"
+        href="#download"
         className="rounded-full border border-glass-edge bg-glass px-4 py-2 text-[11px] font-semibold text-foreground backdrop-blur-xl transition hover:bg-glass-strong hover:shadow-coral"
       >
-        Try the demo
+        Download app
       </a>
     </nav>
   );
@@ -53,7 +53,7 @@ function HeroWatch({ state }: { state: "SAFE" | "WATCH" | "EMERGENCY" }) {
     <div
       className={`product-watch state-${state.toLowerCase()}`}
       style={{ "--state": stateColor } as React.CSSProperties}
-      aria-label={`Rose-gold SheShield Sentinel smartwatch render currently in ${state} state`}
+      aria-label={`Naari OS smartwatch render currently in ${state} state`}
     >
       {/* Top Strap with Lug Connector and Soft Texture */}
       <div className="watch-strap watch-strap-top" aria-hidden="true">
@@ -99,18 +99,18 @@ function HeroWatch({ state }: { state: "SAFE" | "WATCH" | "EMERGENCY" }) {
           </div>
 
           <div className="watch-state">
-            {state === "WATCH" ? "SAFETY WATCH" : state}
+            {state === "WATCH" ? "GUARD MODE" : state === "SAFE" ? "READY" : "SOS ACTIVE"}
           </div>
           <div className="watch-caption">
             {state === "SAFE"
-              ? "STANDBY · CELLULAR + GNSS"
+              ? "WATCH + ANDROID READY"
               : state === "WATCH"
-                ? "DISCREET STREAMING"
-                : "PRIORITY EMERGENCY"}
+                ? "FALL MONITORING · BLE LINK"
+                : "GUARDIAN ESCALATION"}
           </div>
 
           <div className="mt-auto pb-6 font-mono text-[7px] text-cream/50 tracking-wider">
-            PHONE-INDEPENDENT
+            ESP32-S3 · AUTHENTICATED BLE
           </div>
         </div>
       </div>
@@ -149,32 +149,32 @@ export function Hero() {
 
       {/* Giant Ghost Backdrop Word */}
       <motion.div style={{ y: ghostY }} className="ghost-word select-none" aria-hidden>
-        SHIELD
+        NAARI
       </motion.div>
 
       <div className="relative z-10 mx-auto grid min-h-[760px] max-w-[1440px] items-center px-5 pt-24 md:min-h-[880px] md:grid-cols-[.82fr_1.18fr] md:px-10">
         <div className="z-20 pt-10 md:pt-0">
           <Mono>ILS Summit 2026 · Surat · Track 3 SheLeads · P6 · Team Puraanmaya</Mono>
           <h1 className="mt-7 text-[clamp(4.1rem,9vw,9rem)] font-extrabold leading-[.78]">
-            Silent.
+            Naari.
             <br />
-            Signal.
+            Safety.
             <br />
-            <span className="text-primary">Sentinel.</span>
+            <span className="text-primary">Connected.</span>
           </h1>
           <p className="mt-7 max-w-md text-sm leading-6 text-muted-foreground md:text-base">
-            SheShield Sentinel is a phone-independent wearable that lets her alert trusted people
-            before a situation becomes an emergency. Dedicated Cellular (LTE-M) and GNSS right on the
-            wrist.
+            Naari OS joins a purpose-built ESP32-S3 watch with an authenticated Android companion.
+            Manual SOS, fall monitoring, voice memos, guardians, calls, messages and location requests
+            move through one deliberate safety workflow.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
-            <a href="#demo">
-              <SentinelButton variant="glass" aria-label="Scroll to live interactive prototype">
-                Try the live demo <ChevronRight size={16} />
+            <a href="#download">
+              <SentinelButton variant="glass" aria-label="Download the Naari Companion Android app">
+                Download Android app <ChevronRight size={16} />
               </SentinelButton>
             </a>
             <a href="#model">
-              <SentinelButton aria-label="Learn how SheShield works">
+              <SentinelButton aria-label="Learn how Naari OS works">
                 See how it works
               </SentinelButton>
             </a>

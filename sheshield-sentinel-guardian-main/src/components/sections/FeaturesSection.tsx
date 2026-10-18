@@ -1,14 +1,12 @@
 import { motion } from "framer-motion";
 import {
   BellRing,
-  Compass,
   Flashlight,
   Palette,
   PhoneCall,
-  Satellite,
   ShieldAlert,
   Sliders,
-  TimerReset,
+  Activity,
   Users,
 } from "lucide-react";
 
@@ -32,42 +30,42 @@ const features = [
   {
     icon: ShieldAlert,
     title: "30s SOS Grace Window",
-    text: "Real-time depleting countdown arc with hold-to-disarm slider to prevent false emergency dispatches.",
+    text: "A visible countdown gives the wearer time to cancel; stopping an active SOS requires a deliberate 3-second hold.",
   },
   {
     icon: PhoneCall,
-    title: "Cellular Dialer & Ringing Audio",
-    text: "Direct Quad-Band SIM800L audio calls with 440Hz/480Hz dual-cadence telephone ringback synthesis.",
+    title: "Android Safety Relay",
+    text: "The watch requests calls, SMS and location actions through the paired Android phone and receives a clear result.",
   },
   {
     icon: Sliders,
-    title: "watchOS 10 Control Center",
-    text: "High-density status bar (Jio 4G CSQ bars, battery pill), 6 frosted squircle tiles, volume slider & SOS strip.",
+    title: "Remote Watch Control",
+    text: "Guardians, SOS tone, watch settings and device state reconcile over the versioned BLE protocol.",
   },
   {
     icon: Palette,
-    title: "5 AMOLED Wallpapers",
-    text: "OLED Pitch Black, Ultra Topographic Contours, Cosmic Aurora, California Sunset Gradient & Cyber Matrix.",
+    title: "5 AMOLED Watch Faces",
+    text: "Five hardware-rendered faces and a compact app drawer designed for the 410×502 AMOLED display.",
   },
   {
     icon: BellRing,
-    title: "105dB Sound Studio",
-    text: "ES8311 DAC high-output sirens: Police Wail, 105dB Pulse, Ambulance Hi-Lo, Chirp Radar and Chimes.",
+    title: "Voice Memo Library",
+    text: "Record, browse, play and delete up to six watch memos, then transfer verified audio to the phone.",
   },
   {
     icon: Flashlight,
-    title: "3-Mode OLED Torch",
-    text: "Ultra-bright White 100%, Amber Warm night reading, and Red Strobe Emergency beacon.",
+    title: "3-Mode Attention Torch",
+    text: "White light, warm light and a fast red-blue attention strobe for visibility during an incident.",
   },
   {
-    icon: Satellite,
-    title: "Night Walk Guard",
-    text: "Continuous Neo-6M GPS NMEA telemetry, heading 042° NE, and automated 30s guardian pings.",
+    icon: Activity,
+    title: "Fall Monitoring",
+    text: "QMI8658 motion sensing evaluates impact and post-impact posture; calibration and real-world validation remain active work.",
   },
   {
     icon: Users,
-    title: "Guardian Direct Sync",
-    text: "Pre-authorized directory with 1-tap priority calling and instant GPS coordinates via SMS.",
+    title: "Guardian Sync",
+    text: "Two trusted contacts are stored locally, written to the watch and read back so the app can confirm the profile actually arrived.",
   },
 ];
 

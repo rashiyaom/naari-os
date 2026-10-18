@@ -79,15 +79,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "SheShield Sentinel — Safety, before emergency" },
-      { name: "description", content: "SheShield Sentinel is a proactive, phone-independent women's safety wearable developed for ILS Summit 2026, Surat (Track 3 SheLeads, P6) by Team Puraanmaya." },
+      { title: "Naari OS — ESP32-S3 safety watch and Android companion" },
+      { name: "description", content: "Naari OS is a working ESP32-S3 safety watch with authenticated Android BLE, SOS, fall monitoring, guardians and voice memo sync." },
       { name: "author", content: "Team Puraanmaya" },
-      { property: "og:title", content: "SheShield Sentinel — Safety, before emergency" },
-      { property: "og:description", content: "A silent signal for help before danger becomes an emergency. Phone-independent wearable with Cellular (LTE-M) + GNSS." },
+      { property: "og:title", content: "Naari OS — Connected safety on the wrist" },
+      { property: "og:description", content: "A working ESP32-S3 watch and Android BLE companion designed as one safety system." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "SheShield Sentinel — Safety, before emergency" },
-      { name: "twitter:description", content: "A silent signal for help before danger becomes an emergency." },
+      { name: "twitter:title", content: "Naari OS — Connected safety on the wrist" },
+      { name: "twitter:description", content: "ESP32-S3 safety watch, authenticated BLE and an Android companion." },
     ],
     links: [
       {

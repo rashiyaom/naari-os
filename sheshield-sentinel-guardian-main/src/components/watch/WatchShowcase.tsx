@@ -159,14 +159,14 @@ export function WatchShowcase({ onStateChange, compact = false }: WatchShowcaseP
               <span className="check-badge">✓</span>
               <div>
                 <strong>Mature watchOS 10 Control Center</strong>
-                <p>High-density carrier status (Jio 4G LTE), CSQ bars, battery pill, 6 frosted glass squircle cards, and full-width Emergency SOS strip.</p>
+                <p>Compact BLE and battery status, six quick controls, audio level and a full-width Emergency SOS strip.</p>
               </div>
             </div>
 
             <div className="spec-item solved">
               <span className="check-badge">✓</span>
               <div>
-                <strong>Cellular Call Ringing Audio</strong>
+                <strong>Phone Relay Feedback</strong>
                 <p>Realistic telephone ringback cadence synthesizer (440Hz/480Hz dual cadence) when dispatching emergency calls.</p>
               </div>
             </div>
@@ -207,7 +207,7 @@ export function WatchShowcase({ onStateChange, compact = false }: WatchShowcaseP
                 className="hw-sim-btn sounds"
                 onClick={() => setSelectedScreen(SCREENS.SOUND_STUDIO)}
               >
-                🎵 105dB Sirens
+                🎵 SOS Tone Studio
               </button>
               <button
                 type="button"

@@ -201,6 +201,7 @@ fun OnboardingScreen(
                         is OnboardingStep.Welcome -> WelcomeStepContent()
                         is OnboardingStep.PairWatch -> PairWatchStepContent(
                             visualState = state.pairingVisualState,
+                            permissions = state.permissions,
                             pairedAddress = state.pairedAddress,
                             pairedName = state.pairedName,
                             isPairing = state.isPairing,
@@ -209,7 +210,8 @@ fun OnboardingScreen(
                             onCancelSearch = { effectiveViewModel.cancelSearching() },
                             onConfirmPair = { addr, name -> effectiveViewModel.confirmAndPair(addr, name) },
                             onManualPair = { addr, name -> effectiveViewModel.pairDevice(addr, name) },
-                            onUnpair = { effectiveViewModel.clearPairedDevice() }
+                            onUnpair = { effectiveViewModel.clearPairedDevice() },
+                            onRefreshPermissions = { effectiveViewModel.refreshPermissions() }
                         )
                         is OnboardingStep.GrantCapabilities -> GrantCapabilitiesStepContent(
                             permissions = state.permissions,
@@ -255,11 +257,24 @@ fun OnboardingScreen(
                     contentDescription = "Finish setup and open Naari Home dashboard"
                 )
             } else {
+                val pairStepReady = state.currentStep !is OnboardingStep.PairWatch ||
+                    state.pairingVisualState is PairingVisualState.Connected
+                val continueText = when {
+                    state.currentStep is OnboardingStep.Welcome -> "Begin Setup"
+                    state.currentStep is OnboardingStep.PairWatch && state.isPairing -> "Connecting…"
+                    state.currentStep is OnboardingStep.PairWatch && !pairStepReady -> "Pair watch to continue"
+                    else -> "Continue"
+                }
                 PrimaryButton(
-                    text = if (state.currentStep is OnboardingStep.Welcome) "Begin Setup" else "Continue",
+                    text = continueText,
                     onClick = { effectiveViewModel.nextStep() },
                     modifier = Modifier.weight(1f),
-                    contentDescription = "Continue to next setup step"
+                    enabled = pairStepReady,
+                    contentDescription = if (pairStepReady) {
+                        "Continue to next setup step"
+                    } else {
+                        "Pair and authenticate the watch before continuing"
+                    }
                 )
             }
         }
@@ -324,6 +339,7 @@ private fun WelcomeStepContent() {
 @Composable
 private fun PairWatchStepContent(
     visualState: PairingVisualState,
+    permissions: PermissionsSnapshot,
     pairedAddress: String?,
     pairedName: String?,
     isPairing: Boolean,
@@ -332,17 +348,90 @@ private fun PairWatchStepContent(
     onCancelSearch: () -> Unit,
     onConfirmPair: (String, String) -> Unit,
     onManualPair: (String, String) -> Unit,
-    onUnpair: () -> Unit
+    onUnpair: () -> Unit,
+    onRefreshPermissions: () -> Unit
 ) {
     var showManualFallback by remember { mutableStateOf(false) }
     var manualAddress by remember { mutableStateOf("00:11:22:33:44:55") }
     var manualName by remember { mutableStateOf("Naari Watch") }
+    val context = LocalContext.current
+    val bluetoothPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions(),
+        onResult = { onRefreshPermissions() }
+    )
+    val requiredBluetoothPermissions: Array<String> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        arrayOf(Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT)
+    } else {
+        emptyArray()
+    }
+    val pairingPrerequisitesReady = permissions.bluetoothGranted && permissions.bluetoothAdapterEnabled
 
     Column(verticalArrangement = Arrangement.spacedBy(NaariSpacing.md)) {
         SectionHeader(
             title = "Pair Your Watch",
-            subtitle = "Bluetooth Companion Device association"
+            subtitle = "Secure Bluetooth connection to your Naari Watch"
         )
+
+        if (!permissions.bluetoothGranted) {
+            NaariCard {
+                Column(verticalArrangement = Arrangement.spacedBy(NaariSpacing.sm)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Nearby devices access",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        StatusChip(label = "Required", tone = StatusTone.Warning)
+                    }
+                    Text(
+                        text = "Android requires this permission before Naari can bond with and connect to the watch.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    PrimaryButton(
+                        text = "Allow Bluetooth Access",
+                        onClick = { bluetoothPermissionLauncher.launch(requiredBluetoothPermissions) },
+                        enabled = requiredBluetoothPermissions.isNotEmpty(),
+                        contentDescription = "Allow Nearby devices access for watch pairing"
+                    )
+                }
+            }
+        } else if (!permissions.bluetoothAdapterEnabled) {
+            NaariCard {
+                Column(verticalArrangement = Arrangement.spacedBy(NaariSpacing.sm)) {
+                    Text(
+                        text = "Bluetooth is turned off",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = "Turn on Bluetooth, return to Naari, and tap Check Again.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(NaariSpacing.sm)) {
+                        SecondaryButton(
+                            text = "Open Settings",
+                            onClick = {
+                                context.startActivity(android.content.Intent(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS))
+                            },
+                            modifier = Modifier.weight(1f),
+                            contentDescription = "Open Android Bluetooth settings"
+                        )
+                        PrimaryButton(
+                            text = "Check Again",
+                            onClick = onRefreshPermissions,
+                            modifier = Modifier.weight(1f),
+                            contentDescription = "Check Bluetooth status again"
+                        )
+                    }
+                }
+            }
+        }
 
         when (visualState) {
             is PairingVisualState.Connected -> {
@@ -433,6 +522,46 @@ private fun PairWatchStepContent(
                             text = "Cancel Search",
                             onClick = onCancelSearch,
                             contentDescription = "Cancel search for watch"
+                        )
+                    }
+                }
+            }
+
+            is PairingVisualState.PreviouslyPaired -> {
+                NaariCard {
+                    Column(verticalArrangement = Arrangement.spacedBy(NaariSpacing.sm)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Saved Watch",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            StatusChip(label = "Offline", tone = StatusTone.Warning)
+                        }
+                        Text(
+                            text = visualState.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = "${visualState.address}\nThe watch is remembered, but the secure BLE handshake is not active.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        PrimaryButton(
+                            text = "Reconnect Watch",
+                            onClick = { onConfirmPair(visualState.address, visualState.name) },
+                            enabled = pairingPrerequisitesReady,
+                            contentDescription = "Reconnect to saved Naari Watch"
+                        )
+                        SecondaryButton(
+                            text = "Forget & Pair Again",
+                            onClick = onUnpair,
+                            contentDescription = "Forget saved watch and start pairing again"
                         )
                     }
                 }
@@ -576,6 +705,7 @@ private fun PairWatchStepContent(
                         PrimaryButton(
                             text = "Search Again",
                             onClick = onStartSearch,
+                            enabled = pairingPrerequisitesReady,
                             contentDescription = "Retry pairing search"
                         )
                     }
@@ -610,6 +740,7 @@ private fun PairWatchStepContent(
                         PrimaryButton(
                             text = if (isPairing) "Pairing..." else "Search for Watch",
                             onClick = onStartSearch,
+                            enabled = pairingPrerequisitesReady,
                             contentDescription = "Search for nearby Naari Watch"
                         )
 

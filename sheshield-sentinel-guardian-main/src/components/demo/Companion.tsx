@@ -37,7 +37,7 @@ export function Companion({ demo }: Props) {
       <div className="guardian-head">
         <div>
           <Mono>SVNIT Campus Route</Mono>
-          <p>Updated now via Cellular (LTE-M) + GNSS</p>
+          <p>Interactive phone-link simulation</p>
         </div>
         <span className={demo.connected ? "text-safe" : "text-watch"}>
           <Signal size={12} /> {demo.connected ? "LIVE" : "OFFLINE"}
@@ -57,12 +57,14 @@ export function Companion({ demo }: Props) {
           {/* Dynamic Wearer Location Dot with Framer Motion transition */}
           <motion.circle
             className="map-dot"
+            initial={{ cx: dotX, cy: dotY }}
             animate={{ cx: dotX, cy: dotY }}
             transition={{ type: "spring", stiffness: 120, damping: 18 }}
             r="4"
           />
           <motion.circle
             className="map-pulse"
+            initial={{ cx: dotX, cy: dotY }}
             animate={{ cx: dotX, cy: dotY }}
             transition={{ type: "spring", stiffness: 120, damping: 18 }}
             r="8"
@@ -85,14 +87,14 @@ export function Companion({ demo }: Props) {
                   : "SAFE"}
           </span>
           <span className="font-mono text-[8px] text-dark-muted">
-            {demo.connected ? "Cellular: LTE-M Strong" : "Offline: Buffering"}
+            {demo.connected ? "BLE: authenticated" : "BLE: disconnected"}
           </span>
         </div>
 
         {/* Dynamic Alert Card (in exact summit format) or Journey Normal Status */}
         {isEmergencyOrPending ? (
           <div className="alert-card">
-            <Mono>SHE SHIELD — EMERGENCY</Mono>
+            <Mono>NAARI OS — EMERGENCY</Mono>
             <h4>
               Status:{" "}
               {demo.state === "EMERGENCY"
@@ -100,20 +102,8 @@ export function Companion({ demo }: Props) {
                 : `Silent Confirmation Active (${demo.countdown}s)`}
             </h4>
             <p>Time: {new Date().toLocaleTimeString()}</p>
-            <p>Location: Live location available via Cellular (LTE-M) + GNSS</p>
-            <p>Movement: Heading north-east</p>
-            <p>
-              Evidence:{" "}
-              {demo.evidence
-                ? "Audio/video capture initiated where available"
-                : "Evidence recording disabled in wearer config"}
-            </p>
-            <p>
-              Context:{" "}
-              {demo.contextSensor
-                ? "Nearby human presence detected, if supported by sensor"
-                : "Presence sensor inactive in wearer config"}
-            </p>
+            <p>Location: Android location request {demo.connected ? "queued" : "unavailable while offline"}</p>
+            <p>Transport: Authenticated BLE watch request</p>
             <b>Action: Contact wearer · proceed to location · contact appropriate emergency services</b>
           </div>
         ) : (
@@ -124,7 +114,7 @@ export function Companion({ demo }: Props) {
               <p>
                 {demo.state === "SAFE"
                   ? "Safe perimeter maintained · No anomalies"
-                  : "Live location streaming to trusted guardians via Cellular"}
+                  : "Fall monitoring active · phone link visible"}
               </p>
             </div>
           </div>

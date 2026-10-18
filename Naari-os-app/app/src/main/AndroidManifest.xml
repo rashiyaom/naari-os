@@ -6,6 +6,11 @@
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
+    <!-- Required by CompanionDeviceManager. Optional keeps installation available on
+         Android builds where the system pairing UI is absent; the app then reports it. -->
+    <uses-feature
+        android:name="android.software.companion_device_setup"
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" />

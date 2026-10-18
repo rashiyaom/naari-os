@@ -116,8 +116,9 @@ All commands use the included Gradle wrapper (`gradlew` or `gradlew.bat`):
 ### 2. Build Debug APK
 ```bash
 ./gradlew assembleDebug
+./package_debug_apk.sh
 ```
-*Output artifact:* `app/build/outputs/apk/debug/app-debug.apk`
+*Installable v1.2 artifact:* `build/Naari-Companion-1.2-debug.apk` with a matching SHA-256 file. The packaging script also copies the same verified APK into the website download directory.
 
 ### 3. Install on Connected Device (via ADB)
 ```bash

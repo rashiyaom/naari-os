@@ -1,12 +1,10 @@
 package com.naari.companion.ble
 
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanFilter
 import android.companion.AssociationRequest
-import android.companion.BluetoothDeviceFilter
 import android.companion.BluetoothLeDeviceFilter
 import android.companion.CompanionDeviceManager
 import android.content.Context
@@ -71,24 +69,20 @@ class CompanionDeviceManagerHelper @Inject constructor(
 
     /**
      * Builds an AssociationRequest configured to scan for Naari Watch BLE devices
-     * matching either the device name prefix or the primary service UUID (d973f2e0-b19e-11ee-a506-0242ac120002).
+     * matching the device name prefix and primary service UUID (d973f2e0-b19e-11ee-a506-0242ac120002).
      */
     fun buildAssociationRequest(namePrefix: String = ProtocolConstants.DEVICE_NAME_PREFIX): AssociationRequest {
         val pattern = Pattern.compile(".*$namePrefix.*", Pattern.CASE_INSENSITIVE)
-        val nameFilter = BluetoothDeviceFilter.Builder()
-            .setNamePattern(pattern)
-            .build()
-
         val leScanFilter = ScanFilter.Builder()
             .setServiceUuid(ParcelUuid(ProtocolConstants.SERVICE_UUID_V1))
             .build()
 
         val leFilter = BluetoothLeDeviceFilter.Builder()
+            .setNamePattern(pattern)
             .setScanFilter(leScanFilter)
             .build()
 
         return AssociationRequest.Builder()
-            .addDeviceFilter(nameFilter)
             .addDeviceFilter(leFilter)
             .setSingleDevice(true)
             .build()
@@ -154,30 +148,30 @@ class CompanionDeviceManagerHelper @Inject constructor(
      */
     @Suppress("DEPRECATION")
     fun extractDeviceFromResult(intent: Intent?): BluetoothDevice? {
-        if (intent == null) return null
-        return try {
+        val selected = try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                val association = intent.getParcelableExtra(
+                val association = intent?.getParcelableExtra(
                     CompanionDeviceManager.EXTRA_ASSOCIATION,
                     android.companion.AssociationInfo::class.java
                 )
                 val address = association?.deviceMacAddress?.toString()
                 if (address != null) {
-                    val manager = context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
-                    manager?.adapter?.getRemoteDevice(address)?.let { return it }
+                    remoteDevice(address)?.let { return it }
                 }
-                val bluetoothDevice = intent.getParcelableExtra(
+                val bluetoothDevice = intent?.getParcelableExtra(
                     CompanionDeviceManager.EXTRA_DEVICE,
                     BluetoothDevice::class.java
                 )
                 if (bluetoothDevice != null) return bluetoothDevice
-                val scanResult = intent.getParcelableExtra(
+                val scanResult = intent?.getParcelableExtra(
                     CompanionDeviceManager.EXTRA_DEVICE,
                     android.bluetooth.le.ScanResult::class.java
                 )
                 scanResult?.device
             } else {
-                val parcelable = intent.getParcelableExtra<android.os.Parcelable>(CompanionDeviceManager.EXTRA_DEVICE)
+                val parcelable = intent?.getParcelableExtra<android.os.Parcelable>(
+                    CompanionDeviceManager.EXTRA_DEVICE
+                )
                 when (parcelable) {
                     is BluetoothDevice -> parcelable
                     is android.bluetooth.le.ScanResult -> parcelable.device
@@ -187,6 +181,33 @@ class CompanionDeviceManagerHelper @Inject constructor(
         } catch (_: Exception) {
             null
         }
+        // Some Android 13+ implementations return RESULT_OK without including the device
+        // parcelable. The newly created association is authoritative in that case.
+        return selected ?: latestAssociatedDevice()
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun remoteDevice(address: String): BluetoothDevice? = try {
+        val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
+        bluetoothManager?.adapter?.getRemoteDevice(address)
+    } catch (_: Exception) {
+        null
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun latestAssociatedDevice(): BluetoothDevice? {
+        val manager = companionManager ?: return null
+        val address = try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                manager.myAssociations.maxByOrNull { it.id }?.deviceMacAddress?.toString()
+            } else {
+                @Suppress("DEPRECATION")
+                manager.associations.lastOrNull()
+            }
+        } catch (_: Exception) {
+            null
+        }
+        return address?.let(::remoteDevice)
     }
 
     /**

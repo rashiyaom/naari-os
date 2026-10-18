@@ -19,19 +19,22 @@ const Mono = ({ children }: { children: React.ReactNode }) => (
 
 const states = [
   {
-    name: "SAFE",
+    name: "READY",
+    tone: "safe",
     icon: ShieldCheck,
-    text: "Normal operation. Low power, ready, with trusted contacts already configured on device.",
+    text: "The watch face, local tools and trusted contacts remain ready while the phone link reports its real connection state.",
   },
   {
-    name: "WATCH",
+    name: "GUARD",
+    tone: "watch",
     icon: Eye,
-    text: "A discreet triple press shares live location. No loud alarm, completely silent, and always cancellable.",
+    text: "Fall monitoring evaluates motion locally and the wearer can start help manually without navigating a phone.",
   },
   {
-    name: "EMERGENCY",
+    name: "SOS",
+    tone: "emergency",
     icon: Radio,
-    text: "A long press locks GNSS, records available evidence and alerts trusted contacts via Cellular (LTE-M).",
+    text: "A 30-second grace window precedes approved call, SMS and location requests through the connected Android phone.",
   },
 ];
 
@@ -50,8 +53,8 @@ export function ModelSection() {
 
         {/* Three State Cards */}
         <div className="state-cards mt-14">
-          {states.map(({ name, icon: Icon, text }, i) => (
-            <Reveal key={name} className={`state-card state-card-${name.toLowerCase()}`}>
+          {states.map(({ name, tone, icon: Icon, text }, i) => (
+            <Reveal key={name} className={`state-card state-card-${tone}`}>
               <div className="flex items-center justify-between">
                 <Icon size={25} />
                 <Mono>0{i + 1}</Mono>
@@ -71,12 +74,12 @@ export function ModelSection() {
           <ChevronRight size={24} aria-hidden />
           <div>
             <Mono>Triple press</Mono>
-            <p>“Safety Watch activated. Live location available.”</p>
+              <p>Guard mode monitors motion and keeps the phone link visible.</p>
           </div>
           <ChevronRight size={24} aria-hidden />
           <div>
-            <Mono>Long press</Mono>
-            <p>“Emergency alert activated. Live location and available evidence are being shared.”</p>
+            <Mono>SOS trigger</Mono>
+            <p>30-second cancel window, then the phone executes guardian actions.</p>
           </div>
         </Reveal>
       </div>

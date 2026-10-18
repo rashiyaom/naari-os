@@ -18,21 +18,21 @@ const Mono = ({ children }: { children: React.ReactNode }) => (
 );
 
 const mvpFeatures = [
-  "Watch + Emergency activation",
-  "GPS / GNSS transmission",
-  "Contact notification via Cellular",
-  "Live location companion interface",
-  "Timestamped telemetry logging",
+  "ESP32-S3 AMOLED watch interface",
+  "Authenticated BLE pairing and handshake",
+  "Manual SOS with deliberate cancellation",
+  "Guardian write-and-readback sync",
+  "Voice memo library and phone transfer protocol",
 ];
 
 const futurePhases = [
-  "Integrated wristband enclosure",
-  "Low-power edge camera module",
-  "Geofenced commute safe zones",
-  "Multi-tier trusted contact groups",
-  "Hardware-encrypted evidence vault",
-  "Authorized 112 emergency integration",
-  "Solar-assisted 7-day battery life",
+  "Real-world fall dataset collection and threshold calibration",
+  "Physical Android end-to-end BLE test matrix",
+  "A7672S power, LTE and GNSS bench validation",
+  "Signed release APK and Play Store distribution",
+  "Battery and reconnection endurance testing",
+  "Accessibility and multilingual emergency flows",
+  "Pilot study with documented safety protocol",
 ];
 
 export function RoadmapSection() {
@@ -50,7 +50,7 @@ export function RoadmapSection() {
             <span>MVP STAGE</span>
             <h3>Prove the silent safety path.</h3>
             <p>
-              ESP32-S3 class MCU · GNSS · Cellular (LTE-M) · Tactile Button · Vibration motor · MEMS Mic · Basic camera
+              ESP32-S3 · 410×502 AMOLED · QMI8658 IMU · ES7210 microphone · ES8311 audio · Android companion
             </p>
             <ul>
               {mvpFeatures.map((x) => (
@@ -63,10 +63,10 @@ export function RoadmapSection() {
           </Reveal>
 
           <Reveal className="roadmap-card optional">
-            <span>OPTIONAL ADVANCED</span>
-            <h3>Add context carefully.</h3>
+            <span>NEXT VALIDATION</span>
+            <h3>Prove reliability in the field.</h3>
             <p>
-              Discreet voice keyword activation · Thermal human presence sensing · Edge ML classification · Encrypted cloud evidence storage · Guardian companion mobile app
+              Tune fall detection from recorded motion traces, test BLE across Android vendors, validate power behavior, and bench-test the optional A7672S modem path.
             </p>
           </Reveal>
         </div>

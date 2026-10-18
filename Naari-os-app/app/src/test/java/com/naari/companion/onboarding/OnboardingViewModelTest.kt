@@ -303,7 +303,10 @@ class OnboardingViewModelTest {
         runCurrent()
         val errorState = viewModel.uiState.value.pairingVisualState
         assertTrue(errorState is PairingVisualState.Error)
-        assertEquals("Bluetooth scan timed out", (errorState as PairingVisualState.Error).message)
+        assertEquals(
+            "The watch did not complete the secure handshake. Open Phone Link → Start pairing on the watch, then retry.",
+            (errorState as PairingVisualState.Error).message
+        )
 
         viewModel.cancelSearching()
         runCurrent()
@@ -383,6 +386,37 @@ class OnboardingViewModelTest {
         assertNull(repo.addressFlow.value)
         assertTrue(ble.didDisconnect)
         assertTrue(vm.uiState.value.pairingVisualState is PairingVisualState.Error)
+    }
+
+    @Test
+    fun savedWatch_staysOfflineUntilLiveBleHandshakeBecomesReady() = runTest {
+        val repo = FakeOnboardingRepository().apply {
+            addressFlow.value = "11:22:33:44:55:66"
+            nameFlow.value = "Naari Watch"
+        }
+        val ble = FakeBleSessionManager()
+        val vm = OnboardingViewModel(
+            repo,
+            FakePermissionsRepository(),
+            FakeGuardiansRepository(),
+            ble,
+            externalScope = backgroundScope
+        )
+        runCurrent()
+
+        assertTrue(vm.uiState.value.pairingVisualState is PairingVisualState.PreviouslyPaired)
+
+        ble.connectionStateFlow.value = BleConnectionState.Ready
+        runCurrent()
+
+        val connected = vm.uiState.value.pairingVisualState
+        assertTrue(connected is PairingVisualState.Connected)
+        assertEquals("11:22:33:44:55:66", (connected as PairingVisualState.Connected).address)
+
+        ble.connectionStateFlow.value = BleConnectionState.Disconnected
+        runCurrent()
+
+        assertTrue(vm.uiState.value.pairingVisualState is PairingVisualState.PreviouslyPaired)
     }
 
 }

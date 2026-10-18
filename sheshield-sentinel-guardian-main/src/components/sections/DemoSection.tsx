@@ -37,7 +37,7 @@ export function DemoSection({ demo }: Props) {
     <section
       id="demo"
       className={`demo-section ${demoStateClass} py-24 md:py-32`}
-      aria-label="Interactive SheShield Sentinel demo section"
+      aria-label="Interactive Naari OS demo section"
     >
       <div className="mx-auto max-w-[1440px] px-4 md:px-10">
         <div className="mb-12 flex flex-wrap items-end justify-between gap-5">
@@ -79,7 +79,7 @@ export function DemoSection({ demo }: Props) {
 
             <span className={`live-pill ${!demo.connected ? "offline" : ""}`}>
               <i />
-              {demo.connected ? "Live Link Active · LTE-M" : "Waiting for connection…"}
+              {demo.connected ? "Simulated BLE Link Active" : "Waiting for connection…"}
             </span>
           </div>
         </div>
@@ -180,7 +180,7 @@ export function DemoSection({ demo }: Props) {
               </div>
 
               <p className="demo-hint">
-                Slide Drawer · 5 Wallpapers · Crown/Side Buttons · Ringing Audio
+                App drawer · 5 watch faces · voice memos · SOS controls
               </p>
             </div>
 

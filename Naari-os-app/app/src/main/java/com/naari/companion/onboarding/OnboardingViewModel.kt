@@ -37,6 +37,7 @@ sealed interface PairingVisualState {
     object Searching : PairingVisualState
     data class DeviceFound(val address: String, val name: String) : PairingVisualState
     data class Pairing(val address: String, val name: String, val stepMessage: String) : PairingVisualState
+    data class PreviouslyPaired(val address: String, val name: String) : PairingVisualState
     data class Connected(val address: String, val name: String) : PairingVisualState
     data class Error(val message: String) : PairingVisualState
 }
@@ -68,6 +69,13 @@ private data class PairedDeviceInfo(
     val address: String?,
     val name: String?,
     val isCompleted: Boolean
+)
+
+private data class BleProgress(
+    val connectionState: com.naari.companion.ble.BleConnectionState,
+    val connectionStep: BleConnectionStep,
+    val hasRequiredGattService: Boolean,
+    val lastHelloTimestampMs: Long?
 )
 
 /**
@@ -148,30 +156,45 @@ class OnboardingViewModel(
         listOfNotNull(g0, g1)
     }
 
+    private val bleProgressFlow = combine(
+        bleSessionManager.connectionState,
+        bleSessionManager.connectionStep,
+        bleSessionManager.hasRequiredGattService,
+        bleSessionManager.lastHelloTimestampMs
+    ) { connectionState, connectionStep, hasRequiredGattService, lastHelloTimestampMs ->
+        BleProgress(connectionState, connectionStep, hasRequiredGattService, lastHelloTimestampMs)
+    }
+
     val uiState: StateFlow<OnboardingUiState> = combine(
         stepProgressFlow,
         permissionsRepository.permissions,
         deviceInfoFlow,
-        guardiansFlow
-    ) { stepProgress: StepProgress, permissions: PermissionsSnapshot, device: PairedDeviceInfo, guardians: List<Guardian> ->
-        val connStep = bleSessionManager?.connectionStep?.value ?: BleConnectionStep.Disconnected
-        val hasGatt = bleSessionManager?.hasRequiredGattService?.value ?: false
-        val lastHello = bleSessionManager?.lastHelloTimestampMs?.value
-
+        guardiansFlow,
+        bleProgressFlow
+    ) { stepProgress: StepProgress, permissions: PermissionsSnapshot, device: PairedDeviceInfo,
+        guardians: List<Guardian>, ble: BleProgress ->
         val derivedReadiness = ReadinessDeriver.derive(
             bluetoothAdapterEnabled = permissions.bluetoothAdapterEnabled,
-            connectionStep = connStep,
-            hasRequiredGattService = hasGatt,
-            lastHelloTimestampMs = lastHello,
+            connectionStep = ble.connectionStep,
+            hasRequiredGattService = ble.hasRequiredGattService,
+            lastHelloTimestampMs = ble.lastHelloTimestampMs,
             currentTimeMs = System.currentTimeMillis(),
             permissions = permissions
         )
 
-        // If a device is already paired in storage and we are in Idle visual state, reflect Connected
-        val resolvedVisualState = if (device.address != null && stepProgress.visualState == PairingVisualState.Idle) {
-            PairingVisualState.Connected(device.address, device.name ?: "Naari Watch")
-        } else {
-            stepProgress.visualState
+        // A stored association is not the same as a live authenticated GATT handshake.
+        val resolvedVisualState = when {
+            stepProgress.visualState is PairingVisualState.Searching ||
+                stepProgress.visualState is PairingVisualState.DeviceFound ||
+                stepProgress.visualState is PairingVisualState.Pairing ||
+                stepProgress.visualState is PairingVisualState.Error -> stepProgress.visualState
+            device.address == null -> PairingVisualState.Idle
+            ble.connectionState == com.naari.companion.ble.BleConnectionState.Ready ->
+                PairingVisualState.Connected(device.address, device.name ?: "Naari Watch")
+            else -> PairingVisualState.PreviouslyPaired(
+                device.address,
+                device.name ?: "Naari Watch"
+            )
         }
 
         OnboardingUiState(
@@ -214,6 +237,15 @@ class OnboardingViewModel(
      * Initiates searching for Naari Watch via CompanionDeviceManager.
      */
     fun startSearching() {
+        val permissions = permissionsRepository.permissions.value
+        if (!permissions.bluetoothAdapterEnabled) {
+            onPairingError("Bluetooth is turned off. Turn it on, then search again.")
+            return
+        }
+        if (!permissions.bluetoothGranted) {
+            onPairingError("Allow Nearby devices access before pairing your watch.")
+            return
+        }
         _pairingVisualState.value = PairingVisualState.Searching
         _pairingMessage.value = "Searching for Naari Watch..."
 
@@ -225,8 +257,7 @@ class OnboardingViewModel(
                 }
 
                 override fun onFailure(error: String) {
-                    _pairingVisualState.value = PairingVisualState.Error(error)
-                    _pairingMessage.value = error
+                    onPairingError(error)
                 }
             })
         }
@@ -243,8 +274,9 @@ class OnboardingViewModel(
     }
 
     fun onPairingError(message: String) {
-        _pairingVisualState.value = PairingVisualState.Error(message)
-        _pairingMessage.value = message
+        val friendlyMessage = friendlyPairingError(message)
+        _pairingVisualState.value = PairingVisualState.Error(friendlyMessage)
+        _pairingMessage.value = friendlyMessage
     }
 
     /**
@@ -269,7 +301,7 @@ class OnboardingViewModel(
                 bleSessionManager.disconnect()
                 _pairingVisualState.value = PairingVisualState.Error("Pairing timed out. Open Phone Link → Start pairing on the watch and retry.")
             } catch(e: Exception) {
-                _pairingVisualState.value = PairingVisualState.Error(e.message ?: "Pairing failed")
+                onPairingError(e.message ?: "Pairing failed")
             } finally { _isPairing.value = false }
 
         }
@@ -316,6 +348,23 @@ class OnboardingViewModel(
     }
 
     companion object {
+        internal fun friendlyPairingError(raw: String): String {
+            val normalized = raw.lowercase()
+            return when {
+                "companion_device_setup" in normalized || "uses-feature" in normalized ->
+                    "Android pairing support was unavailable in this app build. Install Naari Companion 1.2 or newer."
+                "permission" in normalized || "not allowed" in normalized || "securityexception" in normalized ->
+                    "Bluetooth access is required. Allow Nearby devices, then search again."
+                "cancel" in normalized ->
+                    "Pairing was cancelled. Keep the watch pairing screen open and try again."
+                "timeout" in normalized || "timed out" in normalized ->
+                    "The watch did not complete the secure handshake. Open Phone Link → Start pairing on the watch, then retry."
+                "not supported" in normalized ->
+                    "This phone does not provide Android's companion-device pairing service."
+                else -> "Could not connect to the watch. Keep Phone Link open on the watch and try again."
+            }
+        }
+
         private fun createFallbackGuardiansRepo(): GuardiansRepository = object : GuardiansRepository {
             override val slot0 = MutableStateFlow<Guardian?>(null)
             override val slot1 = MutableStateFlow<Guardian?>(null)

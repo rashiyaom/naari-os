@@ -22,11 +22,11 @@ export function useSentinelDemo() {
   const [screen, setScreen] = useState<WatchScreen>("home");
   const [connected, setConnected] = useState(true);
   const [events, setEvents] = useState<DemoEvent[]>([
-    { id: "init-0", time: stamp(), text: "Sentinel ready · Cellular (LTE-M) + GNSS active" },
+    { id: "init-0", time: stamp(), text: "Naari ready · authenticated BLE link active" },
   ]);
   const [buffered, setBuffered] = useState<DemoEvent[]>([]);
-  const [confirmationWindow, setConfirmationWindow] = useState(3);
-  const [countdown, setCountdown] = useState(3);
+  const [confirmationWindow, setConfirmationWindow] = useState(30);
+  const [countdown, setCountdown] = useState(30);
   const [voiceTrigger, setVoiceTrigger] = useState(true);
   const [vibration, setVibration] = useState(true);
   const [evidence, setEvidence] = useState(true);
@@ -61,7 +61,7 @@ export function useSentinelDemo() {
   const activateWatch = useCallback(() => {
     setState("WATCH");
     setScreen("watch");
-    log("Safety Watch activated · live location shared via Cellular (LTE-M) + GNSS");
+    log("Guard mode activated · motion monitoring active");
   }, [log]);
 
   const activateEmergency = useCallback(() => {
@@ -69,14 +69,12 @@ export function useSentinelDemo() {
     setScreen("emergency");
     const newLogs = [
       "Emergency mode activated",
-      "GPS lock acquired via GNSS",
-      "Trusted contacts alerted",
-      "Live tracking shared via Cellular (LTE-M)",
-      ...(evidence ? ["Audio capture started"] : []),
-      ...(contextSensor ? ["Contextual presence sensor active"] : []),
+      "Authenticated watch request received by Android",
+      "Guardian actions requested from the phone",
+      "Phone result returned to the watch",
     ];
     newLogs.forEach(log);
-  }, [evidence, contextSensor, log]);
+  }, [log]);
 
   const beginEmergency = useCallback(() => {
     if (state === "EMERGENCY") return;
@@ -125,7 +123,7 @@ export function useSentinelDemo() {
       {
         id: `reset-${Date.now()}`,
         time: stamp(),
-        text: "Demo reset · Sentinel ready · Cellular (LTE-M) + GNSS active",
+        text: "Demo reset · Naari ready · authenticated BLE link active",
       },
     ]);
   }, [confirmationWindow]);
@@ -139,7 +137,7 @@ export function useSentinelDemo() {
             const flushNotice: DemoEvent = {
               id: `flush-${Date.now()}`,
               time: stamp(),
-              text: `Reconnected via Cellular (LTE-M) · ${currentBuffered.length} buffered event${currentBuffered.length === 1 ? "" : "s"} flushed`,
+              text: `BLE reconnected · ${currentBuffered.length} buffered event${currentBuffered.length === 1 ? "" : "s"} restored`,
             };
             const unbuffered = currentBuffered.map((ev) => ({ ...ev, buffered: false }));
             setEvents((curr) => [flushNotice, ...unbuffered.reverse(), ...curr].slice(0, 14));
@@ -147,7 +145,7 @@ export function useSentinelDemo() {
             const reconnectNotice: DemoEvent = {
               id: `reconnect-${Date.now()}`,
               time: stamp(),
-              text: "Reconnected via Cellular (LTE-M)",
+              text: "Authenticated BLE link restored",
             };
             setEvents((curr) => [reconnectNotice, ...curr].slice(0, 14));
           }
@@ -157,7 +155,7 @@ export function useSentinelDemo() {
         const item: DemoEvent = {
           id: `offline-${Date.now()}`,
           time: stamp(),
-          text: "Cellular signal lost · events will buffer locally",
+          text: "BLE link lost · phone actions are unavailable",
           buffered: true,
         };
         setBuffered((curr) => [...curr, item]);

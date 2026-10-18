@@ -21,6 +21,61 @@
   --shadow-coral: var(--shadow-coral);
 }
 
+/* Android download */
+.download-shell {
+  position: relative;
+  display: grid;
+  gap: 2rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--primary) 18%, transparent);
+  border-radius: 2rem;
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in oklab, var(--primary) 16%, transparent), transparent 38%),
+    rgba(255, 255, 255, 0.58);
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  box-shadow: 0 30px 80px rgba(93, 47, 57, 0.10);
+  backdrop-filter: blur(24px);
+}
+
+@media (min-width: 900px) {
+  .download-shell { grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr); align-items: center; }
+}
+
+.download-version {
+  border: 1px solid color-mix(in oklab, var(--foreground) 12%, transparent);
+  border-radius: 999px;
+  padding: .72rem 1rem;
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.download-facts { display: grid; gap: .75rem; }
+.download-fact {
+  display: flex;
+  align-items: flex-start;
+  gap: .85rem;
+  border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent);
+  border-radius: 1rem;
+  background: rgba(255,255,255,.52);
+  padding: 1rem;
+}
+.download-fact > span {
+  display: grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: .72rem;
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+  color: var(--primary);
+}
+.download-fact b { display: block; font-size: .84rem; }
+.download-fact p { margin-top: .18rem; font-size: .72rem; line-height: 1.45; color: var(--muted-foreground); }
+.download-ready { display: flex; align-items: center; gap: .55rem; padding: .5rem .3rem; color: var(--safe); font-size: .69rem; font-weight: 700; }
+
 :root {
   --radius: 1.5rem;
   --background: oklch(0.91 0.04 24); --foreground: oklch(0.24 0.025 5);

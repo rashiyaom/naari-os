@@ -21,32 +21,32 @@ const useCases = [
   {
     name: "Walk home",
     scenario: "Evening commute",
-    text: "She feels followed after work. A discreet triple press quietly starts Safety Watch and streams live location to Mom without escalating tension.",
+    text: "She can start SOS from the wrist. After the grace window, the paired phone can message or call a configured guardian and attach its current location.",
   },
   {
     name: "Cab / auto",
     scenario: "Unfamiliar detour",
-    text: "A late-night cab route feels wrong. Guardian monitoring starts discreetly before the situation ever escalates into an emergency.",
+    text: "The watch keeps guardian access close while the Android link makes its real connected or disconnected state visible.",
   },
   {
-    name: "Phone inaccessible",
-    scenario: "Dead battery or bag out of reach",
-    text: "The core safety path remains functional on her wrist, completely independent of a dead, lost, or snatched smartphone.",
+    name: "Fall candidate",
+    scenario: "Impact followed by low movement",
+    text: "The watch checks impact and post-impact motion, asks the wearer to dismiss, then escalates through the same SOS flow if unanswered.",
   },
   {
     name: "False alarm",
     scenario: "Accidental button press",
-    text: "A silent vibration and configurable 1-5s countdown window allow her to cancel instantly without false alarm panic.",
+    text: "A 30-second countdown prevents accidental dispatch, while an active SOS requires a deliberate 3-second hold to stop.",
   },
 ];
 
 const risks = [
-  ["Accidental activation", "Silent cancellation window and haptic vibration feedback"],
-  ["No cellular coverage", "Store-and-forward local event buffering flushed upon reconnection"],
-  ["Battery drain", "Ultra-low-power standby mode, activating high-drain GPS only during events"],
-  ["Wearer privacy", "Trigger-bound evidence capture, strict retention policies, no continuous audio"],
-  ["Sensor ambiguity", "Contextual metadata only (thermal presence), never biometric identification"],
-  ["Voice keyword failure", "Physical crown tactile gestures remain the primary, fail-safe trigger"],
+  ["Accidental activation", "30-second grace period and 3-second hold-to-stop interaction"],
+  ["BLE link loss", "Visible link status, reconnect path and explicit failed-action replies"],
+  ["Battery drain", "Local event-driven sensing and no continuous phone streaming"],
+  ["Wearer privacy", "On-device storage, explicit transfer and no cloud dependency"],
+  ["Sensor ambiguity", "Multi-stage impact and posture heuristic with ongoing dataset calibration"],
+  ["Phone permission denied", "Readiness checks block setup until required Android capabilities are granted"],
 ];
 
 export function CasesAndRisks() {

@@ -47,7 +47,7 @@ export function GapSection() {
             </div>
 
             <p className="mt-10 text-xs text-dark-muted font-mono uppercase tracking-wider">
-              SheShield response
+              Naari OS response
             </p>
             <div className="state-path">
               <span>Normal</span>

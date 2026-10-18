@@ -595,7 +595,7 @@ export default function WatchSimulator({
                     <span className="bar active" />
                     <span className="bar active" />
                   </div>
-                  <span className="ws-status-carrier">Jio 4G</span>
+                  <span className="ws-status-carrier">BLE</span>
                 </div>
                 <div className="ws-status-right">
                   <span className="ws-battery-val">{battery}%</span>
@@ -765,7 +765,7 @@ export default function WatchSimulator({
                   <div className="ws-carrier-bars">
                     <span className="bar active" /><span className="bar active" /><span className="bar active" /><span className="bar active" />
                   </div>
-                  <span className="ws-cc-carrier">Jio 4G LTE</span>
+                  <span className="ws-cc-carrier">Phone linked</span>
                   <span className="ws-cc-dot" />
                 </div>
                 <div className="ws-cc-batt-group">
@@ -778,7 +778,7 @@ export default function WatchSimulator({
               <div className="ws-cc-cards-grid">
                 <button
                   className={`ws-cc-card ${cellularActive ? 'active' : ''}`}
-                  onClick={() => { setCellularActive(!cellularActive); showToast(cellularActive ? 'Cellular Radio Disabled' : 'Cellular Jio 4G Connected'); }}
+                  onClick={() => { setCellularActive(!cellularActive); showToast(cellularActive ? 'Phone Link Disabled' : 'Phone Link Connected'); }}
                 >
                   <div className="ws-cc-card-icon cellular">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -786,7 +786,7 @@ export default function WatchSimulator({
                     </svg>
                   </div>
                   <div className="ws-cc-card-texts">
-                    <span className="title">Cellular</span>
+                    <span className="title">Phone Link</span>
                     <span className="sub">{cellularActive ? 'Connected' : 'Off'}</span>
                   </div>
                 </button>
@@ -846,7 +846,7 @@ export default function WatchSimulator({
                     } else {
                       audioSynth.play('police', volume / 100);
                       setActiveSound('police');
-                      showToast('🔊 105dB Siren sounding!');
+                      showToast('🔊 SOS tone playing');
                     }
                   }}
                 >
@@ -857,7 +857,7 @@ export default function WatchSimulator({
                   </div>
                   <div className="ws-cc-card-texts">
                     <span className="title">Siren</span>
-                    <span className="sub">{activeSound ? 'ACTIVE' : '105dB Loud'}</span>
+                    <span className="sub">{activeSound ? 'ACTIVE' : 'Select tone'}</span>
                   </div>
                 </button>
 
@@ -871,7 +871,7 @@ export default function WatchSimulator({
                     </svg>
                   </div>
                   <div className="ws-cc-card-texts">
-                    <span className="title">GPS Guard</span>
+                    <span className="title">Fall Guard</span>
                     <span className="sub">3D Fix 12 Sats</span>
                   </div>
                 </button>
@@ -910,7 +910,7 @@ export default function WatchSimulator({
             <div className="ws-ui-screen ws-screen ws-screen-emergency-alert">
               <div className="ws-emer-top-header">
                 <span className="ws-emer-badge">CRITICAL ALERT</span>
-                <span className="ws-emer-sub">CELLULAR 4G ARMED</span>
+                <span className="ws-emer-sub">ANDROID RELAY READY</span>
               </div>
 
               <div className="ws-countdown-arc-wrap">
@@ -936,7 +936,7 @@ export default function WatchSimulator({
               </div>
 
               <div className="ws-emer-status-text">
-                Live GPS + Audio Stream to 112 & Guardians in {countdown}s
+                Guardian call, SMS and location requests begin in {countdown}s
               </div>
 
               <button
@@ -1077,7 +1077,7 @@ export default function WatchSimulator({
               <div className="ws-sound-list">
                 {[
                   { id: 'police', name: 'Police Siren', sub: '600-1500Hz wail sweep' },
-                  { id: 'pulse', name: '105dB Pulse', sub: '2200Hz high alert' },
+                  { id: 'pulse', name: 'Priority Pulse', sub: 'High attention tone' },
                   { id: 'ambulance', name: 'Ambulance Hi-Lo', sub: '960/770Hz dual tone' },
                   { id: 'chirp', name: 'Chirp Radar', sub: '1400Hz frequency blast' },
                   { id: 'bell', name: 'Bell Chime', sub: '1760Hz harmonic pulse' },
@@ -1242,7 +1242,7 @@ export default function WatchSimulator({
 
                   <div className="ws-rec-idle-title">TAP TO RECORD</div>
                   <div className="ws-rec-idle-sub">Captures audio note via mic</div>
-                  <div className="ws-rec-idle-desc">Emergency blackbox voice evidence</div>
+                  <div className="ws-rec-idle-desc">On-device voice memo library</div>
                 </div>
               )}
             </div>
@@ -1294,7 +1294,7 @@ export default function WatchSimulator({
             <div className="ws-ui-screen ws-screen ws-screen-guard">
               <div className="ws-guard-top">
                 <span className="title">Night Walk Guard</span>
-                <span className="badge">GPS ACTIVE</span>
+                <span className="badge">MOTION ACTIVE</span>
               </div>
               <div className="ws-guard-pulse-center">
                 <div className="ws-pulse-sonar" />
@@ -1377,7 +1377,7 @@ export default function WatchSimulator({
                   className="call-out-btn"
                   onClick={() => {
                     const targetNum = dialedDigits || '112';
-                    setCallingInfo({ name: 'Cellular Call', number: targetNum, elapsed: 0 });
+                    setCallingInfo({ name: 'Phone Relay', number: targetNum, elapsed: 0 });
                     navigateTo(SCREENS.CALLING);
                   }}
                 >
@@ -1406,7 +1406,7 @@ export default function WatchSimulator({
                 <span className="ws-sys-shield-ico">🛡️</span>
                 <div>
                   <div className="status-title">ALL SYSTEMS NORMAL</div>
-                  <div className="status-sub">4 Sensors Active · GPS Ready</div>
+                  <div className="status-sub">Motion sensor active · BLE ready</div>
                 </div>
               </div>
 
@@ -1421,8 +1421,8 @@ export default function WatchSimulator({
 
                 <div className="ws-sys-card-friendly">
                   <div className="card-top">
-                    <span className="card-name">Cellular 4G LTE</span>
-                    <span className="badge blue">Jio 4G Connected</span>
+                    <span className="card-name">Android Phone Link</span>
+                    <span className="badge blue">Authenticated BLE</span>
                   </div>
                   <div className="card-val">Signal CSQ 26 · 112 Auto-Dial Armed</div>
                 </div>
@@ -1439,12 +1439,12 @@ export default function WatchSimulator({
                   className="ws-sys-card-friendly clickable"
                   onClick={() => {
                     audioSynth.play('police', volume / 100);
-                    showToast('Testing 105dB Siren Speaker...');
+                    showToast('Testing selected SOS tone...');
                     setTimeout(() => audioSynth.stop(), 2000);
                   }}
                 >
                   <div className="card-top">
-                    <span className="card-name">105dB Siren</span>
+                    <span className="card-name">SOS Tone Output</span>
                     <span className="badge amber">Ready (Tap to Test)</span>
                   </div>
                   <div className="card-val">ES8311 I2S Audio Amp Ready</div>

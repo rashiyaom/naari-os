@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { RotateCcw } from "lucide-react";
+import { Download } from "lucide-react";
 import { SentinelButton } from "@/components/ui/sentinel-button";
 
 const Reveal = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
@@ -27,17 +27,17 @@ export function Closing() {
       </div>
 
       <Reveal className="relative z-10 mx-auto max-w-5xl px-5 text-center">
-        <Mono>SheShield Sentinel</Mono>
+        <Mono>Naari OS</Mono>
         <h2 className="mt-7 text-5xl font-extrabold leading-[.92] md:text-8xl">
           Don’t wait for danger to become an emergency before someone knows.
         </h2>
         <p className="mx-auto mt-7 max-w-2xl text-muted-foreground text-sm md:text-base leading-relaxed">
-          SheShield Sentinel turns “I feel unsafe” into a silent signal for help, before it becomes an emergency.
+          A real watch, a real Android bridge, and a safety workflow designed around deliberate action and clear limits.
         </p>
         <div className="mt-8">
-          <a href="#demo">
-            <SentinelButton variant="glass" aria-label="Scroll back up to test the interactive demo again">
-              Replay the demo <RotateCcw size={16} />
+          <a href="/downloads/Naari-Companion-1.2-debug.apk" download>
+            <SentinelButton variant="glass" aria-label="Download the Naari Companion APK">
+              Download companion app <Download size={16} />
             </SentinelButton>
           </a>
         </div>
